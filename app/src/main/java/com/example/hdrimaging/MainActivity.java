@@ -7,7 +7,9 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
+import android.os.Handler;
 import android.provider.Settings;
+import android.text.method.ScrollingMovementMethod;
 import android.view.View;
 import android.widget.TextView;
 
@@ -31,9 +33,12 @@ public class MainActivity extends AppCompatActivity {
 
     private TextView fileLocationText;
     private TextView arrayText;
-    private File file;
     private HDRtofloatarray hdrtofloatarray;
+    private Boolean hdrLoaded;
+    private String pixelArrayText;
+    private float[][][] pixelArray;
     ActivityResultLauncher<Intent> filePicker;
+    Thread arrayThread = null;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -42,7 +47,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(binding.getRoot());
         fileLocationText = binding.FileLocationText;
         arrayText = binding.arrayText;
-
+        arrayText.setMovementMethod(new ScrollingMovementMethod());
         if (Build.VERSION.SDK_INT >= 30) {
             if (!Environment.isExternalStorageManager()) {
                 Intent getpermission = new Intent();
@@ -71,7 +76,7 @@ public class MainActivity extends AppCompatActivity {
                         Uri uri = data.getData();
                         String path = getFileName(uri, getApplicationContext());
                         fileLocationText.setText(path);
-                        String pixelArrayText = getHDRArray(path, getApplicationContext());
+                        pixelArrayText = getHDRArray(path, getApplicationContext());
                         arrayText.setText(pixelArrayText);
 
                     }
@@ -96,18 +101,36 @@ public class MainActivity extends AppCompatActivity {
         return res;
     }
 
-    String getHDRArray (String path, Context context){
-        String array = null;
-        file = new File(path); //for HDRtofloatarray
+    String getHDRArray (String path, Context context){ //TODO: might need to put in threaded function
+        File file = new File(path); //for HDRtofloatarray
+        pixelArrayText = "";
         try {
             hdrtofloatarray = new HDRtofloatarray(file);
         } catch (IOException e) {
             e.printStackTrace();
         }
-        float[][][] pixelArray = hdrtofloatarray.getPixelArray();
-        //TODO: Convert pixelArray to a readable string
-        return array;
-    }
+        pixelArray = hdrtofloatarray.getPixelArray();
+        int width = hdrtofloatarray.getWidth();
+        int length = hdrtofloatarray.getHeight();
 
+        //For testing
+        for (int i = length - 1; i >= 110; i--)
+            for (int j = width - 1; j >= 169; j--)
+                for (int k = 0; k < 3; k++)
+                    pixelArrayText += pixelArray[i][j][k] + "\t";
+
+        //Full array
+//        for (int i= 0; i < pixelArray.length; i++)
+//            for (int j=0; j < pixelArray[i].length; j++)
+//                for (int k=0; k < pixelArray[i][j].length; k++)
+//                    pixelArrayText += pixelArray[i][j][k] + "\t";
+
+        //Full array
+//        for (float[][] floats : pixelArray)
+//            for (float[] aFloat : floats)
+//                for (float v : aFloat) pixelArrayText += v + "\t";
+        //TODO: Convert pixelArray to a readable string
+        return pixelArrayText;
+    }
 
 }
