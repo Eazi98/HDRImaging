@@ -11,4 +11,6 @@
     <string name="hello_second_fragment">Hello second fragment. Arg: %1$s</string>
     <string name="read_hdr_file">Read HDR File</string>
     <string name="hdr_file_location">HDR File Path</string>
+    <string name="Loaded">Loaded</string>
+    <string name="LoremIpsum">"Lorem ipsum dolor sit amet"</string>
 </resources>

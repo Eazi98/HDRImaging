@@ -12,29 +12,6 @@
         android:layout_height="match_parent">
 
         <TextView
-            android:id="@+id/arrayText"
-            android:layout_width="397dp"
-            android:layout_height="321dp"
-            android:ems="10"
-            android:importantForAutofill="no"
-            android:text="@string/hdr_file_location"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0.96" />
-
-        <Button
-            android:id="@+id/ReadFileButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/read_hdr_file"
-            android:onClick = "openFileDialog"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/FileLocationText" />
-
-        <TextView
             android:id="@+id/FileLocationText"
             android:layout_width="370dp"
             android:layout_height="51dp"
@@ -49,16 +26,49 @@
 
         <ImageView
             android:id="@+id/imageView"
-            android:layout_width="408dp"
-            android:layout_height="246dp"
-            app:layout_constraintBottom_toTopOf="@+id/fileLocationText"
+            android:layout_width="374dp"
+            android:layout_height="215dp"
+            app:layout_constraintBottom_toTopOf="@+id/scrollView"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.333"
+            app:layout_constraintHorizontal_bias="0.486"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/ReadFileButton"
-            app:layout_constraintVertical_bias="0.125"
+            app:layout_constraintVertical_bias="0.146"
             app:srcCompat="@drawable/ic_launcher_foreground"
-            tools:ignore="ContentDescription" />
+            tools:ignore="ContentDescription,ImageContrastCheck" />
+
+        <Button
+            android:id="@+id/ReadFileButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:onClick="openFileDialog"
+            android:text="@string/read_hdr_file"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/FileLocationText" />
+
+        <ScrollView
+            android:id="@+id/scrollView"
+            android:layout_width="390dp"
+            android:layout_height="357dp"
+            android:layout_marginBottom="16dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.476"
+            app:layout_constraintStart_toStartOf="parent">
+
+            <TextView
+                android:id="@+id/arrayText"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:ems="10"
+                android:importantForAutofill="no"
+                android:scrollIndicators="right"
+                android:scrollbarStyle="insideOverlay"
+                android:scrollbars="vertical"
+                android:text="@string/hdr_file_location"
+                android:verticalScrollbarPosition="right" />
+        </ScrollView>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
