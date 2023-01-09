@@ -44,7 +44,9 @@ public class MainActivity extends AppCompatActivity {
     private int loadArray = 200;
     int arraySize;
 
-
+    static {
+        System.loadLibrary("DCA_TMO");
+    }
     ActivityResultLauncher<Intent> filePicker;
     Thread arrayThread = null;
     @Override
@@ -113,6 +115,7 @@ public class MainActivity extends AppCompatActivity {
                         HDRArray = getHDRArray(path, getApplicationContext());
 
                         arrayText.setText(String.format("%.4f",HDRArray.get(0)));
+                        HDRArray.remove(0);
                         for (int i= 1; i < loadArray; i++){
                             arrayText.append(" "+ String.format("%.4f", HDRArray.get(0)));
                             HDRArray.remove(0);
