@@ -44,9 +44,9 @@ public class MainActivity extends AppCompatActivity {
     private int loadArray = 200;
     int arraySize;
 
-    static {
-        System.loadLibrary("DCA_TMO");
-    }
+//    static {
+//        System.loadLibrary("DCA_TMO");
+//    }
     ActivityResultLauncher<Intent> filePicker;
     Thread arrayThread = null;
     @Override
@@ -70,7 +70,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
 //                ChooseFile();
-                arrayText.setText(null);
+                arrayText.setText("");
                 openFileDialog(view);
 
             }
@@ -85,9 +85,6 @@ public class MainActivity extends AppCompatActivity {
                         HDRArray.remove(0);
                     }
                 }
-//                if (scrollY > oldScrollY + 100){
-//
-//                }
 
             }
         });
@@ -156,7 +153,7 @@ public class MainActivity extends AppCompatActivity {
         int width = hdrtofloatarray.getWidth();
         int length = hdrtofloatarray.getHeight();
 
-        //For testing
+//For testing
 //        for (int i = length - 1; i >= 110; i--)
 //            for (int j = width - 1; j >= 169; j--)
 //                for (int k = 0; k < 3; k++)
@@ -175,6 +172,12 @@ public class MainActivity extends AppCompatActivity {
         for (float[][] floats : pixelArray)
             for (float[] aFloat : floats)
                 for (float v : aFloat) pixelArrayTextArray.add(v);
+
+        //add length and width to start of array list
+        pixelArrayTextArray.add(0, (float) width);
+        pixelArrayTextArray.add(0, (float) length);
+
+
         //TODO: Convert pixelArray to a readable string
         return pixelArrayTextArray;
     }
