@@ -1,0 +1,43 @@
+com/example/testSimulink/databinding/CameraScopeLayoutBinding.java
+ com.example.testSimulink.databinding.CameraScopeLayoutBinding
+com/example/testSimulink/databinding/FragmentLogBinding.java
+ com.example.testSimulink.databinding.FragmentLogBinding
+com/example/testSimulink/databinding/ActivityMainBinding.java
+ com.example.testSimulink.databinding.ActivityMainBinding
+com/example/testSimulink/testSimulink.java
+ com.example.testSimulink.testSimulink
+ com.example.testSimulink.testSimulink$1
+ com.example.testSimulink.testSimulink$2
+ com.example.testSimulink.testSimulink$3
+ com.example.testSimulink.testSimulink$4
+com/example/testSimulink/CameraScopeSectionsPagerAdapter.java
+ com.example.testSimulink.CameraScopeSectionsPagerAdapter
+com/example/testSimulink/InfoFragment.java
+ com.example.testSimulink.InfoFragment
+com/example/testSimulink/OnFragmentInteractionListener.java
+ com.example.testSimulink.OnFragmentInteractionListener
+com/example/testSimulink/databinding/FragmentInfoBinding.java
+ com.example.testSimulink.databinding.FragmentInfoBinding
+com/example/testSimulink/databinding/CameraViewBinding.java
+ com.example.testSimulink.databinding.CameraViewBinding
+com/example/testSimulink/CameraScopeFragment.java
+ com.example.testSimulink.CameraScopeFragment
+com/example/testSimulink/BuildConfig.java
+ com.example.testSimulink.BuildConfig
+com/example/testSimulink/CameraView.java
+ com.example.testSimulink.CameraView
+ com.example.testSimulink.CameraView$1
+ com.example.testSimulink.CameraView$1$1
+ com.example.testSimulink.CameraView$SetupException
+com/example/testSimulink/databinding/FragmentAppBinding.java
+ com.example.testSimulink.databinding.FragmentAppBinding
+com/example/testSimulink/Camera2View.java
+ com.example.testSimulink.Camera2View
+ com.example.testSimulink.Camera2View$1
+ com.example.testSimulink.Camera2View$1$1
+ com.example.testSimulink.Camera2View$SetupException
+com/example/testSimulink/AppFragment.java
+ com.example.testSimulink.AppFragment
+ com.example.testSimulink.AppFragment$1
+ com.example.testSimulink.AppFragment$2
+ com.example.testSimulink.AppFragment$3
