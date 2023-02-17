@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!-- Copyright 2016 The MathWorks, Inc. -->
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:id="@+id/layoutapp"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+    <!--<CAMERA_SCOPE_LAYOUT>-->
+    <!--<AUTO_GENERATED_WIDGETS_LAYOUT>-->
+<com.example.androidSensorExample.MyGLSurfaceView android:id="@+id/surfaceView" android:layout_width="match_parent" android:layout_height="match_parent"/>
+</LinearLayout>
