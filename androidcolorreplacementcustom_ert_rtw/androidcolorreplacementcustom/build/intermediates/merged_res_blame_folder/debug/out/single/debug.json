@@ -1,0 +1,182 @@
+[
+    {
+        "merged": "com.example.androidcolorreplacementcustom-merged_res-22:/drawable-hdpi_ic_launcher.png.flat",
+        "source": "com.example.androidcolorreplacementcustom-main-25:/drawable-hdpi/ic_launcher.png"
+    },
+    {
+        "merged": "com.example.androidcolorreplacementcustom-merged_res-22:/navigation_mobile_navigation.xml.flat",
+        "source": "com.example.androidcolorreplacementcustom-main-25:/navigation/mobile_navigation.xml"
+    },
+    {
+        "merged": "com.example.androidcolorreplacementcustom-merged_res-22:/drawable-ldpi_ic_toggleswitchblock.png.flat",
+        "source": "com.example.androidcolorreplacementcustom-pngs-17:/drawable-ldpi/ic_toggleswitchblock.png"
+    },
+    {
+        "merged": "com.example.androidcolorreplacementcustom-merged_res-22:/drawable-anydpi-v21_ic_rockerswitchblock.xml.flat",
+        "source": "com.example.androidcolorreplacementcustom-pngs-17:/drawable-anydpi-v21/ic_rockerswitchblock.xml"
+    },
+    {
+        "merged": "com.example.androidcolorreplacementcustom-merged_res-22:/layout_fragment_log.xml.flat",
+        "source": "com.example.androidcolorreplacementcustom-main-25:/layout/fragment_log.xml"
+    },
+    {
+        "merged": "com.example.androidcolorreplacementcustom-merged_res-22:/drawable_expand.png.flat",
+        "source": "com.example.androidcolorreplacementcustom-main-25:/drawable/expand.png"
+    },
+    {
+        "merged": "com.example.androidcolorreplacementcustom-merged_res-22:/drawable_dashboard_active.png.flat",
+        "source": "com.example.androidcolorreplacementcustom-main-25:/drawable/dashboard_active.png"
+    },
+    {
+        "merged": "com.example.androidcolorreplacementcustom-merged_res-22:/drawable_rocker_switch_button.xml.flat",
+        "source": "com.example.androidcolorreplacementcustom-main-25:/drawable/rocker_switch_button.xml"
+    },
+    {
+        "merged": "com.example.androidcolorreplacementcustom-merged_res-22:/menu_bottom_nav_menu.xml.flat",
+        "source": "com.example.androidcolorreplacementcustom-main-25:/menu/bottom_nav_menu.xml"
+    },
+    {
+        "merged": "com.example.androidcolorreplacementcustom-merged_res-22:/drawable_toggle_switch_button.xml.flat",
+        "source": "com.example.androidcolorreplacementcustom-main-25:/drawable/toggle_switch_button.xml"
+    },
+    {
+        "merged": "com.example.androidcolorreplacementcustom-merged_res-22:/drawable_tab_selector.xml.flat",
+        "source": "com.example.androidcolorreplacementcustom-main-25:/drawable/tab_selector.xml"
+    },
+    {
+        "merged": "com.example.androidcolorreplacementcustom-merged_res-22:/drawable_background.png.flat",
+        "source": "com.example.androidcolorreplacementcustom-main-25:/drawable/background.png"
+    },
+    {
+        "merged": "com.example.androidcolorreplacementcustom-merged_res-22:/layout_fragment_app.xml.flat",
+        "source": "com.example.androidcolorreplacementcustom-main-25:/layout/fragment_app.xml"
+    },
+    {
+        "merged": "com.example.androidcolorreplacementcustom-merged_res-22:/drawable_button_checked.xml.flat",
+        "source": "com.example.androidcolorreplacementcustom-main-25:/drawable/button_checked.xml"
+    },
+    {
+        "merged": "com.example.androidcolorreplacementcustom-merged_res-22:/drawable_button_nonchecked.xml.flat",
+        "source": "com.example.androidcolorreplacementcustom-main-25:/drawable/button_nonchecked.xml"
+    },
+    {
+        "merged": "com.example.androidcolorreplacementcustom-merged_res-22:/drawable-xhdpi_ic_launcher.png.flat",
+        "source": "com.example.androidcolorreplacementcustom-main-25:/drawable-xhdpi/ic_launcher.png"
+    },
+    {
+        "merged": "com.example.androidcolorreplacementcustom-merged_res-22:/drawable_divider.xml.flat",
+        "source": "com.example.androidcolorreplacementcustom-main-25:/drawable/divider.xml"
+    },
+    {
+        "merged": "com.example.androidcolorreplacementcustom-merged_res-22:/drawable-mdpi_ic_rockerswitchblock.png.flat",
+        "source": "com.example.androidcolorreplacementcustom-pngs-17:/drawable-mdpi/ic_rockerswitchblock.png"
+    },
+    {
+        "merged": "com.example.androidcolorreplacementcustom-merged_res-22:/drawable-hdpi_ic_rockerswitchblock.png.flat",
+        "source": "com.example.androidcolorreplacementcustom-pngs-17:/drawable-hdpi/ic_rockerswitchblock.png"
+    },
+    {
+        "merged": "com.example.androidcolorreplacementcustom-merged_res-22:/drawable-xhdpi_ic_rockerswitchblock.png.flat",
+        "source": "com.example.androidcolorreplacementcustom-pngs-17:/drawable-xhdpi/ic_rockerswitchblock.png"
+    },
+    {
+        "merged": "com.example.androidcolorreplacementcustom-merged_res-22:/layout-land_fragment_app.xml.flat",
+        "source": "com.example.androidcolorreplacementcustom-main-25:/layout-land/fragment_app.xml"
+    },
+    {
+        "merged": "com.example.androidcolorreplacementcustom-merged_res-22:/drawable_bottom_nav.xml.flat",
+        "source": "com.example.androidcolorreplacementcustom-main-25:/drawable/bottom_nav.xml"
+    },
+    {
+        "merged": "com.example.androidcolorreplacementcustom-merged_res-22:/drawable-xxxhdpi_ic_rockerswitchblock.png.flat",
+        "source": "com.example.androidcolorreplacementcustom-pngs-17:/drawable-xxxhdpi/ic_rockerswitchblock.png"
+    },
+    {
+        "merged": "com.example.androidcolorreplacementcustom-merged_res-22:/layout_activity_main.xml.flat",
+        "source": "com.example.androidcolorreplacementcustom-main-25:/layout/activity_main.xml"
+    },
+    {
+        "merged": "com.example.androidcolorreplacementcustom-merged_res-22:/drawable-xxhdpi_ic_rockerswitchblock.png.flat",
+        "source": "com.example.androidcolorreplacementcustom-pngs-17:/drawable-xxhdpi/ic_rockerswitchblock.png"
+    },
+    {
+        "merged": "com.example.androidcolorreplacementcustom-merged_res-22:/drawable_shrink.png.flat",
+        "source": "com.example.androidcolorreplacementcustom-main-25:/drawable/shrink.png"
+    },
+    {
+        "merged": "com.example.androidcolorreplacementcustom-merged_res-22:/layout_fragment_info.xml.flat",
+        "source": "com.example.androidcolorreplacementcustom-main-25:/layout/fragment_info.xml"
+    },
+    {
+        "merged": "com.example.androidcolorreplacementcustom-merged_res-22:/drawable_mwbutton_background.xml.flat",
+        "source": "com.example.androidcolorreplacementcustom-main-25:/drawable/mwbutton_background.xml"
+    },
+    {
+        "merged": "com.example.androidcolorreplacementcustom-merged_res-22:/drawable-ldpi_ic_launcher.png.flat",
+        "source": "com.example.androidcolorreplacementcustom-main-25:/drawable-ldpi/ic_launcher.png"
+    },
+    {
+        "merged": "com.example.androidcolorreplacementcustom-merged_res-22:/drawable-xhdpi_ic_toggleswitchblock.png.flat",
+        "source": "com.example.androidcolorreplacementcustom-pngs-17:/drawable-xhdpi/ic_toggleswitchblock.png"
+    },
+    {
+        "merged": "com.example.androidcolorreplacementcustom-merged_res-22:/drawable-mdpi_ic_launcher.png.flat",
+        "source": "com.example.androidcolorreplacementcustom-main-25:/drawable-mdpi/ic_launcher.png"
+    },
+    {
+        "merged": "com.example.androidcolorreplacementcustom-merged_res-22:/drawable-ldpi_ic_rockerswitchblock.png.flat",
+        "source": "com.example.androidcolorreplacementcustom-pngs-17:/drawable-ldpi/ic_rockerswitchblock.png"
+    },
+    {
+        "merged": "com.example.androidcolorreplacementcustom-merged_res-22:/drawable-hdpi_ic_toggleswitchblock.png.flat",
+        "source": "com.example.androidcolorreplacementcustom-pngs-17:/drawable-hdpi/ic_toggleswitchblock.png"
+    },
+    {
+        "merged": "com.example.androidcolorreplacementcustom-merged_res-22:/drawable-mdpi_ic_toggleswitchblock.png.flat",
+        "source": "com.example.androidcolorreplacementcustom-pngs-17:/drawable-mdpi/ic_toggleswitchblock.png"
+    },
+    {
+        "merged": "com.example.androidcolorreplacementcustom-merged_res-22:/drawable_app_active.png.flat",
+        "source": "com.example.androidcolorreplacementcustom-main-25:/drawable/app_active.png"
+    },
+    {
+        "merged": "com.example.androidcolorreplacementcustom-merged_res-22:/drawable_default_dot.xml.flat",
+        "source": "com.example.androidcolorreplacementcustom-main-25:/drawable/default_dot.xml"
+    },
+    {
+        "merged": "com.example.androidcolorreplacementcustom-merged_res-22:/drawable-xxxhdpi_ic_toggleswitchblock.png.flat",
+        "source": "com.example.androidcolorreplacementcustom-pngs-17:/drawable-xxxhdpi/ic_toggleswitchblock.png"
+    },
+    {
+        "merged": "com.example.androidcolorreplacementcustom-merged_res-22:/drawable-xxhdpi_ic_toggleswitchblock.png.flat",
+        "source": "com.example.androidcolorreplacementcustom-pngs-17:/drawable-xxhdpi/ic_toggleswitchblock.png"
+    },
+    {
+        "merged": "com.example.androidcolorreplacementcustom-merged_res-22:/drawable-anydpi-v21_ic_toggleswitchblock.xml.flat",
+        "source": "com.example.androidcolorreplacementcustom-pngs-17:/drawable-anydpi-v21/ic_toggleswitchblock.xml"
+    },
+    {
+        "merged": "com.example.androidcolorreplacementcustom-merged_res-22:/drawable_log_active.png.flat",
+        "source": "com.example.androidcolorreplacementcustom-main-25:/drawable/log_active.png"
+    },
+    {
+        "merged": "com.example.androidcolorreplacementcustom-merged_res-22:/layout_camera_view.xml.flat",
+        "source": "com.example.androidcolorreplacementcustom-main-25:/layout/camera_view.xml"
+    },
+    {
+        "merged": "com.example.androidcolorreplacementcustom-merged_res-22:/drawable_info_active.png.flat",
+        "source": "com.example.androidcolorreplacementcustom-main-25:/drawable/info_active.png"
+    },
+    {
+        "merged": "com.example.androidcolorreplacementcustom-merged_res-22:/drawable_mwbutton_text.xml.flat",
+        "source": "com.example.androidcolorreplacementcustom-main-25:/drawable/mwbutton_text.xml"
+    },
+    {
+        "merged": "com.example.androidcolorreplacementcustom-merged_res-22:/drawable_selected_dot.xml.flat",
+        "source": "com.example.androidcolorreplacementcustom-main-25:/drawable/selected_dot.xml"
+    },
+    {
+        "merged": "com.example.androidcolorreplacementcustom-merged_res-22:/layout_camera_scope_layout.xml.flat",
+        "source": "com.example.androidcolorreplacementcustom-main-25:/layout/camera_scope_layout.xml"
+    }
+]

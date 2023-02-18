@@ -1,16 +1,16 @@
 % clear all; clc;
 
 DatasetLocation = 'HDRim/';
-% EXRfiles = dir([DatasetLocation, '*.exr']);
-EXRfiles = dir([DatasetLocation, '*.hdr']);
+EXRfiles = dir([DatasetLocation, '*.exr']);
+%%EXRfiles = dir([DatasetLocation, '*.hdr']);
 len = length(EXRfiles);
 
 for i = 1:len
     EXRfile_name = EXRfiles(i).name;
     loc = strfind(EXRfile_name, '.');
     name = EXRfile_name(1:loc-1);
-%     hdrImg = read_exr([DatasetLocation, EXRfile_name]);
-    hdrImg = double(hdrread([DatasetLocation, EXRfile_name]));
+    hdrImg = read_exr([DatasetLocation, EXRfile_name]);
+    %%hdrImg = double(hdrread([DatasetLocation, EXRfile_name]));
     hdrImg(hdrImg<=0) = eps;
    
     ldrImg = DCA_TMO(hdrImg);

@@ -20,8 +20,7 @@ android {
     compileSdkVersion 32
     buildToolsVersion '32.0.0'
     sourceSets.main {
-        jni.srcDirs = []
-        jniLibs.srcDir 'src/main/libs'
+        jni.srcDirs = ['src/main/libs']
     }
 
     buildFeatures {
@@ -39,7 +38,7 @@ android {
     }
     defaultConfig {
         minSdkVersion 17
-        targetSdkVersion 28
+        targetSdkVersion 32
     }
 }
 

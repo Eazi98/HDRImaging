@@ -1,0 +1,4 @@
+#Sat Feb 18 14:40:47 SGT 2023
+base.0=D\:\\GitRepos\\HDRImaging\\androidcolorreplacementcustom_ert_rtw\\androidcolorreplacementcustom\\build\\intermediates\\dex\\debug\\mergeDexDebug\\classes.dex
+renamed.0=classes.dex
+path.0=classes.dex
