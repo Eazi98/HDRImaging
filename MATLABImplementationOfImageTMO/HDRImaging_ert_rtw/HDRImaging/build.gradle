@@ -4,7 +4,7 @@ buildscript {
 jcenter()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:7.0.4'
+        classpath 'com.android.tools.build:gradle:7.3.1'
     }
 }
 allprojects {
@@ -19,9 +19,6 @@ apply plugin: 'com.android.application'
 android {
     compileSdkVersion 32
     buildToolsVersion '32.0.0'
-    sourceSets.main {
-        jni.srcDirs = ['src/main/libs']
-    }
 
     buildFeatures {
         viewBinding = true
@@ -33,13 +30,11 @@ android {
             proguardFile getDefaultProguardFile('proguard-android.txt')
         }
     }
-    aaptOptions {  
-        cruncherEnabled = false
-    }
     defaultConfig {
         minSdkVersion 17
         targetSdkVersion 32
     }
+    namespace 'com.example.HDRImaging'
 }
 
 dependencies {
