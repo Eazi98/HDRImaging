@@ -1,4 +1,0 @@
-#Fri Feb 17 10:56:57 SGT 2023
-base.0=D\:\\GitRepos\\HDRImaging\\MATLABImplementationOfImageTMO\\androidSensorExample_ert_rtw\\androidSensorExample\\build\\intermediates\\dex\\debug\\mergeDexDebug\\classes.dex
-renamed.0=classes.dex
-path.0=classes.dex
