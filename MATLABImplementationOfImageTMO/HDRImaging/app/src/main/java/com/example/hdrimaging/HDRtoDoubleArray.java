@@ -12,27 +12,27 @@ import java.io.InputStream;
 
 // This class is used to convert a HDR format image into a three-dimension float array represents the
 //RGB channels of the original image.
-public class HDRtofloatarray { //https://github.com/aicp7/HDR_file_readin/blob/master/HDRtofloatarray.java
+public class HDRtoDoubleArray { //https://github.com/aicp7/HDR_file_readin/blob/master/HDRtofloatarray.java
     //the width of the HDR image
     private int width;
     //the height of the HDR image
     private int height;
     //This three-dimension float array is storing the three channels' information of the image.
     //For example, pixels[2][3][1] presents the red channel[][][1] of row No.2 and col No.3 's pixel
-    private float[][][] pixels;
+    private double[][][] pixels;
     //This three-dimension int array is storing the four channels' information.
     //[][][] the first and second is location information
     //[][][] the third one is the R,G,B,E. which is its associated information.
     private int[][][] buffers;
     //This two-dimension float array is storing the luminance information of the pixel.
     //We use the YUV format to calculate the luminance by lum=0.299*R+0.587*G+0.114*B
-    private float[][] lum;
+    private double[][] lum;
     //The mean value of the lum[][]
-    private float lummean;
+    private double lummean;
     //The maximum value of the lum[][]
-    private float lummax;
+    private double lummax;
     //The minimum value of the lum[][]
-    private float lummin;
+    private double lummin;
 
     public int getWidth() {
         return width;
@@ -42,26 +42,26 @@ public class HDRtofloatarray { //https://github.com/aicp7/HDR_file_readin/blob/m
         return height;
     }
 
-    public float[][] getLumArray() {
+    public double[][] getLumArray() {
         return lum;
     }
 
-    public float[][][] getPixelArray() {
+    public double[][][] getPixelArray() {
         return pixels;
     }
 
-    public float getLummax() {
+    public double getLummax() {
         return lummax;
     }
-    public float getLummin() {
+    public double getLummin() {
         return lummin;
     }
 
-    public float getLummean() {
+    public double getLummean() {
         return lummean;
     }
     //Construction method if the input is a file.
-    public HDRtofloatarray(File file) throws IOException{
+    public HDRtoDoubleArray(File file) throws IOException{
         if (file==null)
             throw new NullPointerException();
         InputStream in=new BufferedInputStream(new FileInputStream(file));
@@ -187,9 +187,9 @@ public class HDRtofloatarray { //https://github.com/aicp7/HDR_file_readin/blob/m
          *By the way, we need generate the luminance of each pixel. By using the expressing:
          *Y=0.299*R+0.587*G+0.114*B;
          */
-        pixels = new float[height][width][3];
-        lum = new float[height][width];
-        float lmax = 0.0F;     //This float value is storing the max value of FP32 (RGB) data.
+        pixels = new double[height][width][3];
+        lum = new double[height][width];
+        double lmax = 0.0F;     //This float value is storing the max value of FP32 (RGB) data.
         for (int i = 0; i < height; i++) {
             for (int j = 0; j < width; j++) {
                 int exp = buffers[i][j][3];
@@ -200,11 +200,11 @@ public class HDRtofloatarray { //https://github.com/aicp7/HDR_file_readin/blob/m
                     lum[i][j] = 0.0F;
                 }
                 else {
-                    float exppart = (float) Math.pow(2, exp-128-8);
+                    double exppart = (double) Math.pow(2, exp-128-8);
                     pixels[i][j][0] = buffers[i][j][0]*exppart;
                     pixels[i][j][1] = buffers[i][j][1]*exppart;
                     pixels[i][j][2] = buffers[i][j][2]*exppart;
-                    lum[i][j] = (float) (0.299*pixels[i][j][0]+0.587*pixels[i][j][1]+0.114*pixels[i][j][2]);
+                    lum[i][j] = (double) (0.299*pixels[i][j][0]+0.587*pixels[i][j][1]+0.114*pixels[i][j][2]);
                     if (lum[i][j] > lmax) {
                         lmax = lum[i][j];
                     }
@@ -215,7 +215,7 @@ public class HDRtofloatarray { //https://github.com/aicp7/HDR_file_readin/blob/m
         //The next step is normalize to 1; In the above loop, we already find the max value of the FP32(RGB) data.
         lummax = 0.0F;
         lummin = 1.0F;
-        float lumsum = 0.0F;
+        double lumsum = 0.0F;
         for (int i = 0; i < height; i++) {
             for (int j = 0; j < width; j++) {
                 lum[i][j] /= lmax;

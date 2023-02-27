@@ -24,10 +24,23 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
+        <TextView
+            android:id="@+id/TestValues"
+            android:layout_width="370dp"
+            android:layout_height="51dp"
+            android:layout_marginTop="284dp"
+            android:ems="10"
+            android:importantForAutofill="no"
+            android:text="test values"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.487"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
         <ImageView
             android:id="@+id/imageView"
-            android:layout_width="374dp"
-            android:layout_height="215dp"
+            android:layout_width="380dp"
+            android:layout_height="113dp"
             app:layout_constraintBottom_toTopOf="@+id/scrollView"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.486"

@@ -37,11 +37,15 @@ public class MainActivity extends AppCompatActivity {
     private TextView fileLocationText;
     private ImageView imageHDR;
     private TextView arrayText;
+    private TextView testText;
     private ScrollView scrollView;
-    private HDRtofloatarray hdrtofloatarray;
-    private ArrayList<Float> HDRArray;
-    private ArrayList<Float> pixelArrayTextArray = new ArrayList<>();
+    private HDRtoDoubleArray hdrtodoublearray;
+    private ArrayList<Double> HDRArray;
+    private ArrayList<Double> pixelArrayTextArray = new ArrayList<>();
     private int loadArray = 200;
+    double[][][] pixelArray;
+    int width;
+    int length;
     int arraySize;
 
 //    static {
@@ -58,6 +62,7 @@ public class MainActivity extends AppCompatActivity {
         fileLocationText = binding.FileLocationText;
         imageHDR = binding.imageView;
         arrayText = binding.arrayText;
+        testText = binding.TestValues;
         scrollView = binding.scrollView;
         if (Build.VERSION.SDK_INT >= 30) {
             if (!Environment.isExternalStorageManager()) {
@@ -111,6 +116,11 @@ public class MainActivity extends AppCompatActivity {
 
                         HDRArray = getHDRArray(path, getApplicationContext());
 
+                        DCA_TMO DCA_TMO = new DCA_TMO();
+                        DCA_TMO.DCA_TMO_Processing(pixelArray,length,width);
+                        double v = DCA_TMO.hdrLum[11][397];
+                        double w = DCA_TMO.hdrPQ[1][13];
+                        testText.setText(String.valueOf(w));
                         arrayText.setText(String.format("%.4f",HDRArray.get(0)));
                         HDRArray.remove(0);
                         for (int i= 1; i < loadArray; i++){
@@ -140,18 +150,18 @@ public class MainActivity extends AppCompatActivity {
         return res;
     }
 
-    ArrayList<Float> getHDRArray (String path, Context context){ //TODO: might need to put in threaded function
+    ArrayList<Double> getHDRArray (String path, Context context){ //TODO: might need to put in threaded function
         pixelArrayTextArray.clear();
         File file = new File(path); //for HDRtofloatarray
 //        pixelArrayText = "";
         try {
-            hdrtofloatarray = new HDRtofloatarray(file);
+            hdrtodoublearray = new HDRtoDoubleArray(file);
         } catch (IOException e) {
             e.printStackTrace();
         }
-        float[][][] pixelArray = hdrtofloatarray.getPixelArray();
-        int width = hdrtofloatarray.getWidth();
-        int length = hdrtofloatarray.getHeight();
+        pixelArray = hdrtodoublearray.getPixelArray();
+        width = hdrtodoublearray.getWidth();
+        length = hdrtodoublearray.getHeight();
 
 //For testing
 //        for (int i = length - 1; i >= 110; i--)
@@ -169,13 +179,13 @@ public class MainActivity extends AppCompatActivity {
 
 
         //Full array
-        for (float[][] floats : pixelArray)
-            for (float[] aFloat : floats)
-                for (float v : aFloat) pixelArrayTextArray.add(v);
+        for (double[][] doubles : pixelArray)
+            for (double[] aDouble : doubles)
+                for (double v : aDouble) pixelArrayTextArray.add(v);
 
         //add length and width to start of array list
-        pixelArrayTextArray.add(0, (float) width);
-        pixelArrayTextArray.add(0, (float) length);
+        pixelArrayTextArray.add(0, (double) width);
+        pixelArrayTextArray.add(0, (double) length);
 
 
         //TODO: Convert pixelArray to a readable string
