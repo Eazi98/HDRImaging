@@ -191,8 +191,8 @@ public class DCA_TMO {
                     indexEnd = (int) (k+n);
                     double[] lum2Range = RangeArray(y1D, indexStart, indexEnd);
                     double lum2 = median(lum2Range);
-                    double delta1 = 10.^tvi(log10(lum1));
-                    double delta2 = 10.^tvi(log10(lum2));
+                    double delta1 = Math.pow(10,tvi(new double[]{log10(lum1)}));
+                    double delta2 = Math.pow(10,tvi(new double[]{log10(lum2)}));
                 }
 
                 break;
@@ -275,29 +275,50 @@ public class DCA_TMO {
 
     private double tvi(double[] intensity) {
         double[] threshold= new double[intensity.length];
-        double[] idx = find(intensity, 0 ,4,-3.94);
-        for (int i = 0; i < idx.length; i++) {
+        ArrayList<Integer> idx = new ArrayList<>();
+        idx = find(intensity, 0 ,4,-3.94,0);
+        for (int i = 0; i < idx.size(); i++) {
             {
-                threshold[i] = -2.86;
+                threshold[idx.get(i)] = -2.86;
             }
         }
-        idx = find(intensity >= -3.94 & intensity < -1.44);
-        threshold (idx) = (0.405 * intensity(idx) + 1.6) .^ 2.18 - 2.86;
+        idx = find(intensity,3,0,-3.94,-1.44);
+        for (int i = 0; i < idx.size(); i++) {
+            {
+                threshold[idx.get(i)] = Math.pow((0.405 * intensity[idx.get(i)] + 1.6),2.18) - 2.86;
+            }
+        }
 
-        idx = find(intensity >= -1.44 & intensity < -0.0184);
-        threshold (idx) = intensity(idx) - 0.395;
+        idx = find(intensity,3,0,-1.44,-0.0184);
+        for (int i = 0; i < idx.size(); i++) {
+            {
+                threshold[idx.get(i)] = intensity[idx.get(i)] - 0.395;
+            }
+        }
 
-        idx = find(intensity >= -0.0184 & intensity < 1.9);
-        threshold(idx) = (0.249 * intensity(idx) + 0.65) .^ 2.7 - 0.72;
+        idx = find(intensity, 3,0,-0.0184,1.9);
+        for (int i = 0; i < idx.size(); i++) {
+            {
+                threshold[idx.get(i)] = Math.pow((0.249 * intensity[idx.get(i)] + 0.65),2.7) - 0.72;
+            }
+        }
 
-        idx = find(intensity >= 1.9);
-        threshold (idx) = intensity(idx) - 1.255;
+        idx = find(intensity,3,4, 1.9,0);
+        for (int i = 0; i < idx.size(); i++) {
+            {
+                threshold[idx.get(i)] = intensity[idx.get(i)] - 1.255;
+            }
+        }
 
-        threshold = threshold - 0.95;
-        return threshold;
+        for (int i = 0; i < threshold.length; i++) {
+            {
+                threshold[i] = threshold[i] = - 0.95;
+            }
+        }
+        return threshold[0];
     }
 
-    private double[] find(double[] intensity,double check1,double check2, double value1,double value2) {
+    private ArrayList<Integer> find(double[] intensity,double check1,double check2, double value1,double value2) {
         // 0 < , 1 >, 2 <=, 3 >=, 4 nulll
         ArrayList<Integer> indexes = new ArrayList<>();
         for (int i = 0; i < intensity.length; i++) {
@@ -312,17 +333,17 @@ public class DCA_TMO {
                 }
             }
             if (check1 == 3 && check2 == 0) {
-                if (intensity[i] > value1) {
+                if (intensity[i] >= value1 && intensity[i] < value2) {
+                    indexes.add(i);
+                }
+            }
+            if (check1 == 3 && check2 == 4) {
+                if (intensity[i] >= value1) {
                     indexes.add(i);
                 }
             }
         }
-        if (indexes.size() > 0){
-            return new double[indexes.size()];
-        }
-        else{
-            return new double[0];
-        }
+        return indexes;
     }
 
     private double[] RangeArray(double[] lum, int indexStart, int indexEnd) {
