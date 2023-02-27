@@ -1,5 +1,6 @@
 package com.example.hdrimaging;
 
+import static java.lang.Double.min;
 import static java.lang.Math.abs;
 import static java.lang.Math.exp;
 import static java.lang.Math.floor;
@@ -102,6 +103,7 @@ public class DCA_TMO {
             for (int j = 0; j < hdrImg[i].length; j++) {
                 hdrPQnor[i][j] = hdrPQnor[i][j] * 0.35 + labels[i][j] * 0.65;
             }
+
 //        hdrPQnor = hdrPQnor .* 0.35 + labels .* 0.65;
 //        labels_DoG = labels + 3.0*imfilter(hdrPQnor, DoGfilter, 'replicate');
         //TODO:
@@ -158,7 +160,6 @@ public class DCA_TMO {
         for (int i=1; i<nclust-1; i++)
         {
             double[] maxError = max(errors);
-            double val= maxError[0];
             double idx = maxError[1];
             double k = edges[(int)idx];
             double n = edges[(int)idx+1]-k;
@@ -181,86 +182,56 @@ public class DCA_TMO {
                 double e1 = ssm - Math.pow(sm,2)/m;
                 double e2 = ssn - ssm - Math.pow((sn - sm),2)/(n-m);
                 d = 2 * d;
-                if(abs(e1-e2) < 0.001 || d >= n)
-                {
-                    int indexStart = (int) (k+1);
-                    int indexEnd = (int) (k+m);
+                if(abs(e1-e2) < 0.001 || d >= n) {
+                    int indexStart = (int) (k + 1);
+                    int indexEnd = (int) (k + m);
                     double[] lum1Range = RangeArray(y1D, indexStart, indexEnd);
                     double lum1 = median(lum1Range);
-                    indexStart = (int) (k+m+1);
-                    indexEnd = (int) (k+n);
+                    indexStart = (int) (k + m + 1);
+                    indexEnd = (int) (k + n);
                     double[] lum2Range = RangeArray(y1D, indexStart, indexEnd);
                     double lum2 = median(lum2Range);
-                    double delta1 = Math.pow(10,tvi(new double[]{log10(lum1)}));
-                    double delta2 = Math.pow(10,tvi(new double[]{log10(lum2)}));
+                    double delta1 = Math.pow(10, tvi(new double[]{log10(lum1)}));
+                    double delta2 = Math.pow(10, tvi(new double[]{log10(lum2)}));
+//                  TODO:
+//                    [~, lum_loc] = min(abs(delta1./(delta1+delta2) .* (lum(k+n)-lum(k+1)) + lum(k+1) - lum(k+1:k+n)));
+//                    m = lum_loc;
+                    double value = delta1/(delta1+delta2) * (lum1D[(int) (k+n)] - lum1D[(int) (k+1)]) + lum1D[(int) (k+1)];
+                    double[] absValue = doubleMinusArray(value, RangeArray(lum1D, (int) (k+1), (int) (k+n)));
+                    double[] values = min(absMatrix(absValue));
+                    double lum_loc = values[1];
+                    m = lum_loc;
+                    sm = s_data[(int) (k + m)];
+                    if (k >= 1)
+                        sm = sm - s_data[(int) k];
+                    ssm = ss_data[(int) (k + m)];
+                    if (k >= 1)
+                        ssm = ssm - ss_data[(int) k];
+                    e1 = Math.pow(ssm - sm, 2) / m;
+                    e2 = ssn - ssm - Math.pow((sn - sm), 2) / (n - m);
+//                  TODO:
+//                    edges = [edges(1:idx),k+m,edges(idx+1:end)];
+//                    errors = [errors(1:idx-1),e1,e2,errors(idx+1:end)];
+                    break;
                 }
-
-                break;
+                else{
+                    if(e1 > e2)
+                        m = m-floor(n/d);
+                    else if(e1 < e2)
+                        m = m+floor(n/d);
+                }
             }
 
         }
-//
-//        for i = 1 : nclust-1
-//                [~,idx] = max(errors);
-//        k = edges(idx); n = edges(idx+1)-k;
-//        sn = s_data(k+n);
-//        if(k>=1)
-//            sn = sn - s_data(k);
-//        end
-//                ssn = ss_data(k+n);
-//        if(k>=1)
-//            ssn = ssn - ss_data(k);
-//        end
-//                d = 2; m = floor(n/d);
-//        while(1)
-//            sm = s_data(k+m);
-//        if(k>=1)
-//            sm = sm - s_data(k);
-//        end
-//                ssm = ss_data(k+m);
-//        if(k>=1)
-//            ssm = ssm - ss_data(k);
-//        end
-//                e1 = ssm-sm^2/m;
-//        e2 = ssn - ssm - (sn - sm)^2/(n-m);
-//        d = 2 * d;
-//        if(abs(e1-e2) < 0.001 || d >= n)
-//            lum1 = median(lum(k+1:k+m)); lum2 = median(lum(k+m+1:k+n));
-//        delta1 = 10.^tvi(log10(lum1)); delta2 = 10.^tvi(log10(lum2));
-//            [~, lum_loc] = min(abs(delta1./(delta1+delta2) .* (lum(k+n)-lum(k+1)) + lum(k+1) - lum(k+1:k+n)));
-//        m = lum_loc;
-//        sm = s_data(k+m);
-//        if(k>=1)
-//            sm = sm - s_data(k);
-//        end
-//                ssm = ss_data(k+m);
-//        if(k>=1)
-//            ssm = ssm - ss_data(k);
-//        end
-//                e1 = ssm-sm^2/m;
-//        e2 = ssn - ssm - (sn - sm)^2/(n-m);
-//
-//        edges = [edges(1:idx),k+m,edges(idx+1:end)];
-//        errors = [errors(1:idx-1),e1,e2,errors(idx+1:end)];
-//        break;
-//        else
-//        if(e1 > e2)
-//            m = m-floor(n/d);
-//        elseif(e1 < e2)
-//        m = m+floor(n/d);
-//        end
-//                end
-//        end
-//                end
-//
+        //TODO:
 //        mdata = zeros(1, nclust);
 //        mdata(1) = min(lum0(:));
 //        mdata(end) = max(lum0(:));
 //        for i=2:nclust-1
-//        if lum(edges(i))==lum(edges(i+1))
-//        ind = (lum0==lum(edges(i)));
-//        mdata(i) = mean(lum0(ind))+eps*i;
-//    else
+//              if lum(edges(i))==lum(edges(i+1))
+//             ind = (lum0==lum(edges(i)));
+    //        mdata(i) = mean(lum0(ind))+eps*i;
+//          else
 //        ind = (lum0>lum(edges(i)) & lum0<=lum(edges(i+1)));
 //        mdata(i) = mean(lum0(ind));
 //        end
@@ -268,9 +239,33 @@ public class DCA_TMO {
 //
 //        labels_mdata = linspace(1, 256, nclust);
 //        labels = interp1(mdata, labels_mdata, lum0, 'linear');
-//
-//        end
         return hdrPQ;
+    }
+
+    private double[] min(double[] absMatrix) {
+        double min = absMatrix[0];
+        double index = 0;
+        for (int i = 0; i < absMatrix.length; i++)
+        {
+            if (min > absMatrix[i])
+            {
+                min = absMatrix[i];
+                index = i;
+            }
+        }
+        return new double[]{min, index};
+    }
+
+    private double[] absMatrix(double[] absValue) {
+        for (int i = 0; i < absValue.length; i++)
+            absValue[i] = abs(absValue[i]);
+        return absValue;
+    }
+
+    private double[] doubleMinusArray(double value, double[] rangeArray) {
+        for (int i = 0; i < rangeArray.length; i++)
+            rangeArray[i] = value - rangeArray[i];
+        return rangeArray;
     }
 
     private double tvi(double[] intensity) {
@@ -510,6 +505,12 @@ public class DCA_TMO {
         return array;
     }
 
+    private double[] addition(double[] array1, double[] array2){
+        for (int i = 0; i < array1.length; i++){
+            array1[i] = array1[i] + array2[i];
+        }
+        return array1;
+    }
     private double median(double[] array)
     {
         double m=0;
