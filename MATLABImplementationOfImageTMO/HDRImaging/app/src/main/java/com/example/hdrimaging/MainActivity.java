@@ -186,6 +186,9 @@ public class MainActivity extends AppCompatActivity {
         } catch (IOException e) {
             e.printStackTrace();
         }
+        width = hdrtodoublearray.getWidth();
+        length = hdrtodoublearray.getHeight();
+        double[][][] pixelArray = new double[width][length][3];
         pixelArray = hdrtodoublearray.getPixelArray();
         return pixelArray;
     }

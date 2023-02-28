@@ -23,7 +23,7 @@ public class HDRtoDoubleArray { //https://github.com/aicp7/HDR_file_readin/blob/
     //This three-dimension int array is storing the four channels' information.
     //[][][] the first and second is location information
     //[][][] the third one is the R,G,B,E. which is its associated information.
-    private int[][][] buffers;
+    private double[][][] buffers;
     //This two-dimension float array is storing the luminance information of the pixel.
     //We use the YUV format to calculate the luminance by lum=0.299*R+0.587*G+0.114*B
     private double[][] lum;
@@ -116,7 +116,7 @@ public class HDRtoDoubleArray { //https://github.com/aicp7/HDR_file_readin/blob/
         //The pixel data may be stored uncompressed or using a straightforward run length encoding scheme.
 
         DataInput din = new DataInputStream(in);
-        buffers = new int[height][width][4];
+        buffers = new double[height][width][4];
 
 
         //We read the information row by row. In each row, the first four bytes store the column number information.
@@ -192,7 +192,7 @@ public class HDRtoDoubleArray { //https://github.com/aicp7/HDR_file_readin/blob/
         double lmax = 0.0F;     //This float value is storing the max value of FP32 (RGB) data.
         for (int i = 0; i < height; i++) {
             for (int j = 0; j < width; j++) {
-                int exp = buffers[i][j][3];
+                double exp = buffers[i][j][3];
                 if(exp == 0) {
                     pixels[i][j][0] = 0.0F;
                     pixels[i][j][1] = 0.0F;

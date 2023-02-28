@@ -21,6 +21,7 @@ public class DCA_TMO {
     public double[] errors;
     public double[][][] DCA_TMO_Processing(double[][][] hdrImg, int length, int width)
     {
+        //TODO: Figure out why hdrImg is not returning full array
         double maxhdr;
         double minhdr;
         double hdrMaxValue;
@@ -107,7 +108,7 @@ public class DCA_TMO {
                 hdrPQnor[i][j] = hdrPQnor[i][j] * 0.35 + labels[i][j] * 0.65;
             }
 
-//        hdrPQnor = hdrPQnor .* 0.35 + labels .* 0.65;
+
 //        labels_DoG = labels + 3.0*imfilter(hdrPQnor, DoGfilter, 'replicate');
         //TODO:
 //        %% color restoration
@@ -478,10 +479,10 @@ public class DCA_TMO {
         double m = sizeVariables[1];
 
         sort(hdrImg);
-        int index = (int) round(n * m * percentile);
+        double index = round(n * m * percentile);
         double[] maxcheck = {index, 1};
-        index = (int) max(maxcheck)[1];
-        double ret = hdrImg[index];
+        index = max(maxcheck)[0];
+        double ret = hdrImg[(int) index];
         return ret;
     }
 
@@ -517,7 +518,7 @@ public class DCA_TMO {
     }
 
     private double[] sum(double[] array) {
-        int sum = 0;
+        double sum = 0;
         for (double value : array) {
             sum += value;
         }
