@@ -115,11 +115,11 @@ public class MainActivity extends AppCompatActivity {
 //                        }
 
                         HDRArray = getHDRArray(path, getApplicationContext());
-
+                        double[][][] HDRDoubleArray = getHDRDoubleArray(path, getApplicationContext());
                         DCA_TMO DCA_TMO = new DCA_TMO();
-                        DCA_TMO.DCA_TMO_Processing(pixelArray,length,width);
-                        double v = DCA_TMO.hdrLum[11][397];
-                        double w = DCA_TMO.hdrPQ[1][13];
+                        DCA_TMO.DCA_TMO_Processing(HDRDoubleArray,length,width);
+
+                        double w = DCA_TMO.errors[1];
                         testText.setText(String.valueOf(w));
                         arrayText.setText(String.format("%.4f",HDRArray.get(0)));
                         HDRArray.remove(0);
@@ -163,21 +163,6 @@ public class MainActivity extends AppCompatActivity {
         width = hdrtodoublearray.getWidth();
         length = hdrtodoublearray.getHeight();
 
-//For testing
-//        for (int i = length - 1; i >= 110; i--)
-//            for (int j = width - 1; j >= 169; j--)
-//                for (int k = 0; k < 3; k++)
-//                    pixelArrayText += pixelArray[i][j][k] + "\t";
-
-//        Full array
-//        for (int i = 0; i < pixelArray.length; i++)
-//            for (int j = 0; j < pixelArray[i].length; j++)
-//                for (int k = 0; k < pixelArray[i][j].length; k++){
-////                    pixelArrayText += pixelArray[i][j][k] + "\t";
-//                    pixelArrayTextArray.add(pixelArray[i][j][k]);
-//                }
-
-
         //Full array
         for (double[][] doubles : pixelArray)
             for (double[] aDouble : doubles)
@@ -192,6 +177,18 @@ public class MainActivity extends AppCompatActivity {
         return pixelArrayTextArray;
     }
 
+    double[][][] getHDRDoubleArray (String path, Context context){
+        pixelArrayTextArray.clear();
+        File file = new File(path); //for HDRtofloatarray
+//        pixelArrayText = "";
+        try {
+            hdrtodoublearray = new HDRtoDoubleArray(file);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        pixelArray = hdrtodoublearray.getPixelArray();
+        return pixelArray;
+    }
 //    Drawable showHDR(String path) throws IOException {
 //        Drawable drawable = null;
 //        File file = new File(path);
