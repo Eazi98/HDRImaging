@@ -119,7 +119,8 @@ public class MainActivity extends AppCompatActivity {
                         DCA_TMO DCA_TMO = new DCA_TMO();
                         DCA_TMO.DCA_TMO_Processing(HDRDoubleArray,length,width);
 
-                        double w = DCA_TMO.errors[1];
+//                        double w = DCA_TMO.errors[1];
+                        double w = DCA_TMO.hdrLum[2][2];
                         testText.setText(String.valueOf(w));
                         arrayText.setText(String.format("%.4f",HDRArray.get(0)));
                         HDRArray.remove(0);

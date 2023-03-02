@@ -47,10 +47,13 @@ for i = 1 : nclust-1
         e2 = ssn - ssm - (sn - sm)^2/(n-m);
         d = 2 * d;
         if(abs(e1-e2) < 0.001 || d >= n)
-            lum1 = median(lum(k+1:k+m)); lum2 = median(lum(k+m+1:k+n));
+            test = lum(k+1:k+m)
+            lum1 = median(lum(k+1:k+m)); 
+            test = lum(k+m+1:k+n);
+            lum2 = median(lum(k+m+1:k+n));
             delta1 = 10.^tvi(log10(lum1)); 
             delta2 = 10.^tvi(log10(lum2));
-            [~, lum_loc] = min(abs(delta1./(delta1+delta2) .* (lum(k+n)-lum(k+1)) + lum(k+1) - lum(k+1:k+n)));
+            [test, lum_loc] = min(abs(delta1./(delta1+delta2) .* (lum(k+n)-lum(k+1)) + lum(k+1) - lum(k+1:k+n)));
             m = lum_loc;
             sm = s_data(k+m); 
             if(k>=1) 

@@ -17,8 +17,7 @@ public class DCA_TMO {
 
     public double[][] hdrLum;
     public double[][] hdrPQ;
-    public double[] edges;
-    public double[] errors;
+
     public double[][][] DCA_TMO_Processing(double[][][] hdrImg, int length, int width)
     {
         //TODO: Figure out why hdrImg is not returning full array
@@ -150,16 +149,19 @@ public class DCA_TMO {
         double[] y1D = reshape1D(y, numel(y));
         sort(y1D);
 
-        edges = new double[]{0, y1D.length};
+        double[] edges = new double[]{0, y1D.length};
         double[] errorsPow = new double[y1D.length];
         double meanOfY = mean(y1D);
         for (int i = 0; i < y1D.length; i++){
             errorsPow[i] = Math.pow((y1D[i]-meanOfY),2);
             }
-        errors = sum(errorsPow);
+        double[] errors = sum(errorsPow);
 
+        sort(y1D);
         double[] s_data = cumsum(y1D);
-        double[] ss_data = cumsum(pow(y1D));
+        sort(y1D);
+        double[] y1DPow = pow(y1D);
+        double[] ss_data = cumsum(y1DPow);
 
 
         for (int i=1; i<nclust-1; i++)
@@ -178,27 +180,26 @@ public class DCA_TMO {
             double m = floor(n/d);
             while(true)
             {
-                double sm = s_data[(int) (k+m)];
+                double sm = s_data[(int) (k+m-1)];
                 if(k>=1)
-                    sm = sm - s_data[(int) k];
-                double ssm = ss_data[(int) (k+m)];
+                    sm = sm - s_data[(int) k-1];
+                double ssm = ss_data[(int) (k+m-1)];
                 if(k>=1)
                     ssm = ssm - ss_data[(int) k];
                 double e1 = ssm - Math.pow(sm,2)/m;
                 double e2 = ssn - ssm - Math.pow((sn - sm),2)/(n-m);
                 d = 2 * d;
                 if(abs(e1-e2) < 0.001 || d >= n) {
-                    int indexStart = (int) (k + 1);
-                    int indexEnd = (int) (k + m);
-                    double[] lum1Range = RangeArray(y1D, indexStart, indexEnd);
+                    //TODO: Check lum1Range and lum2Range values
+                    double[] lum1Range = RangeArray(lum1D, (int) (k), (int) (k + m));
                     double lum1 = median(lum1Range);
-                    indexStart = (int) (k + m + 1);
-                    indexEnd = (int) (k + n);
-                    double[] lum2Range = RangeArray(y1D, indexStart, indexEnd);
+                    double[] lum2Range = RangeArray(lum1D, (int) (k + m ), (int) (k + n-1));
                     double lum2 = median(lum2Range);
-                    double delta1 = Math.pow(10, tvi(new double[]{log10(lum1)}));
+                    double lum1log = log10(lum1);
+                    double tvilum1 = tvi(new double[]{lum1log});
+                    double delta1 = Math.pow(10, tvilum1);
                     double delta2 = Math.pow(10, tvi(new double[]{log10(lum2)}));
-                    double value = delta1/(delta1+delta2) * (lum1D[(int) (k+n-1)] - lum1D[(int) (k+1-1)]) + lum1D[(int) (k+1-1)];
+                    double value = delta1/(delta1+delta2) * (lum1D[(int) (k+n-1)] - lum1D[(int) (k+1)]) + lum1D[(int) (k+1)];
                     double[] absValue = doubleMinusArray(value, RangeArray(lum1D, (int) (k+1), (int) (k+n)));
                     double[] values = min(absMatrix(absValue));
                     double lum_loc = values[1];
@@ -209,14 +210,14 @@ public class DCA_TMO {
                     ssm = ss_data[(int) (k + m)];
                     if (k >= 1)
                         ssm = ssm - ss_data[(int) k];
-                    e1 = Math.pow(ssm - sm, 2) / m;
+                    e1 = ssm - Math.pow(sm, 2) / m;
                     e2 = ssn - ssm - Math.pow((sn - sm), 2) / (n - m);
 //                  TODO:
 //                    edges = [edges(1:idx),k+m,edges(idx+1:end)];
 //                    errors = [errors(1:idx-1),e1,e2,errors(idx+1:end)];
-//                  TODO:Resolve errors
-                    edges = AppendEdges(RangeArray(edges,0, (int) idx),(int)(k+m),RangeArray(edges, (int) (idx+1), edges.length-1));
-                    errors = AppendErrors(RangeArray(errors,0, (int) (idx-1)),e1,e2,RangeArray(errors, (int) (idx+1),errors.length-1));
+//                  TODO:Check values
+                    edges = AppendEdges(RangeArray(edges,0, (int) idx+1),(int)(k+m),RangeArray(edges, (int) (idx+1), edges.length));
+                    errors = AppendErrors(RangeArray(errors,0, (int) (idx)),e1,e2,RangeArray(errors, (int) (idx+1),errors.length));
                     break;
                 }
                 else{
@@ -228,10 +229,12 @@ public class DCA_TMO {
             }
 
         }
+
+        double[] mdata = new double[(int) nclust];
+        double[] lum01d = reshape1D(lum0,numel(lum0));
+        mdata[1] = min(lum01d)[0];
+        mdata[mdata.length-1] = max(lum01d)[0];
         //TODO:
-//        mdata = zeros(1, nclust);
-//        mdata(1) = min(lum0(:));
-//        mdata(end) = max(lum0(:));
 //        for i=2:nclust-1
 //              if lum(edges(i))==lum(edges(i+1))
 //             ind = (lum0==lum(edges(i)));
@@ -248,7 +251,7 @@ public class DCA_TMO {
     }
 
     private double[] AppendEdges(double[] rangeArray, double value, double[] rangeArray1) {
-//        int arraySize = rangeArray.length + 1 + rangeArray1.length;
+        int arraySize = rangeArray.length + 1 + rangeArray1.length;
 //        double[] output = new double[arraySize];
 //        for (int i = 0; i < output.length; i++)
 //        {
@@ -256,9 +259,12 @@ public class DCA_TMO {
 //                output[i] = rangeArray[i];
 //            if (i >rangeArray.length && i <= rangeArray.length+1)
 //                output[i] = value;
-//            if (i >rangeArray.length+1)
+//            if (i >rangeArray.length+1){
+//                output[i] = value;
+//            }
 //
 //        }
+//        return output;
         double[] result = Arrays.copyOf(rangeArray,rangeArray.length+rangeArray1.length+1);
         result[rangeArray.length]=value;
         System.arraycopy(rangeArray1,0,result,rangeArray.length+1,rangeArray1.length);
@@ -322,7 +328,8 @@ public class DCA_TMO {
         idx = find(intensity,3,0,-3.94,-1.44);
         for (int i = 0; i < idx.size(); i++) {
             {
-                threshold[idx.get(i)] = Math.pow((0.405 * intensity[idx.get(i)] + 1.6),2.18) - 2.86;
+                double value =(0.405 * intensity[idx.get(i)] + 1.6);
+                threshold[idx.get(i)] = Math.pow(value,2.18) - 2.86;
             }
         }
 
@@ -336,7 +343,8 @@ public class DCA_TMO {
         idx = find(intensity, 3,0,-0.0184,1.9);
         for (int i = 0; i < idx.size(); i++) {
             {
-                threshold[idx.get(i)] = Math.pow((0.249 * intensity[idx.get(i)] + 0.65),2.7) - 0.72;
+                double value =0.249 * intensity[idx.get(i)] + 0.65;
+                threshold[idx.get(i)] = Math.pow(value,2.7) - 0.72;
             }
         }
 
@@ -347,9 +355,10 @@ public class DCA_TMO {
             }
         }
 
+
         for (int i = 0; i < threshold.length; i++) {
             {
-                threshold[i] = threshold[i] = - 0.95;
+                threshold[i] = threshold[i] - 0.95;
             }
         }
         return threshold[0];
@@ -359,11 +368,6 @@ public class DCA_TMO {
         // 0 < , 1 >, 2 <=, 3 >=, 4 nulll
         ArrayList<Integer> indexes = new ArrayList<>();
         for (int i = 0; i < intensity.length; i++) {
-            if (check1 == 1 && check2 == 4) {
-                if (intensity[i] > value1) {
-                    indexes.add(i);
-                }
-            }
             if (check1 == 0 && check2 == 4) {
                 if (intensity[i] < value1) {
                     indexes.add(i);
@@ -384,8 +388,8 @@ public class DCA_TMO {
     }
 
     private double[] RangeArray(double[] lum, int indexStart, int indexEnd) {
-        indexStart = indexStart-1;
-        indexEnd = indexEnd -1;
+        indexStart = indexStart;
+        indexEnd = indexEnd;
         int range = indexEnd - indexStart;
         double[] rangeArray = new double[range];
         int j = indexStart;
@@ -526,6 +530,7 @@ public class DCA_TMO {
     }
 
     private double[] cumsum(double[] array){
+        double[] retArray = new double[array.length];
         double sum = 0;
         for (int i = 0; i < array.length; i++) {
 
@@ -533,22 +538,24 @@ public class DCA_TMO {
             sum += array[i];
 
             // replace
-            array[i] = sum;
+            retArray[i] = sum;
         }
-        return array;
+        return retArray;
     }
     private double[] pow(double[] array){
+        double[] retArray = new double[array.length];
         for (int i = 0; i < array.length; i++){
-            array[i] = Math.pow(array[i],2);
+            retArray[i] = array[i] * array[i];
         }
-        return array;
+        return retArray;
     }
 
     private double[] addition(double[] array1, double[] array2){
+        double[] retArray = new double[array1.length];
         for (int i = 0; i < array1.length; i++){
-            array1[i] = array1[i] + array2[i];
+            retArray[i] = array1[i] + array2[i];
         }
-        return array1;
+        return retArray;
     }
     private double median(double[] array)
     {
