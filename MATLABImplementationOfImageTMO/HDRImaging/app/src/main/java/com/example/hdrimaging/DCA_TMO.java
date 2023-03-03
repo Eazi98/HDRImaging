@@ -17,9 +17,14 @@ public class DCA_TMO {
 
     public double[][] hdrLum;
     public double[][] hdrPQ;
+    private int length;
+    private int width;
+    private static final double eps = Math.pow(2,-52);
 
-    public double[][][] DCA_TMO_Processing(double[][][] hdrImg, int length, int width)
+    public double[][][] DCA_TMO_Processing(double[][][] hdrImg, int length1, int width1)
     {
+        length = length1;
+        width = width1;
         //TODO: Figure out why hdrImg is not returning full array
         double maxhdr;
         double minhdr;
@@ -164,7 +169,7 @@ public class DCA_TMO {
         double[] ss_data = cumsum(y1DPow);
 
 
-        for (int i=1; i<nclust-1; i++)
+        for (int i=0; i<nclust-1; i++)
         {
             double[] maxError = max(errors);
             double idx = maxError[1];
@@ -235,19 +240,49 @@ public class DCA_TMO {
         mdata[1] = min(lum01d)[0];
         mdata[mdata.length-1] = max(lum01d)[0];
         //TODO:
-//        for i=2:nclust-1
-//              if lum(edges(i))==lum(edges(i+1))
-//             ind = (lum0==lum(edges(i)));
-    //        mdata(i) = mean(lum0(ind))+eps*i;
-//          else
-//        ind = (lum0>lum(edges(i)) & lum0<=lum(edges(i+1)));
-//        mdata(i) = mean(lum0(ind));
-//        end
-//                end
-//
+        double[][] ind = new double[length][width];
+        for (int i=1; i<nclust-1; i++)
+            if (lum1D[(int) edges[i]]==lum1D[(int) edges[i+1]]) {
+                ind = matrixBoolean(lum0, lum1D[(int) edges[i]]); //(lum0==lum[(int) edges[i]]);
+                double[] lum0Ind = getIndexValuesToArray(lum0,ind);
+
+
+                mdata[i] = mean(lum0Ind) + eps * i;
+            }
+            else
+            {
+//                double[][] ind = (lum0 > lum[(int) edges[i]] & lum0 <= lum[(int) edges[i + 1]]);
+//                mdata[i] = mean(lum0[ind]);
+            }
+
 //        labels_mdata = linspace(1, 256, nclust);
 //        labels = interp1(mdata, labels_mdata, lum0, 'linear');
         return hdrPQ;
+    }
+
+    private double[] getIndexValuesToArray(double[][] lum0, double[][] ind) {
+        double[] retArray = new double[numel(ind)];
+        for (int i = 1; i < retArray.length; i++)
+            for (int j = 1; j < ind.length; j++)
+                for (int k = 1; k < ind[i].length; k++) {
+                    //TODO:
+                    retArray[i] = lum0[ind[j][k]];
+        }
+        return retArray;
+    }
+
+
+    private double[][] matrixBoolean(double[][] lum0, double doubles) {
+        double[][] retArray = new double[length][width];
+        for (int i = 1; i < lum0.length-1; i++) {
+            for (int j = 1; j < lum0[i].length-1; j++) {
+                if (lum0[i][j] == doubles) {
+                    retArray[i][j] = 1;
+                }
+            }
+
+        }
+        return retArray;
     }
 
     private double[] AppendEdges(double[] rangeArray, double value, double[] rangeArray1) {
@@ -449,7 +484,7 @@ public class DCA_TMO {
         for (int i = 0; i < arg.length; i++)
             for (int j = 0; j < arg[i].length; j++)
                 h[i][j] = exp(arg[i][j]);
-        double eps = Math.pow(2,-52);
+
         double hMax = h[0][0];
         for (int i = 0; i < h.length; i++)
             for (int j = 0; j < h[i].length; j++)
