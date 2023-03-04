@@ -1,6 +1,5 @@
 package com.example.hdrimaging;
 
-import static java.lang.Double.min;
 import static java.lang.Math.abs;
 import static java.lang.Math.exp;
 import static java.lang.Math.floor;
@@ -254,10 +253,41 @@ public class DCA_TMO {
                 mdata[i] = mean(lum0Ind);
             }
 
-//        labels_mdata = linspace(1, 256, nclust);
-//        labels = interp1(mdata, labels_mdata, lum0, 'linear');
+        double[] labels_mdata = linspace(nclust);
+        double[][] labels = interp1(mdata, labels_mdata, lum0);
         return hdrPQ;
     }
+
+    private double[][] interp1(double[] X, double[] V, double[][] Xq) {
+        sort(X);
+        sort(V);
+        double[][] reshapeX = inverse(X);
+        double[][] reshapeV = inverse(V);
+        double[] siz_vq = {length,width};
+        double[][] extrapMask = matrixBoolean2(Xq,X[1],X[X.length-1]);
+        double[][] Xqcol = inverse(reshape1D(Xq, numel(Xq)));
+        int num_vals = (int) size(reshapeV[1])[1];
+        //Continue from line 182 in matlab
+    }
+
+    private double[][] inverse(double[] X) {
+        double[][] retArray = new double[1][X.length];
+        System.arraycopy(X, 0, retArray[0], 0, X.length);
+        return retArray;
+    }
+
+    private double[] linspace(double nclust) {
+        int range = 256 - 1;
+        double diff = range/ (nclust-1);
+        double[] retArray = new double[(int) nclust];
+        double value = 1;
+        for (int i = 0; i< nclust; i++){
+            retArray[i] = value;
+            value += diff;
+        }
+        return retArray;
+    }
+
     //TODO: CHECK if this is correct
     private double[] getIndexValuesToArray(double[][] lum0, double[][] ind) {
         List<Double> retArray = new ArrayList<>();
@@ -267,7 +297,6 @@ public class DCA_TMO {
                     retArray.add(lum0[i][j]);
         return retArray.stream().mapToDouble(Double::doubleValue).toArray();
     }
-
 
     private double[][] matrixBoolean(double[][] array, double valueToCheck) {
         double[][] retArray = new double[length][width];
@@ -295,6 +324,18 @@ public class DCA_TMO {
         return retArray;
     }
 
+    private double[][] matrixBoolean2(double[][] array, double valueToCheck1,double valueToCheck2) {
+        double[][] retArray = new double[length][width];
+        for (int i = 0; i < array.length-1; i++) {
+            for (int j = 0; j < array[i].length-1; j++) {
+                if (array[i][j] < valueToCheck1 || array[i][j] > valueToCheck2) {
+                    retArray[i][j] = 1;
+                }
+            }
+
+        }
+        return retArray;
+    }
     private double[] AppendEdges(double[] rangeArray, double value, double[] rangeArray1) {
         int arraySize = rangeArray.length + 1 + rangeArray1.length;
 //        double[] output = new double[arraySize];
