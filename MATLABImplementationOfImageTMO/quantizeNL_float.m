@@ -85,9 +85,11 @@ mdata(end) = max(lum0(:));
 for i=2:nclust-1
     if lum(edges(i))==lum(edges(i+1))
         ind = (lum0==lum(edges(i)));
+        testInput = lum0(ind);
         mdata(i) = mean(lum0(ind))+eps*i;
     else
         ind = (lum0>lum(edges(i)) & lum0<=lum(edges(i+1)));
+        testInput = lum0(ind);
         mdata(i) = mean(lum0(ind));
     end
 end

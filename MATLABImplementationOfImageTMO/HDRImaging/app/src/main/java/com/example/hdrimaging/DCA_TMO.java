@@ -12,6 +12,7 @@ import static java.util.Arrays.sort;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 public class DCA_TMO {
 
@@ -217,7 +218,6 @@ public class DCA_TMO {
                         ssm = ssm - ss_data[(int) k];
                     e1 = ssm - Math.pow(sm, 2) / m;
                     e2 = ssn - ssm - Math.pow((sn - sm), 2) / (n - m);
-//                  TODO:
 //                    edges = [edges(1:idx),k+m,edges(idx+1:end)];
 //                    errors = [errors(1:idx-1),e1,e2,errors(idx+1:end)];
 //                  TODO:Check values
@@ -237,7 +237,7 @@ public class DCA_TMO {
 
         double[] mdata = new double[(int) nclust];
         double[] lum01d = reshape1D(lum0,numel(lum0));
-        mdata[1] = min(lum01d)[0];
+        mdata[0] = min(lum01d)[0];
         mdata[mdata.length-1] = max(lum01d)[0];
         //TODO:
         double[][] ind = new double[length][width];
@@ -245,38 +245,48 @@ public class DCA_TMO {
             if (lum1D[(int) edges[i]]==lum1D[(int) edges[i+1]]) {
                 ind = matrixBoolean(lum0, lum1D[(int) edges[i]]); //(lum0==lum[(int) edges[i]]);
                 double[] lum0Ind = getIndexValuesToArray(lum0,ind);
-
-
                 mdata[i] = mean(lum0Ind) + eps * i;
             }
             else
             {
-//                double[][] ind = (lum0 > lum[(int) edges[i]] & lum0 <= lum[(int) edges[i + 1]]);
-//                mdata[i] = mean(lum0[ind]);
+                ind = matrixBoolean1(lum0,lum1D[(int) edges[i]],lum1D[(int) edges[i + 1]]);
+                double[] lum0Ind = getIndexValuesToArray(lum0,ind);
+                mdata[i] = mean(lum0Ind);
             }
 
 //        labels_mdata = linspace(1, 256, nclust);
 //        labels = interp1(mdata, labels_mdata, lum0, 'linear');
         return hdrPQ;
     }
-
+    //TODO: CHECK if this is correct
     private double[] getIndexValuesToArray(double[][] lum0, double[][] ind) {
-        double[] retArray = new double[numel(ind)];
-        for (int i = 1; i < retArray.length; i++)
-            for (int j = 1; j < ind.length; j++)
-                for (int k = 1; k < ind[i].length; k++) {
-                    //TODO:
-                    retArray[i] = lum0[ind[j][k]];
+        List<Double> retArray = new ArrayList<>();
+        for (int i = 0; i < ind.length; i++)
+            for (int j = 1; j < ind[i].length; j++)
+                if (ind[i][j] == 1)
+                    retArray.add(lum0[i][j]);
+        return retArray.stream().mapToDouble(Double::doubleValue).toArray();
+    }
+
+
+    private double[][] matrixBoolean(double[][] array, double valueToCheck) {
+        double[][] retArray = new double[length][width];
+        for (int i = 0; i < array.length-1; i++) {
+            for (int j = 1; j < array[i].length-1; j++) {
+                if (array[i][j] == valueToCheck) {
+                    retArray[i][j] = 1;
+                }
+            }
+
         }
         return retArray;
     }
 
-
-    private double[][] matrixBoolean(double[][] lum0, double doubles) {
+    private double[][] matrixBoolean1(double[][] array, double valueToCheck1,double valueToCheck2) {
         double[][] retArray = new double[length][width];
-        for (int i = 1; i < lum0.length-1; i++) {
-            for (int j = 1; j < lum0[i].length-1; j++) {
-                if (lum0[i][j] == doubles) {
+        for (int i = 0; i < array.length-1; i++) {
+            for (int j = 0; j < array[i].length-1; j++) {
+                if (array[i][j] > valueToCheck1 && array[i][j] <= valueToCheck2) {
                     retArray[i][j] = 1;
                 }
             }
