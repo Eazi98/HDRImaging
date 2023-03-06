@@ -238,7 +238,7 @@ public class DCA_TMO {
         double[] lum01d = reshape1D(lum0,numel(lum0));
         mdata[0] = min(lum01d)[0];
         mdata[mdata.length-1] = max(lum01d)[0];
-        //TODO:
+        //TODO: Checkk mdata values
         double[][] ind = new double[length][width];
         for (int i=1; i<nclust-1; i++)
             if (lum1D[(int) edges[i]]==lum1D[(int) edges[i+1]]) {
@@ -259,20 +259,67 @@ public class DCA_TMO {
     }
 
     private double[][] interp1(double[] X, double[] V, double[][] Xq) {
+        double[][] Vout = new double[length][width];
+        double[] pp;
         sort(X);
         sort(V);
+        double[][] penultimate = Xq;
+        double[] orig_size_v = {1,V.length};
         double[][] reshapeX = inverse(X);
         double[][] reshapeV = inverse(V);
         double[] siz_vq = {length,width};
         double[][] extrapMask = matrixBoolean2(Xq,X[1],X[X.length-1]);
-        double[][] Xqcol = inverse(reshape1D(Xq, numel(Xq)));
+        double[] xqcol1d = reshape1D(Xq, numel(Xq));
+        double[][] Xqcol = inverse(xqcol1d);
         int num_vals = (int) size(reshapeV[1])[1];
+        Vout = to2dArray(linearInterpolation(X,V,xqcol1d), length, width);
         //Continue from line 182 in matlab
+
+        return Vout;
+    }
+
+    private double[][] to2dArray(double[] array1D, int length, int width) {
+        double[][] retArray = new double[length][width];
+        int pixelCounter = 0;
+        for (int j = 0; j < length; j++) {
+            for (int k = 0; k < width; k++) {
+                retArray[j][k] = array1D[0];
+                pixelCounter += 1;
+            }
+        }
+        return retArray;
+    }
+
+    public static double[] linearInterpolation(double[] x, double[] y, double[] values) {
+        double[] interpolatedValues = new double[values.length];
+
+        for (int i = 0; i < values.length; i++) {
+            // Find the index of the x value that is closest to the value to interpolate
+            int j = 1;
+            while (j < x.length - 1 && x[j] < values[i]) {
+                j++;
+            }
+
+            // Perform linear interpolation using the two closest data points
+            double x1 = x[j - 1];
+            double y1 = y[j - 1];
+            double x2 = x[j];
+            double y2 = y[j];
+            double slope = (y2 - y1) / (x2 - x1);
+            double interpolatedValue = y1 + slope * (values[i] - x1);
+
+            interpolatedValues[i] = interpolatedValue;
+        }
+
+        return interpolatedValues;
     }
 
     private double[][] inverse(double[] X) {
-        double[][] retArray = new double[1][X.length];
-        System.arraycopy(X, 0, retArray[0], 0, X.length);
+        double[][] retArray = new double[X.length][1];
+        for (int i = 0; i< X.length; i++) {
+            retArray[i][0] = X[i];
+        }
+
         return retArray;
     }
 
