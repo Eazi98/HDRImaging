@@ -9,9 +9,11 @@ import static java.lang.Math.round;
 import static java.util.Arrays.*;
 import static java.util.Arrays.sort;
 
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+
 
 public class DCA_TMO {
 
@@ -148,6 +150,55 @@ public class DCA_TMO {
     }
 
     private double[][] imfilter(double[][] hdrPQnor, double[][] doGfilter) {
+        double[] finalSize = {length, width};
+        return filterDouble2DWithConv(hdrPQnor,doGfilter,finalSize);
+    }
+
+    private double[][] filterDouble2DWithConv(double[][] a, double[][] h, double[] finalSize){
+        double[] pad = new double[] {4,4};
+        double[][] retArray =  new double[length][width];
+        h = rot90(a,2);
+        double[] imageSize = {length, width};
+        double[] sizeh = new double[] {h.length,h.length};
+        double[] nonSymmetricPadShift = numMinusArray(1,mod(sizeh,2));
+        //TODO: Continue from line 504 in imfilter.m
+
+        return retArray;
+    }
+
+    private double[] numMinusArray(int num, double[] mod) {
+        double[] retArray = new double[mod.length];
+        for (int i = 0; i< mod.length; i++){
+            retArray[i] = num - mod[i];
+        }
+        return retArray;
+    }
+
+    private double[] mod(double[] doubles, int y) {
+        double x1 = doubles[0];
+        double x2 = doubles[1];
+        double[] retArray = new double[doubles.length];
+        for (int i= 0; i < doubles.length; i++)
+            retArray[i] = doubles[i]- floor(doubles[i]/y)*y;
+
+        return retArray;
+
+    }
+
+    private double[][] rot90(double[][] arr1, int times) {
+        int d = arr1.length;
+        double[][] arr2 = new double[d][d];
+
+        for (int i = 0; i < d; i++)
+            for (int j = 0; j < d; j++)
+                arr2[d - 1 - j][i] = arr1[i][j];
+
+        times -= 1;
+
+        if (times > 0) {
+            rot90(arr2, times);
+        }
+        return arr2;
     }
 
     private double[][] quantizeNL_float(double[][] y, double nclust, double[][] lum) {
