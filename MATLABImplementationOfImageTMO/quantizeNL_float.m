@@ -33,7 +33,8 @@ for i = 1 : nclust-1
     if(k>=1) 
         ssn = ssn - ss_data(k); 
     end
-    d = 2; m = floor(n/d);
+    d = 2; 
+    m = floor(n/d);
     while(1)
         sm = s_data(k+m); 
         if(k>=1) 
@@ -65,7 +66,8 @@ for i = 1 : nclust-1
             end
             e1 = ssm-sm^2/m;
             e2 = ssn - ssm - (sn - sm)^2/(n-m);
-            
+            test = edges(1:idx);
+            test1 = edges(idx+1:end);
             edges = [edges(1:idx),k+m,edges(idx+1:end)];
             errors = [errors(1:idx-1),e1,e2,errors(idx+1:end)];
             break;
@@ -85,11 +87,13 @@ mdata(end) = max(lum0(:));
 for i=2:nclust-1
     if lum(edges(i))==lum(edges(i+1))
         ind = (lum0==lum(edges(i)));
-        testInput = lum0(ind);
+        test1 = lum0(ind);
         mdata(i) = mean(lum0(ind))+eps*i;
     else
+        test = edges(i);
+        test2 = edges(i+1);
         ind = (lum0>lum(edges(i)) & lum0<=lum(edges(i+1)));
-        testInput = lum0(ind);
+        
         mdata(i) = mean(lum0(ind));
     end
 end

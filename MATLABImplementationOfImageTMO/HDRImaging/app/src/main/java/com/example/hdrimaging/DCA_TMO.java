@@ -112,8 +112,13 @@ public class DCA_TMO {
                 hdrPQnor[i][j] = hdrPQnor[i][j] * 0.35 + labels[i][j] * 0.65;
             }
 
+        double[][] labels_DoG = new double[length][width];
+        double[][] imfilterArray = imfilter(hdrPQnor, DoGfilter);
+        for (int i = 0; i < labels_DoG.length; i++)
+            for (int j = 0; j < labels_DoG[i].length; j++) {
+                labels_DoG[i][j] = labels[i][j] + 3.0 * imfilterArray[i][j];
+            }
 
-//        labels_DoG = labels + 3.0*imfilter(hdrPQnor, DoGfilter, 'replicate');
         //TODO:
 //        %% color restoration
 //        s1 = (labels_DoG - min(labels_DoG(:))) ./ (max(labels_DoG(:)) - min(labels_DoG(:)));
@@ -140,6 +145,9 @@ public class DCA_TMO {
 //        ldrImg_DoG(ldrImg_DoG<minn) = minn;
 //        ldrImg = 255.* ((ldrImg_DoG - minn) ./ (maxx - minn));
         return ldrImg;
+    }
+
+    private double[][] imfilter(double[][] hdrPQnor, double[][] doGfilter) {
     }
 
     private double[][] quantizeNL_float(double[][] y, double nclust, double[][] lum) {
@@ -254,11 +262,12 @@ public class DCA_TMO {
             }
 
         double[] labels_mdata = linspace(nclust);
-        double[][] labels = interp1(mdata, labels_mdata, lum0);
-        return hdrPQ;
+        double[][] labels = interp1(mdata, labels_mdata, lum0); //Done in main
+
+        return labels;
     }
 
-    private double[][] interp1(double[] X, double[] V, double[][] Xq) {
+    public double[][] interp1(double[] X, double[] V, double[][] Xq) {
         double[][] Vout = new double[length][width];
         double[] pp;
         sort(X);
@@ -273,7 +282,6 @@ public class DCA_TMO {
         double[][] Xqcol = inverse(xqcol1d);
         int num_vals = (int) size(reshapeV[1])[1];
         Vout = to2dArray(linearInterpolation(X,V,xqcol1d), length, width);
-        //Continue from line 182 in matlab
 
         return Vout;
     }
@@ -290,7 +298,7 @@ public class DCA_TMO {
         return retArray;
     }
 
-    public static double[] linearInterpolation(double[] x, double[] y, double[] values) {
+    private static double[] linearInterpolation(double[] x, double[] y, double[] values) {
         double[] interpolatedValues = new double[values.length];
 
         for (int i = 0; i < values.length; i++) {
