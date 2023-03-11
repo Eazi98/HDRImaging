@@ -10,6 +10,8 @@ import static java.util.Arrays.*;
 import static java.util.Arrays.sort;
 
 
+import android.util.Range;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -155,14 +157,77 @@ public class DCA_TMO {
     }
 
     private double[][] filterDouble2DWithConv(double[][] a, double[][] h, double[] finalSize){
-        double[] pad = new double[] {4,4};
+        int[] padSize = new int[] {4,4};
         double[][] retArray =  new double[length][width];
         h = rot90(a,2);
         double[] imageSize = {length, width};
         double[] sizeh = new double[] {h.length,h.length};
         double[] nonSymmetricPadShift = numMinusArray(1,mod(sizeh,2));
-        //TODO: Continue from line 504 in imfilter.m
+        a = padarray_algo(a,padSize);
+        retArray = conv2(a,h);
 
+
+        return retArray;
+    }
+
+    private double[][] conv2(double[][] a, double[][] h) {
+
+        //TODO: Try to add this function in
+    }
+
+    private double[][] padarray_algo(double[][] a, int[] padSize) {
+        double[] aSize = {length, width};
+        int[][] aIdx = getPaddingIndices(aSize, padSize);
+        double[][] b = RangeMatrix(a,aIdx);
+        return b;
+    }
+
+    private double[][] RangeMatrix(double[][] a, int[][] aIdx) {
+        int lengthArray = aIdx.length;
+        int widthArray = aIdx[0].length;
+        double[][] retArray = new double[lengthArray][widthArray];
+        for (int i = 0; i < aIdx.length; i++){
+            for (int j = 0; j < aIdx[i].length; j++){
+                //TODO: check if logic correct
+                retArray[i][j] = a[aIdx[0][i]][aIdx[1][j]];
+            }
+        }
+        return retArray;
+    }
+
+    private int[][] getPaddingIndices(double[] aSize, int[] padSize) {
+        int numDims = padSize.length;
+        int[][] idx = {{1},{numDims}};
+        for (int k = 0; k< numDims-1; k++){
+            double M = aSize[k];
+            int p = padSize[k];
+            int[] onesVector = ones(p);
+            int loopRange = (int) (onesVector.length + M + onesVector.length);
+            int count = 0;
+            for (int j = 0; j< loopRange; j++){
+                if (j < onesVector.length){
+                    idx[k][j] = 1;
+                }
+                if (j == onesVector.length && j < (loopRange - onesVector.length -1))
+                {
+                    idx[k][j] = count;
+                    count += 1;
+                }
+                else
+                {
+                    idx[k][j] = (int) M;
+                }
+            }
+
+        }
+        return idx;
+    }
+
+    private int[] ones(int p) {
+        int[] retArray = new int[p];
+        for (int i = 0; i< p; i++){
+            retArray[i] = 1;
+        }
         return retArray;
     }
 
