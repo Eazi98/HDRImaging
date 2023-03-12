@@ -17,7 +17,7 @@ import java.util.Arrays;
 import java.util.List;
 
 
-public class DCA_TMO {
+public class DCA_TMO extends Thread{
 
     public double[][] hdrLum;
     public double[][] hdrPQ;
@@ -171,8 +171,15 @@ public class DCA_TMO {
     }
 
     private double[][] conv2(double[][] a, double[][] h) {
+        double[][] retArray = new double[length][width];
+        //https://towardsdatascience.com/intuitively-understanding-convolutions-for-deep-learning-1f6f42faee1
 
+        //https://homepages.inf.ed.ac.uk/rbf/HIPR2/flatjavasrc/Convolution.java
+        //TODO: Check whats difference between Android and Java implementation of color. Replace methods in Convolution.java
+        //https://docs.oracle.com/javase/7/docs/api/java/awt/Color.html
+        //https://developer.android.com/reference/android/graphics/Color
         //TODO: Try to add this function in
+        return retArray;
     }
 
     private double[][] padarray_algo(double[][] a, int[] padSize) {
