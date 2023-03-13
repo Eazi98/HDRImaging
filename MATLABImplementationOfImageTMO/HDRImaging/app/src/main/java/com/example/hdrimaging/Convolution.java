@@ -1,5 +1,7 @@
 package com.example.hdrimaging;
 
+import android.graphics.Color;
+
 /**
  * Convolution is the code for applying the convolution operator.
  *
@@ -189,7 +191,7 @@ public class Convolution extends Thread {
 
     /**
      * Converts a greylevel array into a pixel array.
-     * @param the 1D array of greylevels.
+     * @param greys the 1D array of grey levels.
      * @return the 1D array of RGB pixels.
      */
     public static int [] doublesToValidPixels (double [] greys){
@@ -203,7 +205,8 @@ public class Convolution extends Thread {
             }else{
                 grey = (int) Math.round(greys[i]);
             }
-            result[i] = (new Color(grey,grey,grey)).getRGB();
+            result[i] = Color.rgb(grey,grey,grey);
+            //result[i] = (new Color(grey,grey,grey)).getRGB();
         }
         return result;
     }
@@ -289,7 +292,8 @@ public class Convolution extends Thread {
         double [] output = new double [width*height];
         for(int j=0;j<height;++j){
             for(int i=0;i<width;++i){
-                input2D[i][j] = (new Color(input[j*width+i])).getRed();
+                input2D[i][j] = Color.red(input[j*width+i]);
+                //input2D[i][j] = (new Color(input[j*width+i])).getRed();
             }
         }
         output = convolutionDoublePadded(input2D,width,height,
@@ -301,7 +305,8 @@ public class Convolution extends Thread {
             if(outputInts[i]>255) outputInts[i] = 255;
             if(outputInts[i]<0) outputInts[i] = 0;
             int g = outputInts[i];
-            outputInts[i] = (new Color(g,g,g)).getRGB();
+            outputInts[i] = Color.rgb(g, g, g);
+            //outputInts[i] = (new Color(g,g,g)).getRGB();// Original
         }
         return outputInts;
     }

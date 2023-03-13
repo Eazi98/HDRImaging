@@ -92,7 +92,7 @@ public class DCA_TMO extends Thread{
         double[][] DoGfilter = new double[(int) window][(int) window];
         for (int i = 0; i < DoGfilter.length; i++)
             for (int j = 0; j < DoGfilter[i].length; j++)
-                DoGfilter[i][j] = gfilterC[i][j] - gfilterS[i][j];
+                DoGfilter[i][j] = (gfilterC[i][j] - gfilterS[i][j]);
 
         double[][] hdrPQnor = new double[length][width];
         double hdrPQMax = hdrPQnor[0][0];
@@ -173,12 +173,9 @@ public class DCA_TMO extends Thread{
     private double[][] conv2(double[][] a, double[][] h) {
         double[][] retArray = new double[length][width];
         //https://towardsdatascience.com/intuitively-understanding-convolutions-for-deep-learning-1f6f42faee1
-
+        //TODO:Check values
+        retArray = Convolution.convolution2DPadded(a,length,width,h,h.length,h.length);
         //https://homepages.inf.ed.ac.uk/rbf/HIPR2/flatjavasrc/Convolution.java
-        //TODO: Check whats difference between Android and Java implementation of color. Replace methods in Convolution.java
-        //https://docs.oracle.com/javase/7/docs/api/java/awt/Color.html
-        //https://developer.android.com/reference/android/graphics/Color
-        //TODO: Try to add this function in
         return retArray;
     }
 
@@ -192,11 +189,13 @@ public class DCA_TMO extends Thread{
     private double[][] RangeMatrix(double[][] a, int[][] aIdx) {
         int lengthArray = aIdx.length;
         int widthArray = aIdx[0].length;
-        double[][] retArray = new double[lengthArray][widthArray];
-        for (int i = 0; i < aIdx.length; i++){
-            for (int j = 0; j < aIdx[i].length; j++){
+        double[][] retArray = new double[aIdx[0].length][aIdx[1].length];
+        for (int i = 0; i < retArray.length-1; i++){
+            for (int j = 0; j < retArray[i].length-1; j++){
                 //TODO: check if logic correct
-                retArray[i][j] = a[aIdx[0][i]][aIdx[1][j]];
+                int lengthAxis = aIdx[0][i];
+                int widthAxis = aIdx[1][j];
+                retArray[i][j] = a[lengthAxis-1][widthAxis-1];
             }
         }
         return retArray;
@@ -204,23 +203,23 @@ public class DCA_TMO extends Thread{
 
     private int[][] getPaddingIndices(double[] aSize, int[] padSize) {
         int numDims = padSize.length;
-        int[][] idx = {{1},{numDims}};
-        for (int k = 0; k< numDims-1; k++){
+        int[][] idx = {new int[length+(padSize[0]*2)],new int[width+(padSize[0]*2)]};
+        for (int k = 0; k< numDims; k++){
             double M = aSize[k];
             int p = padSize[k];
             int[] onesVector = ones(p);
             int loopRange = (int) (onesVector.length + M + onesVector.length);
-            int count = 0;
+            int count = 1;
             for (int j = 0; j< loopRange; j++){
                 if (j < onesVector.length){
                     idx[k][j] = 1;
                 }
-                if (j == onesVector.length && j < (loopRange - onesVector.length -1))
+                else if ((j >= onesVector.length) && (j <= (loopRange - onesVector.length-1)))
                 {
                     idx[k][j] = count;
                     count += 1;
                 }
-                else
+                else if (j > (loopRange - onesVector.length-1))
                 {
                     idx[k][j] = (int) M;
                 }
@@ -682,7 +681,7 @@ public class DCA_TMO extends Thread{
 
     private double[][] fspecial(double window, double sigma){
         double[] p2 = {window,window};  // siz
-        double p3 = 0.5;;    // std
+        double p3 = sigma;;    // std
         double siz   = (p2[1]-1)/2;
 
         double x[][] = {
