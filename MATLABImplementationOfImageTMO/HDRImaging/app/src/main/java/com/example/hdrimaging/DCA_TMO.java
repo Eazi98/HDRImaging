@@ -10,8 +10,6 @@ import static java.util.Arrays.*;
 import static java.util.Arrays.sort;
 
 
-import android.util.Range;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -78,8 +76,6 @@ public class DCA_TMO extends Thread{
                 hdrPQ[i][j] = Math.pow((Math.pow(hdrLum1[i][j],((double)1305/(double)8192)) * ((double)2413/(double)128)+ ((double)107/(double)128)) / (Math.pow(hdrLum1[i][j],((double)1305 /(double)8192)) *((double)2392/(double)128)+ ((double)1)), ((double)2523/(double)32));
             }
 
-
-
         double[][] labels = quantizeNL_float(hdrPQ, K, hdrLum);
         //TODO:
 //        %% local enhancemant using DoG
@@ -95,8 +91,8 @@ public class DCA_TMO extends Thread{
                 DoGfilter[i][j] = (gfilterC[i][j] - gfilterS[i][j]);
 
         double[][] hdrPQnor = new double[length][width];
-        double hdrPQMax = hdrPQnor[0][0];
-        double hdrPQMin = hdrPQnor[0][0];
+        double hdrPQMax = hdrPQ[0][0];
+        double hdrPQMin = hdrPQ[0][0];
         for (double[] doubles : hdrPQ)
             for (double aDouble : doubles) {
                 if (aDouble > hdrPQMax) {
@@ -125,7 +121,14 @@ public class DCA_TMO extends Thread{
 
         //TODO:
 //        %% color restoration
+        double[][] s1 = new double[length][width];
+        double minLabels_DoG = min2dArray(labels_DoG);
+        double maxLabels_DoG = max2dArray(labels_DoG);
+
+        s1 = array2dDivision(arrayMinusDouble(labels_DoG,minLabels_DoG),(maxLabels_DoG - minLabels_DoG));
 //        s1 = (labels_DoG - min(labels_DoG(:))) ./ (max(labels_DoG(:)) - min(labels_DoG(:)));
+        double[][] s = new double[length][width];
+        s = doubleMinusArray(1 - atan(s1));
 //        s = 1 - atan(s1);
 //        s = min(s, 0.5);
 //        ldrImg_DoG = (hdrImg ./ hdrLum).^s .* labels_DoG;
@@ -151,6 +154,34 @@ public class DCA_TMO extends Thread{
         return ldrImg;
     }
 
+    private double[][] array2dDivision(double[][] array, double value) {
+        double[][] retArray = new double[array.length][array[0].length];
+        for (int i = 0; i < array.length; i++)
+            for (int j = 0; j < array[i].length; j++)
+                retArray[i][j] = array[i][j]/ value;
+        return retArray;
+    }
+
+    private double min2dArray(double[][] array){
+        double arrayMin = array[0][0];
+        for (double[] doubles : array)
+            for (double aDouble : doubles) {
+                if (aDouble < arrayMin) {
+                    arrayMin = aDouble;
+                }
+            }
+        return arrayMin;
+    }
+    private double max2dArray(double[][] array){
+        double arrayMax = array[0][0];
+        for (double[] doubles : array)
+            for (double aDouble : doubles) {
+                if (aDouble > arrayMax) {
+                    arrayMax = aDouble;
+                }
+            }
+        return arrayMax;
+    }
     private double[][] imfilter(double[][] hdrPQnor, double[][] doGfilter) {
         double[] finalSize = {length, width};
         return filterDouble2DWithConv(hdrPQnor,doGfilter,finalSize);
@@ -325,19 +356,22 @@ public class DCA_TMO extends Thread{
                 double e2 = ssn - ssm - Math.pow((sn - sm),2)/(n-m);
                 d = 2 * d;
                 if(abs(e1-e2) < 0.001 || d >= n) {
-                    //TODO: Check lum1Range and lum2Range values
                     double[] lum1Range = RangeArray(lum1D, (int) (k), (int) (k + m));
                     double lum1 = median(lum1Range);
-                    double[] lum2Range = RangeArray(lum1D, (int) (k + m ), (int) (k + n-1));
+                    double[] lum2Range = RangeArray(lum1D, (int) (k + m +1), (int) (k + n));
                     double lum2 = median(lum2Range);
                     double lum1log = log10(lum1);
                     double tvilum1 = tvi(new double[]{lum1log});
                     double delta1 = Math.pow(10, tvilum1);
-                    double delta2 = Math.pow(10, tvi(new double[]{log10(lum2)}));
+                    double lum2log = log10(lum2);
+                    double tvilum2 = tvi(new double[]{lum2log});
+                    double delta2 = Math.pow(10, tvilum2);
                     double value = delta1/(delta1+delta2) * (lum1D[(int) (k+n-1)] - lum1D[(int) (k+1)]) + lum1D[(int) (k+1)];
                     double[] absValue = doubleMinusArray(value, RangeArray(lum1D, (int) (k+1), (int) (k+n)));
+                    double[] absMatrixValue = absMatrix(absValue);
                     double[] values = min(absMatrix(absValue));
                     double lum_loc = values[1];
+                    //TODO: Check num lock value
                     m = lum_loc;
                     sm = s_data[(int) (k + m)];
                     if (k >= 1)
@@ -349,7 +383,6 @@ public class DCA_TMO extends Thread{
                     e2 = ssn - ssm - Math.pow((sn - sm), 2) / (n - m);
 //                    edges = [edges(1:idx),k+m,edges(idx+1:end)];
 //                    errors = [errors(1:idx-1),e1,e2,errors(idx+1:end)];
-//                  TODO:Check values
                     edges = AppendEdges(RangeArray(edges,0, (int) idx+1),(int)(k+m),RangeArray(edges, (int) (idx+1), edges.length));
                     errors = AppendErrors(RangeArray(errors,0, (int) (idx)),e1,e2,RangeArray(errors, (int) (idx+1),errors.length));
                     break;
@@ -577,6 +610,14 @@ public class DCA_TMO extends Thread{
         for (int i = 0; i < rangeArray.length; i++)
             rangeArray[i] = value - rangeArray[i];
         return rangeArray;
+    }
+
+    private double[][] arrayMinusDouble(double[][] rangeArray, double value) {
+        double[][] retArray = new double[rangeArray.length][rangeArray[0].length];
+        for (int i = 0; i < rangeArray.length; i++)
+            for (int j = 0; j < rangeArray[i].length; j++)
+                retArray[i][j] = rangeArray[i][j] - value;
+        return retArray;
     }
 
     private double tvi(double[] intensity) {

@@ -23,8 +23,10 @@ s_data = cumsum(y);
 ss_data = cumsum(y.^2);
 
 for i = 1 : nclust-1
-    [~,idx] = max(errors);
-    k = edges(idx); n = edges(idx+1)-k;
+    [test,idx] = max(errors);
+    test;
+    k = edges(idx); 
+    n = edges(idx+1)-k;
     sn = s_data(k+n); 
     if(k>=1) 
         sn = sn - s_data(k); 
@@ -54,6 +56,8 @@ for i = 1 : nclust-1
             lum2 = median(lum(k+m+1:k+n));
             delta1 = 10.^tvi(log10(lum1)); 
             delta2 = 10.^tvi(log10(lum2));
+            test =(delta1./(delta1+delta2) .* (lum(k+n)-lum(k+1)) + lum(k+1) - lum(k+1:k+n));
+            test = abs(test);
             [test, lum_loc] = min(abs(delta1./(delta1+delta2) .* (lum(k+n)-lum(k+1)) + lum(k+1) - lum(k+1:k+n)));
             m = lum_loc;
             sm = s_data(k+m); 
