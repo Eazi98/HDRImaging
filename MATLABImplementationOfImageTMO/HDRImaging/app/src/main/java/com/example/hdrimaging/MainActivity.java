@@ -36,11 +36,14 @@ public class MainActivity extends AppCompatActivity {
 
     private TextView fileLocationText;
     private ImageView imageHDR;
-    private TextView arrayText;
+    private TextView HDRText;
+    private TextView LDRText;
     private TextView testText;
-    private ScrollView scrollView;
+    private ScrollView scrollViewHDR;
+    private ScrollView scrollViewLDR;
     private HDRtoDoubleArray hdrtodoublearray;
     private ArrayList<Double> HDRArray;
+    private ArrayList<Double> LDRArray;
     private ArrayList<Double> pixelArrayTextArray = new ArrayList<>();
     private int loadArray = 200;
     double[][][] pixelArray;
@@ -61,9 +64,11 @@ public class MainActivity extends AppCompatActivity {
         setContentView(binding.getRoot());
         fileLocationText = binding.FileLocationText;
         imageHDR = binding.imageView;
-        arrayText = binding.arrayText;
+        HDRText = binding.arrayText;
+        LDRText = binding.arrayText1;
         testText = binding.TestValues;
-        scrollView = binding.scrollView;
+        scrollViewHDR = binding.scrollView;
+        scrollViewLDR = binding.scrollView1;
         if (Build.VERSION.SDK_INT >= 30) {
             if (!Environment.isExternalStorageManager()) {
                 Intent getpermission = new Intent();
@@ -75,19 +80,34 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
 //                ChooseFile();
-                arrayText.setText("");
+                HDRText.setText("");
                 openFileDialog(view);
 
             }
         });
 
         binding.scrollView.setOnScrollChangeListener(new View.OnScrollChangeListener() {
+            @SuppressLint("DefaultLocale")
             @Override
             public void onScrollChange(View view, int scrollX, int scrollY, int oldScrollX, int oldScrollY) {
-                if (scrollView.getChildAt(0).getBottom() <= (scrollView.getHeight() + scrollView.getScrollY())) {
+                if (scrollViewHDR.getChildAt(0).getBottom() <= (scrollViewHDR.getHeight() + scrollViewHDR.getScrollY())) {
                     for (int i= 0; i < loadArray; i++){
-                        arrayText.append(" "+ String.format("%.4f", HDRArray.get(0)));
+                        HDRText.append(" "+ String.format("%.4f", HDRArray.get(0)));
                         HDRArray.remove(0);
+                    }
+                }
+
+            }
+        });
+
+        binding.scrollView.setOnScrollChangeListener(new View.OnScrollChangeListener() {
+            @SuppressLint("DefaultLocale")
+            @Override
+            public void onScrollChange(View view, int scrollX, int scrollY, int oldScrollX, int oldScrollY) {
+                if (scrollViewLDR.getChildAt(0).getBottom() <= (scrollViewLDR.getHeight() + scrollViewLDR.getScrollY())) {
+                    for (int i= 0; i < loadArray; i++){
+                        LDRText.append(" "+ String.format("%.4f", LDRArray.get(0)));
+                        LDRArray.remove(0);
                     }
                 }
 
@@ -114,25 +134,42 @@ public class MainActivity extends AppCompatActivity {
 //                            e.printStackTrace();
 //                        }
 
-                        HDRArray = getHDRArray(path, getApplicationContext());
+
                         double[][][] HDRDoubleArray = getHDRDoubleArray(path, getApplicationContext());
                         DCA_TMO DCA_TMO = new DCA_TMO();
-                        DCA_TMO.DCA_TMO_Processing(HDRDoubleArray,length,width);
+                        double[][][] LDRDoubleArray = DCA_TMO.DCA_TMO_Processing(HDRDoubleArray,length,width);
+                        LDRArray = to1dArray(LDRDoubleArray);
 
 //                        double w = DCA_TMO.errors[1];
                         double w = DCA_TMO.hdrLum[2][2];
                         testText.setText(String.valueOf(w));
-                        arrayText.setText(String.format("%.4f",HDRArray.get(0)));
+
+                        HDRArray = getHDRArray(path, getApplicationContext());
+                        HDRText.setText(String.format("%.4f",HDRArray.get(0)));
                         HDRArray.remove(0);
                         for (int i= 1; i < loadArray; i++){
-                            arrayText.append(" "+ String.format("%.4f", HDRArray.get(0)));
+                            HDRText.append(" "+ String.format("%.4f", HDRArray.get(0)));
                             HDRArray.remove(0);
+                        }
+
+                        LDRText.setText(String.format("%.4f",LDRArray.get(0)));
+                        LDRArray.remove(0);
+                        for (int i= 1; i < loadArray; i++){
+                            LDRText.append(" "+ String.format("%.4f", LDRArray.get(0)));
+                            LDRArray.remove(0);
                         }
                     }
                 }
             }
     );
 
+    private ArrayList<Double> to1dArray(double[][][] array2d){
+        ArrayList<Double> retArrayList = new ArrayList<>();;
+        for (double[][] doubles : array2d)
+            for (double[] aDouble : doubles)
+                for (double v : aDouble) retArrayList.add(v);
+        return retArrayList;
+    }
     public void openFileDialog(View view){
         Intent data = new Intent(Intent.ACTION_OPEN_DOCUMENT);
         data.setType("*/*");
@@ -168,11 +205,6 @@ public class MainActivity extends AppCompatActivity {
         for (double[][] doubles : pixelArray)
             for (double[] aDouble : doubles)
                 for (double v : aDouble) pixelArrayTextArray.add(v);
-
-        //add length and width to start of array list
-        pixelArrayTextArray.add(0, (double) width);
-        pixelArrayTextArray.add(0, (double) length);
-
 
         //TODO: Convert pixelArray to a readable string
         return pixelArrayTextArray;

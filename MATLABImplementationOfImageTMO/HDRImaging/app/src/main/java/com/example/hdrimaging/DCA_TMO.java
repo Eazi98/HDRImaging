@@ -196,18 +196,18 @@ public class DCA_TMO extends Thread{
 
     private double[][][] multiply3d2d(double[][][] array, double[][] multiplyBy) {
         double[][][] retArray = new double[array.length][array[0].length][array[0][0].length];
-        for (int i = 0; i < array[0][0].length; i++)
-            for (int j = 0; j < array.length; j++)
-                for (int k = 0; k < array[j].length; k++)
+        for (int i = 0; i < array.length; i++)
+            for (int j = 0; j < array[i].length; j++)
+                for (int k = 0; k < array[0][0].length; k++)
                     retArray[i][j][k] = array[i][j][k] * multiplyBy[i][j];
         return retArray;
     }
 
     private double[][][] pow3d2d(double[][][] array, double[][] power) {
         double[][][] retArray = new double[array.length][array[0].length][array[0][0].length];
-        for (int i = 0; i < array[0][0].length; i++)
-            for (int j = 0; j < array.length; j++)
-                for (int k = 0; k < array[j].length; k++)
+        for (int i = 0; i < array.length; i++)
+            for (int j = 0; j < array[i].length; j++)
+                for (int k = 0; k < array[0][0].length; k++)
                     retArray[i][j][k] = Math.pow(array[i][j][k],power[i][j]);
         return retArray;
     }
@@ -488,7 +488,7 @@ public class DCA_TMO extends Thread{
         double[] lum01d = reshape1D(lum0,numel(lum0));
         mdata[0] = min(lum01d)[0];
         mdata[mdata.length-1] = max(lum01d)[0];
-        //TODO: Checkk mdata values
+        //TODO: Check mdata values
         double[][] ind = new double[length][width];
         for (int i=1; i<nclust-1; i++)
             if (lum1D[(int) edges[i]]==lum1D[(int) edges[i+1]]) {
