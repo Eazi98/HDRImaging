@@ -206,7 +206,6 @@ public class MainActivity extends AppCompatActivity {
             for (double[] aDouble : doubles)
                 for (double v : aDouble) pixelArrayTextArray.add(v);
 
-        //TODO: Convert pixelArray to a readable string
         return pixelArrayTextArray;
     }
 

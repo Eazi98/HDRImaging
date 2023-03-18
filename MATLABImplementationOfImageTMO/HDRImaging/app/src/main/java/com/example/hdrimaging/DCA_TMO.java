@@ -28,7 +28,6 @@ public class DCA_TMO extends Thread{
     {
         length = length1;
         width = width1;
-        //TODO: Figure out why hdrImg is not returning full array
         double maxhdr;
         double minhdr;
         double hdrMaxValue;
@@ -55,7 +54,6 @@ public class DCA_TMO extends Thread{
                         hdrImg[i][j][k] = minhdr;
                     }
                 }
-        //TODO:
 //        tone map using clustering method
         hdrLum = new double[length][width];
         double[][] hdrLum1 = new double[length][width];
@@ -78,7 +76,6 @@ public class DCA_TMO extends Thread{
             }
 
         double[][] labels = quantizeNL_float(hdrPQ, K, hdrLum);
-        //TODO:
 //        %% local enhancemant using DoG
         double sigmaC = 0.5;
         double sigmaS = 0.8;
@@ -120,7 +117,6 @@ public class DCA_TMO extends Thread{
                 labels_DoG[i][j] = labels[i][j] + 3.0 * imfilterArray[i][j];
             }
 
-        //TODO: Check values from here onward
         // color restoration
         double[][] s1 = new double[length][width];
         double minLabels_DoG = min2dArray(labels_DoG);
@@ -310,7 +306,6 @@ public class DCA_TMO extends Thread{
         double[][] retArray = new double[aIdx[0].length][aIdx[1].length];
         for (int i = 0; i < retArray.length-1; i++){
             for (int j = 0; j < retArray[i].length-1; j++){
-                //TODO: check if logic correct
                 int lengthAxis = aIdx[0][i];
                 int widthAxis = aIdx[1][j];
                 retArray[i][j] = a[lengthAxis-1][widthAxis-1];
@@ -443,6 +438,7 @@ public class DCA_TMO extends Thread{
                 double e2 = ssn - ssm - Math.pow((sn - sm),2)/(n-m);
                 d = 2 * d;
                 if(abs(e1-e2) < 0.001 || d >= n) {
+                    //TODO: Check between here and....
                     double[] lum1Range = RangeArray(lum1D, (int) (k), (int) (k + m));
                     double lum1 = median(lum1Range);
                     double[] lum2Range = RangeArray(lum1D, (int) (k + m +1), (int) (k + n));
@@ -453,10 +449,11 @@ public class DCA_TMO extends Thread{
                     double lum2log = log10(lum2);
                     double tvilum2 = tvi(new double[]{lum2log});
                     double delta2 = Math.pow(10, tvilum2);
-                    double value = delta1/(delta1+delta2) * (lum1D[(int) (k+n-1)] - lum1D[(int) (k+1)]) + lum1D[(int) (k+1)];
-                    double[] absValue = doubleMinusArray(value, RangeArray(lum1D, (int) (k+1), (int) (k+n)));
+                    double value = delta1/(delta1+delta2) * (lum1D[(int) (k+n -1)] - lum1D[(int) (k)]) + lum1D[(int) (k)];
+                    double[] absValue = doubleMinusArray(value, RangeArray(lum1D, (int) (k), (int) (k+n)));
                     double[] absMatrixValue = absMatrix(absValue);
-                    double[] values = min(absMatrix(absValue));
+                    double[] values = min(absMatrixValue);
+                    //TODO: here
                     double lum_loc = values[1];
                     //TODO: Check num lock value
                     m = lum_loc;
