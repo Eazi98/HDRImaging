@@ -463,11 +463,12 @@ public class DCA_TMO extends Thread{
                     ssm = ss_data[(int) (k + m)];
                     if (k >= 1)
                         ssm = ssm - ss_data[(int) k];
-                    e1 = ssm - Math.pow(sm, 2) / m;
-                    e2 = ssn - ssm - Math.pow((sn - sm), 2) / (n - m);
+                    e1 = ssm - Math.pow(sm, 2) / m+1;
+                    e2 = ssn - ssm - Math.pow((sn - sm), 2) / (n - (m+1));
 //                    edges = [edges(1:idx),k+m,edges(idx+1:end)];
 //                    errors = [errors(1:idx-1),e1,e2,errors(idx+1:end)];
-                    edges = AppendEdges(RangeArray(edges,0, (int) idx+1),(int)(k+m),RangeArray(edges, (int) (idx+1), edges.length));
+                    //TODO: Check why e1 and e2 as well as k+m differ from matlab
+                    edges = AppendEdges(RangeArray(edges,0, (int) idx+1),(int)(k+m+1),RangeArray(edges, (int) (idx+1), edges.length));
                     errors = AppendErrors(RangeArray(errors,0, (int) (idx)),e1,e2,RangeArray(errors, (int) (idx+1),errors.length));
                     break;
                 }
@@ -517,15 +518,15 @@ public class DCA_TMO extends Thread{
         double[][] reshapeV = inverse(V);
         double[] siz_vq = {length,width};
         double[][] extrapMask = matrixBoolean2(Xq,X[1],X[X.length-1]);
-        double[] xqcol1d = reshape1D(Xq, numel(Xq));
-        double[][] Xqcol = inverse(xqcol1d);
-        int num_vals = (int) size(reshapeV[1])[1];
-        Vout = to2dArray(linearInterpolation(X,V,xqcol1d), length, width);
+        for (int i = 0; i < Xq.length; i++) {
+            Vout[i] = linearInterpolation(X,V,Xq[i]);
+        }
+
 
         return Vout;
     }
 
-    private double[][] to2dArray(double[] array1D, int length, int width) {
+    private double[][] to2dArray(double[] array1D) {
         double[][] retArray = new double[length][width];
         int pixelCounter = 0;
         for (int j = 0; j < length; j++) {

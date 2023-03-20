@@ -4,6 +4,8 @@ import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.Color;
 import android.graphics.ColorSpace;
 import android.graphics.ImageDecoder;
 import android.graphics.drawable.Drawable;
@@ -28,6 +30,8 @@ import com.example.hdrimaging.databinding.ActivityMainBinding;
 import com.google.android.material.snackbar.Snackbar;
 
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.lang.reflect.Array;
 import java.util.ArrayList;
@@ -139,7 +143,7 @@ public class MainActivity extends AppCompatActivity {
                         DCA_TMO DCA_TMO = new DCA_TMO();
                         double[][][] LDRDoubleArray = DCA_TMO.DCA_TMO_Processing(HDRDoubleArray,length,width);
                         LDRArray = to1dArray(LDRDoubleArray);
-
+                        createBitMap(LDRDoubleArray,path);
 //                        double w = DCA_TMO.errors[1];
                         double w = DCA_TMO.hdrLum[2][2];
                         testText.setText(String.valueOf(w));
@@ -224,19 +228,35 @@ public class MainActivity extends AppCompatActivity {
         pixelArray = hdrtodoublearray.getPixelArray();
         return pixelArray;
     }
-//    Drawable showHDR(String path) throws IOException {
-//        Drawable drawable = null;
-//        File file = new File(path);
-//        ImageDecoder.Source source = null;
-//        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.P) {
-//            source = ImageDecoder.createSource(file);
-//        }
-//        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.P) {
-//            drawable = ImageDecoder.decodeDrawable(source, (decoder, info, src) -> {
-//                decoder.setTargetColorSpace(ColorSpace.get(ColorSpace.Named.EXTENDED_SRGB));
-//            });
-//        }
-//        return drawable;
-//    }
+    private void createBitMap(double[][][] ldrImg, String path){// your 2D array
+        File folder = new File(path).getParentFile();
+        File directory = new File(folder + "/LDRim/");
+        if (!directory.exists()) {
+            directory.mkdirs();
+        }
+
+// Create a Bitmap object from the 3D array
+        int width = ldrImg[0].length;
+        int height = ldrImg.length;
+        Bitmap bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
+        for (int y = 0; y < height; y++) {
+            for (int x = 0; x < width; x++) {
+                int pixel = Color.rgb((int) ldrImg[y][x][0], (int) ldrImg[y][x][1], (int) ldrImg[y][x][2]);
+                bitmap.setPixel(x, y, pixel);
+            }
+        }
+
+// Save the Bitmap object as a PNG file
+        String fileName = "something.png";
+        File file = new File(directory, fileName);
+        try {
+            file.createNewFile();
+            FileOutputStream outputStream = new FileOutputStream(file);
+            bitmap.compress(Bitmap.CompressFormat.PNG, 100, outputStream);
+            outputStream.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 
 }
