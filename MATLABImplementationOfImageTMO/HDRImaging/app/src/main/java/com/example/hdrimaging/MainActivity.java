@@ -230,6 +230,8 @@ public class MainActivity extends AppCompatActivity {
     }
     private void createBitMap(double[][][] ldrImg, String path){// your 2D array
         File folder = new File(path).getParentFile();
+        String[] fileNameArray = path.split("/");
+        String fileName = fileNameArray[fileNameArray.length-1];
         File directory = new File(folder + "/LDRim/");
         if (!directory.exists()) {
             directory.mkdirs();
@@ -247,7 +249,7 @@ public class MainActivity extends AppCompatActivity {
         }
 
 // Save the Bitmap object as a PNG file
-        String fileName = "something.png";
+        fileName = fileName + ".png";
         File file = new File(directory, fileName);
         try {
             file.createNewFile();

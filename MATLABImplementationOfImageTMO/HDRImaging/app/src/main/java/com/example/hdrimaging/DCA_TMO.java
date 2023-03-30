@@ -463,8 +463,8 @@ public class DCA_TMO extends Thread{
                     ssm = ss_data[(int) (k + m)];
                     if (k >= 1)
                         ssm = ssm - ss_data[(int) k];
-                    e1 = ssm - Math.pow(sm, 2) / m+1;
-                    e2 = ssn - ssm - Math.pow((sn - sm), 2) / (n - (m+1));
+                    e1 = ssm - Math.pow(sm, 2) / m;
+                    e2 = ssn - ssm - Math.pow((sn - sm), 2) / (n - m);
 //                    edges = [edges(1:idx),k+m,edges(idx+1:end)];
 //                    errors = [errors(1:idx-1),e1,e2,errors(idx+1:end)];
                     //TODO: Check why e1 and e2 as well as k+m differ from matlab
