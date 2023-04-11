@@ -144,7 +144,7 @@ public class MainActivity extends AppCompatActivity {
                         double[][][] LDRDoubleArray = DCA_TMO.DCA_TMO_Processing(HDRDoubleArray,length,width);
                         LDRArray = to1dArray(LDRDoubleArray);
                         createBitMap(LDRDoubleArray,path);
-//                        double w = DCA_TMO.errors[1];
+
                         double w = DCA_TMO.hdrLum[2][2];
                         testText.setText(String.valueOf(w));
 
@@ -259,6 +259,7 @@ public class MainActivity extends AppCompatActivity {
         } catch (IOException e) {
             e.printStackTrace();
         }
+        imageHDR.setImageURI(Uri.parse(file.toString()));
     }
 
 }
