@@ -450,30 +450,23 @@ public class DCA_TMO extends Thread{
                     double lum2log = log10(lum2);
                     double tvilum2 = tvi(new double[]{lum2log});
                     double delta2 = Math.pow(10, tvilum2);
-                    //TODO: Check between here and....
                     double value = delta1/(delta1+delta2) * (lum1D[(int) (k+n -1)] - lum1D[(int) (k)]) + lum1D[(int) (k)];
-                    double[] absValue = doubleMinusArray(value, RangeArray(lum1D, (int) (k), (int) (k+n)));
+                    double[] absValue = doubleMinusArray(value, RangeArray(lum1D, (int) (k), (int) (k+n-1)));
                     double[] absMatrixValue = absMatrix(absValue);
 
                     double[] values = min(absMatrixValue);
-
-                    //TODO: here
                     double lum_loc = values[1];
-                    //TODO: Check num lock value
                     m = lum_loc;
-                    sm = s_data[(int) (k + m)-1];
+                    sm = s_data[(int) (k + m)];
                     if (k >= 1)
                         sm = sm - s_data[(int) k-1];
-                    ssm = ss_data[(int) (k + m)-1];
+                    ssm = ss_data[(int) (k + m)];
                     if (k >= 1)
                         ssm = ssm - ss_data[(int) k-1];
-                    e1 = ssm - Math.pow(sm, 2) / (m+1);
-                    e2 = ssn - ssm - Math.pow((sn - sm), 2) / (n - (m+1));
-//                    edges = [edges(1:idx),k+m,edges(idx+1:end)];
-//                    errors = [errors(1:idx-1),e1,e2,errors(idx+1:end)];
-                    //TODO: Check why e1 and e2 as well as k+m differ from matlab
-                    edges = AppendEdges(RangeArray(edges,0, (int) idx+1),(int)(k+m+1),RangeArray(edges, (int) (idx+1), edges.length));
-                    errors = AppendErrors(RangeArray(errors,0, (int) (idx)),e1,e2,RangeArray(errors, (int) (idx+1),errors.length));
+                    e1 = ssm - Math.pow(sm, 2.0) / (m+1);
+                    e2 = ssn - ssm - Math.pow((sn - sm), 2.0) / (n - (m+1));
+                    edges = AppendEdges(RangeArray(edges,0, (int) idx),(int)(k+m+1),RangeArray(edges, (int) (idx+1), edges.length-1));
+                    errors = AppendErrors(RangeArray(errors,0, (int) (idx-1)),e1,e2,RangeArray(errors, (int) (idx+1),errors.length-1));
                     break;
                 }
                 else{
@@ -788,7 +781,7 @@ public class DCA_TMO extends Thread{
         double[] rangeArray = new double[range+1];
         int j = indexStart;
         for (int i = 0; i <= range; i++) {
-            if (j < indexEnd) {
+            if (j <= indexEnd) {
                 rangeArray[i] = lum[j++];
             }
         }
