@@ -417,54 +417,58 @@ public class DCA_TMO extends Thread{
             double[] maxError = max(errors);
             double idx = maxError[1];
             double k = edges[(int)idx];
-            double n = edges[(int)idx+1]-k;
-            double sn = s_data[(int) (k+n-1)];
+            double n = edges[(int)idx+1]-(k);
+            double sn = s_data[(int) (k+n)-1];
             if(k>=1)
-                sn = sn - s_data[(int) k];
+                sn = sn - s_data[(int) k-1];
             double ssn = ss_data[(int) (k+n)-1];
             if(k>=1)
-                ssn = ssn - ss_data[(int) k];
+                ssn = ssn - ss_data[(int) k-1];
             double d = 2;
             double m = floor(n/d);
             while(true)
             {
-                double sm = s_data[(int) (k+m-1)];
+                double sm = s_data[(int) (k+m)-1];
                 if(k>=1)
                     sm = sm - s_data[(int) k-1];
-                double ssm = ss_data[(int) (k+m-1)];
+                double ssm = ss_data[(int) (k+m)-1];
                 if(k>=1)
-                    ssm = ssm - ss_data[(int) k];
+                    ssm = ssm - ss_data[(int) k-1];
                 double e1 = ssm - Math.pow(sm,2)/m;
                 double e2 = ssn - ssm - Math.pow((sn - sm),2)/(n-m);
                 d = 2 * d;
                 if(abs(e1-e2) < 0.001 || d >= n) {
-                    //TODO: Check between here and....
-                    double[] lum1Range = RangeArray(lum1D, (int) (k), (int) (k + m));
+
+                    double[] lum1Range = RangeArray(lum1D, (int) (k+1-1), (int) (k + m-1));
                     double lum1 = median(lum1Range);
-                    double[] lum2Range = RangeArray(lum1D, (int) (k + m +1), (int) (k + n));
-                    double lum2 = median(lum2Range);
                     double lum1log = log10(lum1);
                     double tvilum1 = tvi(new double[]{lum1log});
                     double delta1 = Math.pow(10, tvilum1);
+
+                    double[] lum2Range = RangeArray(lum1D, (int) (k + m +1-1), (int) (k + n-1));
+                    double lum2 = median(lum2Range);
                     double lum2log = log10(lum2);
                     double tvilum2 = tvi(new double[]{lum2log});
                     double delta2 = Math.pow(10, tvilum2);
+                    //TODO: Check between here and....
                     double value = delta1/(delta1+delta2) * (lum1D[(int) (k+n -1)] - lum1D[(int) (k)]) + lum1D[(int) (k)];
                     double[] absValue = doubleMinusArray(value, RangeArray(lum1D, (int) (k), (int) (k+n)));
                     double[] absMatrixValue = absMatrix(absValue);
+
                     double[] values = min(absMatrixValue);
+
                     //TODO: here
                     double lum_loc = values[1];
                     //TODO: Check num lock value
                     m = lum_loc;
-                    sm = s_data[(int) (k + m)];
+                    sm = s_data[(int) (k + m)-1];
                     if (k >= 1)
-                        sm = sm - s_data[(int) k];
-                    ssm = ss_data[(int) (k + m)];
+                        sm = sm - s_data[(int) k-1];
+                    ssm = ss_data[(int) (k + m)-1];
                     if (k >= 1)
-                        ssm = ssm - ss_data[(int) k];
-                    e1 = ssm - Math.pow(sm, 2) / m;
-                    e2 = ssn - ssm - Math.pow((sn - sm), 2) / (n - m);
+                        ssm = ssm - ss_data[(int) k-1];
+                    e1 = ssm - Math.pow(sm, 2) / (m+1);
+                    e2 = ssn - ssm - Math.pow((sn - sm), 2) / (n - (m+1));
 //                    edges = [edges(1:idx),k+m,edges(idx+1:end)];
 //                    errors = [errors(1:idx-1),e1,e2,errors(idx+1:end)];
                     //TODO: Check why e1 and e2 as well as k+m differ from matlab
@@ -780,15 +784,12 @@ public class DCA_TMO extends Thread{
         return indexes;
     }
     private double[] RangeArray(double[] lum, int indexStart, int indexEnd) {
-        indexStart = indexStart;
-        indexEnd = indexEnd;
         int range = indexEnd - indexStart;
-        double[] rangeArray = new double[range];
+        double[] rangeArray = new double[range+1];
         int j = indexStart;
-        for (int i = 0; i < range; i++) {
+        for (int i = 0; i <= range; i++) {
             if (j < indexEnd) {
-                rangeArray[i] = lum[j];
-                j += 1;
+                rangeArray[i] = lum[j++];
             }
         }
         return rangeArray;
@@ -945,7 +946,11 @@ public class DCA_TMO extends Thread{
     {
         double m=0;
         int n = array.length;
-        if(n%2==1)
+        if (n<=1)
+        {
+            return array[0];
+        }
+        else if(n%2==1)
         {
             m=array[((n+1)/2)-1];
 
@@ -953,7 +958,6 @@ public class DCA_TMO extends Thread{
         else
         {
             m=(array[n/2-1]+array[n/2])/2;
-
         }
         return m;
 
