@@ -485,18 +485,18 @@ public class DCA_TMO extends Thread{
         mdata[mdata.length-1] = max(lum01d)[0];
         //TODO: Check mdata values
         double[][] ind = new double[length][width];
-        for (int i=1; i<nclust-1; i++) {
-            if (lum1D[(int) edges[i]] == lum1D[(int) edges[i + 1]]) {
+        for (int i=1; i<=nclust-1; i++) {
+            if (lum1D[(int) edges[i]-1] == lum1D[(int) edges[i + 1]-1]) {
                 ind = matrixBoolean(lum0, lum1D[(int) edges[i]]); //(lum0==lum[(int) edges[i]]);
                 double[] lum0Ind = getIndexValuesToArray(lum0, ind);
                 mdata[i] = mean(lum0Ind) + eps * i;
             } else {
-                ind = matrixBoolean1(lum0, lum1D[(int) edges[i]], lum1D[(int) edges[i + 1]]);
+                ind = matrixBoolean1(lum0, lum1D[(int) edges[i]-1], lum1D[(int) edges[i + 1]-1]);
                 double[] lum0Ind = getIndexValuesToArray(lum0, ind);
                 mdata[i] = mean(lum0Ind);
             }
         }
-        double[] labels_mdata = linspace(nclust);
+        double[] labels_mdata = linspace(1,256,(int)nclust);
         double[][] labels = interp1(mdata, labels_mdata, lum0); //Done in main
 
         return labels;
@@ -504,15 +504,8 @@ public class DCA_TMO extends Thread{
 
     public double[][] interp1(double[] X, double[] V, double[][] Xq) {
         double[][] Vout = new double[length][width];
-        double[] pp;
         sort(X);
         sort(V);
-        double[][] penultimate = Xq;
-        double[] orig_size_v = {1,V.length};
-        double[][] reshapeX = inverse(X);
-        double[][] reshapeV = inverse(V);
-        double[] siz_vq = {length,width};
-        double[][] extrapMask = matrixBoolean2(Xq,X[1],X[X.length-1]);
         for (int i = 0; i < Xq.length; i++) {
             Vout[i] = linearInterpolation(X,V,Xq[i]);
         }
@@ -557,23 +550,10 @@ public class DCA_TMO extends Thread{
         return interpolatedValues;
     }
 
-    private double[][] inverse(double[] X) {
-        double[][] retArray = new double[X.length][1];
-        for (int i = 0; i< X.length; i++) {
-            retArray[i][0] = X[i];
-        }
-
-        return retArray;
-    }
-
-    private double[] linspace(double nclust) {
-        int range = 256 - 1;
-        double diff = range/ (nclust-1);
-        double[] retArray = new double[(int) nclust];
-        double value = 1;
-        for (int i = 0; i< nclust; i++){
-            retArray[i] = value;
-            value += diff;
+    public static double[] linspace(double min, double max, int points) {
+        double[] retArray = new double[points];
+        for (int i = 0; i < points; i++){
+            retArray[i] = min + i * (max - min) / (points - 1);
         }
         return retArray;
     }
