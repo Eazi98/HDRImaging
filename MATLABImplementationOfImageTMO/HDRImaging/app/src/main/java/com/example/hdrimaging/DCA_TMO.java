@@ -223,8 +223,8 @@ public class DCA_TMO extends Thread{
         double[][] retArray = new double[array.length][array[0].length];
         for (int i = 0; i < array.length; i++)
             for (int j = 0; j < array[i].length; j++)
-                if (retArray[i][j] < value)
-                    retArray[i][j] = retArray[i][j];
+                if (array[i][j] < value)
+                    retArray[i][j] = array[i][j];
                 else{
                     retArray[i][j] = value;
                 }
