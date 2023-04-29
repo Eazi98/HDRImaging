@@ -496,7 +496,7 @@ public class DCA_TMO extends Thread{
                 mdata[i] = mean(lum0Ind);
             }
         }
-        double[] labels_mdata = linspace(nclust);
+        double[] labels_mdata = linspace(1,256,(int)nclust);
         double[][] labels = interp1(mdata, labels_mdata, lum0); //Done in main
 
         return labels;
@@ -566,14 +566,10 @@ public class DCA_TMO extends Thread{
         return retArray;
     }
 
-    private double[] linspace(double nclust) {
-        int range = 256 - 1;
-        double diff = range/ (nclust-1);
-        double[] retArray = new double[(int) nclust];
-        double value = 1;
-        for (int i = 0; i< nclust; i++){
-            retArray[i] = value;
-            value += diff;
+    public static double[] linspace(double min, double max, int points) {
+        double[] retArray = new double[points];
+        for (int i = 0; i < points; i++){
+            retArray[i] = min + i * (max - min) / (points - 1);
         }
         return retArray;
     }
