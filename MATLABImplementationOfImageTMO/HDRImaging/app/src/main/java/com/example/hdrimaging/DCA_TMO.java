@@ -485,13 +485,13 @@ public class DCA_TMO extends Thread{
         mdata[mdata.length-1] = max(lum01d)[0];
         //TODO: Check mdata values
         double[][] ind = new double[length][width];
-        for (int i=1; i<nclust-1; i++) {
-            if (lum1D[(int) edges[i]] == lum1D[(int) edges[i + 1]]) {
+        for (int i=1; i<=nclust-1; i++) {
+            if (lum1D[(int) edges[i]-1] == lum1D[(int) edges[i + 1]-1]) {
                 ind = matrixBoolean(lum0, lum1D[(int) edges[i]]); //(lum0==lum[(int) edges[i]]);
                 double[] lum0Ind = getIndexValuesToArray(lum0, ind);
                 mdata[i] = mean(lum0Ind) + eps * i;
             } else {
-                ind = matrixBoolean1(lum0, lum1D[(int) edges[i]], lum1D[(int) edges[i + 1]]);
+                ind = matrixBoolean1(lum0, lum1D[(int) edges[i]-1], lum1D[(int) edges[i + 1]-1]);
                 double[] lum0Ind = getIndexValuesToArray(lum0, ind);
                 mdata[i] = mean(lum0Ind);
             }
