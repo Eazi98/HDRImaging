@@ -504,15 +504,8 @@ public class DCA_TMO extends Thread{
 
     public double[][] interp1(double[] X, double[] V, double[][] Xq) {
         double[][] Vout = new double[length][width];
-        double[] pp;
         sort(X);
         sort(V);
-        double[][] penultimate = Xq;
-        double[] orig_size_v = {1,V.length};
-        double[][] reshapeX = inverse(X);
-        double[][] reshapeV = inverse(V);
-        double[] siz_vq = {length,width};
-        double[][] extrapMask = matrixBoolean2(Xq,X[1],X[X.length-1]);
         for (int i = 0; i < Xq.length; i++) {
             Vout[i] = linearInterpolation(X,V,Xq[i]);
         }
@@ -555,15 +548,6 @@ public class DCA_TMO extends Thread{
         }
 
         return interpolatedValues;
-    }
-
-    private double[][] inverse(double[] X) {
-        double[][] retArray = new double[X.length][1];
-        for (int i = 0; i< X.length; i++) {
-            retArray[i][0] = X[i];
-        }
-
-        return retArray;
     }
 
     public static double[] linspace(double min, double max, int points) {
