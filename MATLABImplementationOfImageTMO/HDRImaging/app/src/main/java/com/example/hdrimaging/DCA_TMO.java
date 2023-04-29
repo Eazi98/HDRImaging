@@ -81,6 +81,7 @@ public class DCA_TMO extends Thread{
         double sigmaS = 0.8;
         double window = 9;
 
+        //Correct from here
         double[][] gfilterC = fspecial(window, sigmaC);
         double[][] gfilterS = fspecial(window, sigmaS);
         double[][] DoGfilter = new double[(int) window][(int) window];
@@ -91,6 +92,7 @@ public class DCA_TMO extends Thread{
         double[][] hdrPQnor = new double[length][width];
         double hdrPQMax = hdrPQ[0][0];
         double hdrPQMin = hdrPQ[0][0];
+        /* maybe put into a method */
         for (double[] doubles : hdrPQ)
             for (double aDouble : doubles) {
                 if (aDouble > hdrPQMax) {
@@ -99,12 +101,12 @@ public class DCA_TMO extends Thread{
                     hdrPQMin = aDouble;
                 }
             }
+
         for (int i = 0; i < hdrImg.length; i++)
             for (int j = 0; j < hdrImg[i].length; j++) {
                 hdrPQnor[i][j] = 255 * (hdrPQ[i][j] - hdrPQMin) / (hdrPQMax - hdrPQMin) + 1;
             }
-
-//        hdrPQnor = 255 .* (hdrPQ - min(hdrPQ(:))) ./ (max(hdrPQ(:)) - min(hdrPQ(:))) + 1;
+//Correct to here
         for (int i = 0; i < hdrImg.length; i++)
             for (int j = 0; j < hdrImg[i].length; j++) {
                 hdrPQnor[i][j] = hdrPQnor[i][j] * 0.35 + labels[i][j] * 0.65;
@@ -493,6 +495,7 @@ public class DCA_TMO extends Thread{
             } else {
                 ind = matrixBoolean1(lum0, lum1D[(int) edges[i]-1], lum1D[(int) edges[i + 1]-1]);
                 double[] lum0Ind = getIndexValuesToArray(lum0, ind);
+                sort(lum0Ind);
                 mdata[i] = mean(lum0Ind);
             }
         }
