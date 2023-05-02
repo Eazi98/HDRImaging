@@ -55,9 +55,6 @@ public class MainActivity extends AppCompatActivity {
     int length;
     int arraySize;
 
-//    static {
-//        System.loadLibrary("DCA_TMO");
-//    }
     ActivityResultLauncher<Intent> filePicker;
     Thread arrayThread = null;
     @Override
@@ -131,13 +128,6 @@ public class MainActivity extends AppCompatActivity {
                         Uri uri = data.getData();
                         String path = getFileName(uri, getApplicationContext());
                         fileLocationText.setText(path);
-//                        try {
-//                            Drawable drawable = showHDR(path);
-//                            imageHDR.setImageDrawable(drawable);
-//                        } catch (IOException e) {
-//                            e.printStackTrace();
-//                        }
-
 
                         double[][][] HDRDoubleArray = getHDRDoubleArray(path, getApplicationContext());
                         DCA_TMO DCA_TMO = new DCA_TMO();
