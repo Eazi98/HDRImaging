@@ -28,7 +28,6 @@ test1 = min(hdrPQ(:));
 test2 = (max(hdrPQ(:)));
 hdrPQnor = 255 .* (hdrPQ - min(hdrPQ(:))) ./ (max(hdrPQ(:)) - min(hdrPQ(:))) + 1;
 hdrPQnor = hdrPQnor .* 0.35 + labels .* 0.65;
-test = imfilter(hdrPQnor, DoGfilter, 'replicate');
 labels_DoG = labels + 3.0*imfilter(hdrPQnor, DoGfilter, 'replicate');
 
 %% color restoration

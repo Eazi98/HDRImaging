@@ -279,9 +279,10 @@ public class DCA_TMO extends Thread{
     private double[][] filterDouble2DWithConv(double[][] a, double[][] h, double[] finalSize){
         int[] padSize = new int[] {4,4};
         double[][] retArray;
-        h = rot90(a,2);
+        h = rot90(h,2);
+        //double[] imageSize = {length, width};
         double[] sizeh = new double[] {h.length,h.length};
-        double[] nonSymmetricPadShift = numMinusArray(1,mod(sizeh,2));
+        //double[] nonSymmetricPadShift = numMinusArray(1,mod(sizeh,2));
         a = padarray_algo(a,padSize);
         retArray = conv2(a,h);
 
