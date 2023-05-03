@@ -78,6 +78,8 @@ public class DCA_TMO extends Thread{
 
         QuantizeNL_float QuantizeNL_float = new QuantizeNL_float(length, width);
         double[][] labels = QuantizeNL_float.quantizeNL_float(hdrPQ, K, hdrLum);
+        // TODO: Check labels to see when values are off by less than 1
+
         //local enhancement using DoG
         double sigmaC = 0.5;
         double sigmaS = 0.8;
@@ -108,12 +110,12 @@ public class DCA_TMO extends Thread{
             for (int j = 0; j < hdrImg[i].length; j++) {
                 hdrPQnor[i][j] = 255 * (hdrPQ[i][j] - hdrPQMin) / (hdrPQMax - hdrPQMin) + 1;
             }
-        //Correct to here
+
         for (int i = 0; i < hdrImg.length; i++)
             for (int j = 0; j < hdrImg[i].length; j++) {
                 hdrPQnor[i][j] = hdrPQnor[i][j] * 0.35 + labels[i][j] * 0.65;
             }
-
+        //Correct to here
         double[][] labels_DoG = new double[length][width];
         double[][] imfilterArray = imfilter(hdrPQnor, DoGfilter);
         for (int i = 0; i < labels_DoG.length; i++)
@@ -122,7 +124,7 @@ public class DCA_TMO extends Thread{
             }
 
         // color restoration
-        double[][] s1 = new double[length][width];
+        double[][] s1;
         double minLabels_DoG = min2dArray(labels_DoG);
         double maxLabels_DoG = max2dArray(labels_DoG);
 
@@ -276,9 +278,8 @@ public class DCA_TMO extends Thread{
 
     private double[][] filterDouble2DWithConv(double[][] a, double[][] h, double[] finalSize){
         int[] padSize = new int[] {4,4};
-        double[][] retArray =  new double[length][width];
+        double[][] retArray;
         h = rot90(a,2);
-        double[] imageSize = {length, width};
         double[] sizeh = new double[] {h.length,h.length};
         double[] nonSymmetricPadShift = numMinusArray(1,mod(sizeh,2));
         a = padarray_algo(a,padSize);
