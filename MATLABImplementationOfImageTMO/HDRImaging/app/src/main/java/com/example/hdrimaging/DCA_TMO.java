@@ -164,8 +164,9 @@ public class DCA_TMO extends Thread{
                     }
                 }
         double[][][]minusedArray = array3dMinusDouble(ldrImg_DoG,minn);
-        double[][][] multipliedArray = multiply3dDouble(255,minusedArray);
-        ldrImg = divide3dDouble(multipliedArray,(maxx - minn));
+
+        dividedArray = divide3dDouble(minusedArray,(maxx - minn));
+        ldrImg = multiply3dDouble(255,dividedArray);
         return ldrImg;
     }
 
