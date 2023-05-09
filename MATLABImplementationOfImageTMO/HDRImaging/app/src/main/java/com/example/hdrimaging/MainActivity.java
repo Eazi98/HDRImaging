@@ -40,17 +40,16 @@ public class MainActivity extends AppCompatActivity {
 
     private TextView fileLocationText;
     private ImageView imageHDR;
-    private TextView HDRText;
-    private TextView LDRText;
-    private TextView testText;
+//    private TextView HDRText;
+//    private TextView LDRText;
     private ScrollView scrollViewHDR;
     private ScrollView scrollViewLDR;
     private HDRtoDoubleArray hdrtodoublearray;
     private ArrayList<Double> HDRArray;
     private ArrayList<Double> LDRArray;
     private ArrayList<Double> pixelArrayTextArray = new ArrayList<>();
-    private int loadArray = 200;
-    double[][][] pixelArray;
+    private final int loadArray = 200;
+    //double[][][] pixelArray;
     int width;
     int length;
     int arraySize;
@@ -65,9 +64,8 @@ public class MainActivity extends AppCompatActivity {
         setContentView(binding.getRoot());
         fileLocationText = binding.FileLocationText;
         imageHDR = binding.imageView;
-        HDRText = binding.arrayText;
-        LDRText = binding.arrayText1;
-        testText = binding.TestValues;
+//        HDRText = binding.arrayText;
+//        LDRText = binding.arrayText1;
         scrollViewHDR = binding.scrollView;
         scrollViewLDR = binding.scrollView1;
         if (Build.VERSION.SDK_INT >= 30) {
@@ -81,39 +79,39 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
 //                ChooseFile();
-                HDRText.setText("");
+                //HDRText.setText("");
                 openFileDialog(view);
 
             }
         });
 
-        binding.scrollView.setOnScrollChangeListener(new View.OnScrollChangeListener() {
-            @SuppressLint("DefaultLocale")
-            @Override
-            public void onScrollChange(View view, int scrollX, int scrollY, int oldScrollX, int oldScrollY) {
-                if (scrollViewHDR.getChildAt(0).getBottom() <= (scrollViewHDR.getHeight() + scrollViewHDR.getScrollY())) {
-                    for (int i= 0; i < loadArray; i++){
-                        HDRText.append(" "+ String.format("%.4f", HDRArray.get(0)));
-                        HDRArray.remove(0);
-                    }
-                }
+//        binding.scrollView.setOnScrollChangeListener(new View.OnScrollChangeListener() {
+//            @SuppressLint("DefaultLocale")
+//            @Override
+//            public void onScrollChange(View view, int scrollX, int scrollY, int oldScrollX, int oldScrollY) {
+//                if (scrollViewHDR.getChildAt(0).getBottom() <= (scrollViewHDR.getHeight() + scrollViewHDR.getScrollY())) {
+//                    for (int i= 0; i < loadArray; i++){
+//                        HDRText.append(" "+ String.format("%.4f", HDRArray.get(0)));
+//                        HDRArray.remove(0);
+//                    }
+//                }
+//
+//            }
+//        });
 
-            }
-        });
-
-        binding.scrollView.setOnScrollChangeListener(new View.OnScrollChangeListener() {
-            @SuppressLint("DefaultLocale")
-            @Override
-            public void onScrollChange(View view, int scrollX, int scrollY, int oldScrollX, int oldScrollY) {
-                if (scrollViewLDR.getChildAt(0).getBottom() <= (scrollViewLDR.getHeight() + scrollViewLDR.getScrollY())) {
-                    for (int i= 0; i < loadArray; i++){
-                        LDRText.append(" "+ String.format("%.4f", LDRArray.get(0)));
-                        LDRArray.remove(0);
-                    }
-                }
-
-            }
-        });
+//        binding.scrollView.setOnScrollChangeListener(new View.OnScrollChangeListener() {
+//            @SuppressLint("DefaultLocale")
+//            @Override
+//            public void onScrollChange(View view, int scrollX, int scrollY, int oldScrollX, int oldScrollY) {
+//                if (scrollViewLDR.getChildAt(0).getBottom() <= (scrollViewLDR.getHeight() + scrollViewLDR.getScrollY())) {
+//                    for (int i= 0; i < loadArray; i++){
+//                        LDRText.append(" "+ String.format("%.4f", LDRArray.get(0)));
+//                        LDRArray.remove(0);
+//                    }
+//                }
+//
+//            }
+//        });
     }
 
     ActivityResultLauncher<Intent> sActivityResultLauncher = registerForActivityResult(
@@ -132,38 +130,35 @@ public class MainActivity extends AppCompatActivity {
                         double[][][] HDRDoubleArray = getHDRDoubleArray(path, getApplicationContext());
                         DCA_TMO DCA_TMO = new DCA_TMO();
                         double[][][] LDRDoubleArray = DCA_TMO.DCA_TMO_Processing(HDRDoubleArray,length,width);
-                        LDRArray = to1dArray(LDRDoubleArray);
+                        //LDRArray = to1dArray(LDRDoubleArray);
                         createBitMap(LDRDoubleArray,path);
 
-                        double w = DCA_TMO.hdrLum[2][2];
-                        testText.setText(String.valueOf(w));
+//                        HDRArray = getHDRArray(path, getApplicationContext());
+//                        HDRText.setText(String.format("%.4f",HDRArray.get(0)));
+//                        HDRArray.remove(0);
+//                        for (int i= 1; i < loadArray; i++){
+//                            HDRText.append(" "+ String.format("%.4f", HDRArray.get(0)));
+//                            HDRArray.remove(0);
+//                        }
 
-                        HDRArray = getHDRArray(path, getApplicationContext());
-                        HDRText.setText(String.format("%.4f",HDRArray.get(0)));
-                        HDRArray.remove(0);
-                        for (int i= 1; i < loadArray; i++){
-                            HDRText.append(" "+ String.format("%.4f", HDRArray.get(0)));
-                            HDRArray.remove(0);
-                        }
-
-                        LDRText.setText(String.format("%.4f",LDRArray.get(0)));
-                        LDRArray.remove(0);
-                        for (int i= 1; i < loadArray; i++){
-                            LDRText.append(" "+ String.format("%.4f", LDRArray.get(0)));
-                            LDRArray.remove(0);
-                        }
+//                        LDRText.setText(String.format("%.4f",LDRArray.get(0)));
+//                        LDRArray.remove(0);
+//                        for (int i= 1; i < loadArray; i++){
+//                            LDRText.append(" "+ String.format("%.4f", LDRArray.get(0)));
+//                            LDRArray.remove(0);
+//                        }
                     }
                 }
             }
     );
 
-    private ArrayList<Double> to1dArray(double[][][] array2d){
-        ArrayList<Double> retArrayList = new ArrayList<>();;
-        for (double[][] doubles : array2d)
-            for (double[] aDouble : doubles)
-                for (double v : aDouble) retArrayList.add(v);
-        return retArrayList;
-    }
+//    private ArrayList<Double> to1dArray(double[][][] array2d){
+//        ArrayList<Double> retArrayList = new ArrayList<>();;
+//        for (double[][] doubles : array2d)
+//            for (double[] aDouble : doubles)
+//                for (double v : aDouble) retArrayList.add(v);
+//        return retArrayList;
+//    }
     public void openFileDialog(View view){
         Intent data = new Intent(Intent.ACTION_OPEN_DOCUMENT);
         data.setType("*/*");
@@ -182,26 +177,26 @@ public class MainActivity extends AppCompatActivity {
         return res;
     }
 
-    ArrayList<Double> getHDRArray (String path, Context context){ //TODO: might need to put in threaded function
-        pixelArrayTextArray.clear();
-        File file = new File(path); //for HDRtofloatarray
-//        pixelArrayText = "";
-        try {
-            hdrtodoublearray = new HDRtoDoubleArray(file);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        pixelArray = hdrtodoublearray.getPixelArray();
-        width = hdrtodoublearray.getWidth();
-        length = hdrtodoublearray.getHeight();
-
-        //Full array
-        for (double[][] doubles : pixelArray)
-            for (double[] aDouble : doubles)
-                for (double v : aDouble) pixelArrayTextArray.add(v);
-
-        return pixelArrayTextArray;
-    }
+//    ArrayList<Double> getHDRArray (String path, Context context){ //TODO: might need to put in threaded function
+//        pixelArrayTextArray.clear();
+//        File file = new File(path); //for HDRtofloatarray
+////        pixelArrayText = "";
+//        try {
+//            hdrtodoublearray = new HDRtoDoubleArray(file);
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
+//        pixelArray = hdrtodoublearray.getPixelArray();
+//        width = hdrtodoublearray.getWidth();
+//        length = hdrtodoublearray.getHeight();
+//
+//        //Full array
+//        for (double[][] doubles : pixelArray)
+//            for (double[] aDouble : doubles)
+//                for (double v : aDouble) pixelArrayTextArray.add(v);
+//
+//        return pixelArrayTextArray;
+//    }
 
     double[][][] getHDRDoubleArray (String path, Context context){
         pixelArrayTextArray.clear();
@@ -214,8 +209,7 @@ public class MainActivity extends AppCompatActivity {
         }
         width = hdrtodoublearray.getWidth();
         length = hdrtodoublearray.getHeight();
-        double[][][] pixelArray = new double[width][length][3];
-        pixelArray = hdrtodoublearray.getPixelArray();
+        double[][][] pixelArray = hdrtodoublearray.getPixelArray();
         return pixelArray;
     }
     private void createBitMap(double[][][] ldrImg, String path){// your 2D array
@@ -227,7 +221,7 @@ public class MainActivity extends AppCompatActivity {
             directory.mkdirs();
         }
 
-// Create a Bitmap object from the 3D array
+        // Create a Bitmap object from the 3D array
         int width = ldrImg[0].length;
         int height = ldrImg.length;
         Bitmap bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
@@ -238,7 +232,7 @@ public class MainActivity extends AppCompatActivity {
             }
         }
 
-// Save the Bitmap object as a PNG file
+        // Save the Bitmap object as a PNG file
         fileName = fileName + ".png";
         File file = new File(directory, fileName);
         try {

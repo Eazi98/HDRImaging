@@ -1,25 +1,15 @@
 package com.example.hdrimaging;
 
-import static java.lang.Math.abs;
 import static java.lang.Math.atan;
 import static java.lang.Math.exp;
 import static java.lang.Math.floor;
-import static java.lang.Math.log10;
-import static java.lang.Math.max;
-import static java.lang.Math.round;
-import static java.util.Arrays.*;
-import static java.util.Arrays.sort;
+import static java.util.Arrays.stream;
 
-
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 
 
 public class DCA_TMO extends Thread{
 
-    public double[][] hdrLum;
-    public double[][] hdrPQ;
     private int length;
     private int width;
     private static final double eps = Math.pow(2,-52);
@@ -31,7 +21,7 @@ public class DCA_TMO extends Thread{
         double maxhdr;
         double minhdr;
         double hdrMaxValue;
-        double[][][] ldrImg = {};
+        double[][][] ldrImg;
 
         //set parameters
         double K = 55;
@@ -55,10 +45,10 @@ public class DCA_TMO extends Thread{
                         hdrImg[i][j][k] = minhdr;
                     }
                 }
-        //tone map using clustering method
-        hdrLum = new double[length][width];
+        //tone map using clustering methods
+        double[][] hdrLum = new double[length][width];
         double[][] hdrLum1 = new double[length][width];
-        hdrPQ = new double[length][width];
+        double[][] hdrPQ = new double[length][width];
 
         //get max value for hdrLum1 = hdrLum./max(hdrImg(:));  max(hdrImg(:)) value
         hdrMaxValue = hdrImg[0][0][0];
