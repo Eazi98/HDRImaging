@@ -63,9 +63,7 @@ public class MainActivity extends AppCompatActivity {
         com.example.hdrimaging.databinding.ActivityMainBinding binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
         fileLocationText = binding.FileLocationText;
-        imageHDR = binding.imageView;
-//        HDRText = binding.arrayText;
-//        LDRText = binding.arrayText1;
+        imageHDR = binding.convertedImage;
         scrollViewHDR = binding.scrollView;
         scrollViewLDR = binding.scrollView1;
         if (Build.VERSION.SDK_INT >= 30) {
@@ -78,8 +76,6 @@ public class MainActivity extends AppCompatActivity {
         binding.ReadFileButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-//                ChooseFile();
-                //HDRText.setText("");
                 openFileDialog(view);
 
             }
