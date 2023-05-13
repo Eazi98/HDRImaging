@@ -84,17 +84,10 @@ public class DCA_TMO extends Thread{
                 DoGfilter[i][j] = (gfilterC[i][j] - gfilterS[i][j]);
 
         double[][] hdrPQnor = new double[length][width];
-        double hdrPQMax = hdrPQ[0][0];
-        double hdrPQMin = hdrPQ[0][0];
-        /* maybe put into a method */
-        for (double[] doubles : hdrPQ)
-            for (double aDouble : doubles) {
-                if (aDouble > hdrPQMax) {
-                    hdrPQMax = aDouble;
-                } else if (aDouble < hdrPQMin) {
-                    hdrPQMin = aDouble;
-                }
-            }
+
+        double[] hdrPQMaxMin = findMaxAndMinOfArray(hdrPQ);
+        double hdrPQMax = hdrPQMaxMin[0];
+        double hdrPQMin = hdrPQMaxMin[1];
 
         for (int i = 0; i < hdrImg.length; i++)
             for (int j = 0; j < hdrImg[i].length; j++) {
@@ -158,6 +151,20 @@ public class DCA_TMO extends Thread{
         dividedArray = divide3dDouble(minusedArray,(maxx - minn));
         ldrImg = multiply3dDouble(255,dividedArray);
         return ldrImg;
+    }
+
+    private double[] findMaxAndMinOfArray(double[][] array){
+        double max = array[0][0];
+        double min = array[0][0];
+        for (double[] doubles : array)
+            for (double aDouble : doubles) {
+                if (aDouble > max) {
+                    max = aDouble;
+                } else if (aDouble < min) {
+                    min = aDouble;
+                }
+            }
+        return new double[]{max,min};
     }
 
     private double[][][] divide3dDouble(double[][][] array, double value) {
@@ -285,7 +292,8 @@ public class DCA_TMO extends Thread{
         double[][] retArray = new double[length][width];
         //https://towardsdatascience.com/intuitively-understanding-convolutions-for-deep-learning-1f6f42faee1
         //TODO:Check values
-        retArray = Convolution.convolution2DPadded(a,length,width,h,h.length,h.length);
+        //+ 8 to length and width to ensure that the returned array gives correct dimensions
+        retArray = Convolution.convolution2D(a, length+8, width+8,h,h.length,h.length);
         //https://homepages.inf.ed.ac.uk/rbf/HIPR2/flatjavasrc/Convolution.java
         return retArray;
     }

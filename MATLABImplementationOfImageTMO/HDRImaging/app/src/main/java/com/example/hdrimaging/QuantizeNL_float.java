@@ -169,6 +169,7 @@ public class QuantizeNL_float {
         double[][] Vout = new double[length][width];
         sort(X);
         sort(V);
+
         for (int i = 0; i < Xq.length; i++) {
             Vout[i] = linearInterpolation(X,V,Xq[i]);
         }
@@ -177,11 +178,9 @@ public class QuantizeNL_float {
 
     private double[][] to2dArray(double[] array1D) {
         double[][] retArray = new double[length][width];
-        int pixelCounter = 0;
         for (int j = 0; j < length; j++) {
             for (int k = 0; k < width; k++) {
                 retArray[j][k] = array1D[0];
-                pixelCounter += 1;
             }
         }
         return retArray;
