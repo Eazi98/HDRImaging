@@ -1,5 +1,8 @@
 package com.example.hdrimaging;
 
+import static com.example.hdrimaging.DCA_TMO.DCA_TMO_Processing;
+import static java.lang.System.currentTimeMillis;
+
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
@@ -34,16 +37,19 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.lang.reflect.Array;
+import java.sql.Time;
+import java.time.Duration;
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.concurrent.TimeoutException;
 
 public class MainActivity extends AppCompatActivity {
 
     private TextView fileLocationText;
     private ImageView imageHDR;
-//    private TextView HDRText;
-//    private TextView LDRText;
     private ScrollView scrollViewHDR;
     private ScrollView scrollViewLDR;
+    private TextView timeTaken;
     private HDRtoDoubleArray hdrtodoublearray;
     private ArrayList<Double> HDRArray;
     private ArrayList<Double> LDRArray;
@@ -65,7 +71,8 @@ public class MainActivity extends AppCompatActivity {
         fileLocationText = binding.FileLocationText;
         imageHDR = binding.convertedImage;
         scrollViewHDR = binding.scrollView;
-        scrollViewLDR = binding.scrollView1;
+        timeTaken = binding.TimeTakenText;
+        //scrollViewLDR = binding.scrollView1;
         if (Build.VERSION.SDK_INT >= 30) {
             if (!Environment.isExternalStorageManager()) {
                 Intent getpermission = new Intent();
@@ -124,43 +131,33 @@ public class MainActivity extends AppCompatActivity {
                         fileLocationText.setText(path);
 
                         double[][][] HDRDoubleArray = getHDRDoubleArray(path, getApplicationContext());
-                        DCA_TMO DCA_TMO = new DCA_TMO();
-                        double[][][] LDRDoubleArray = DCA_TMO.DCA_TMO_Processing(HDRDoubleArray,length,width);
-                        //LDRArray = to1dArray(LDRDoubleArray);
+
+                        double[][][] LDRDoubleArray = DCATMO(HDRDoubleArray);
+
                         createBitMap(LDRDoubleArray,path);
-
-//                        HDRArray = getHDRArray(path, getApplicationContext());
-//                        HDRText.setText(String.format("%.4f",HDRArray.get(0)));
-//                        HDRArray.remove(0);
-//                        for (int i= 1; i < loadArray; i++){
-//                            HDRText.append(" "+ String.format("%.4f", HDRArray.get(0)));
-//                            HDRArray.remove(0);
-//                        }
-
-//                        LDRText.setText(String.format("%.4f",LDRArray.get(0)));
-//                        LDRArray.remove(0);
-//                        for (int i= 1; i < loadArray; i++){
-//                            LDRText.append(" "+ String.format("%.4f", LDRArray.get(0)));
-//                            LDRArray.remove(0);
-//                        }
                     }
                 }
             }
     );
 
-//    private ArrayList<Double> to1dArray(double[][][] array2d){
-//        ArrayList<Double> retArrayList = new ArrayList<>();;
-//        for (double[][] doubles : array2d)
-//            for (double[] aDouble : doubles)
-//                for (double v : aDouble) retArrayList.add(v);
-//        return retArrayList;
-//    }
+    public double[][][] DCATMO(double[][][] HDRDoubleArray){
+        long startTime = System.nanoTime();
+        double[][][] retArray = DCA_TMO_Processing(HDRDoubleArray, length, width);
+        long endTime = System.nanoTime();
+        long TimeTaken = endTime - startTime;
+        timeTaken.setText(String.valueOf(nanosecondsToSeconds(TimeTaken)));
+        return retArray;
+    }
+
+    public static double nanosecondsToSeconds(long nanoseconds) {
+        double seconds = nanoseconds / 1_000_000_000.0;
+        return seconds;
+    }
     public void openFileDialog(View view){
         Intent data = new Intent(Intent.ACTION_OPEN_DOCUMENT);
         data.setType("*/*");
         data = Intent.createChooser(data, "Choose a file");
         sActivityResultLauncher.launch(data);
-        //arrayText.append(pixelArrayText);
         if (fileLocationText.getText() == ""){
             Snackbar.make(view, "Do not select files from recent!", Snackbar.LENGTH_LONG)
                     .setAction("Action", null).show();

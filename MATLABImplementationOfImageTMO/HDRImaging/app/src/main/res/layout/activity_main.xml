@@ -28,12 +28,9 @@
             android:id="@+id/convertedImage"
             android:layout_width="393dp"
             android:layout_height="287dp"
-            app:layout_constraintBottom_toTopOf="@+id/scrollView"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.333"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/ReadFileButton"
-            app:layout_constraintVertical_bias="0.293"
             app:srcCompat="@drawable/ic_launcher_foreground"
             tools:ignore="ContentDescription,ImageContrastCheck" />
 
@@ -55,7 +52,9 @@
             android:layout_marginBottom="12dp"
             app:layout_constraintBottom_toTopOf="@+id/scrollView1"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent">
+            app:layout_constraintHorizontal_bias="1.0"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/TimeTakenText">
 
             <TextView
                 android:layout_width="match_parent"
@@ -69,28 +68,17 @@
                 android:verticalScrollbarPosition="right" />
         </ScrollView>
 
-        <ScrollView
-            android:id="@+id/scrollView1"
-            android:layout_width="399dp"
-            android:layout_height="109dp"
-
-
-            android:layout_marginBottom="40dp"
-            app:layout_constraintBottom_toBottomOf="parent"
+        <TextView
+            android:id="@+id/TimeTakenText"
+            android:layout_width="370dp"
+            android:layout_height="51dp"
+            android:ems="10"
+            android:importantForAutofill="no"
+            android:text="@string/hdr_file_location"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent">
-
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:ems="10"
-                android:importantForAutofill="no"
-                android:scrollIndicators="right"
-                android:scrollbarStyle="insideOverlay"
-                android:scrollbars="vertical"
-                android:text="@string/hdr_file_location"
-                android:verticalScrollbarPosition="right" />
-        </ScrollView>
+            app:layout_constraintHorizontal_bias="0.487"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/convertedImage" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
