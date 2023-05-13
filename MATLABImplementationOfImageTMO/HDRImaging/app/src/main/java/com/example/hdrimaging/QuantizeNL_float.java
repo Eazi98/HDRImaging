@@ -169,21 +169,18 @@ public class QuantizeNL_float {
         double[][] Vout = new double[length][width];
         sort(X);
         sort(V);
+
         for (int i = 0; i < Xq.length; i++) {
             Vout[i] = linearInterpolation(X,V,Xq[i]);
         }
-
-
         return Vout;
     }
 
     private double[][] to2dArray(double[] array1D) {
         double[][] retArray = new double[length][width];
-        int pixelCounter = 0;
         for (int j = 0; j < length; j++) {
             for (int k = 0; k < width; k++) {
                 retArray[j][k] = array1D[0];
-                pixelCounter += 1;
             }
         }
         return retArray;
@@ -191,24 +188,29 @@ public class QuantizeNL_float {
 
     private static double[] linearInterpolation(double[] x, double[] y, double[] values) {
         double[] interpolatedValues = new double[values.length];
-
+        int n = x.length;
         for (int i = 0; i < values.length; i++) {
             // Find the index of the x value that is closest to the value to interpolate
-            int j = 1;
-            while (j < x.length - 1 && x[j] < values[i]) {
-                j++;
+            if (values[i] < x[0]) {
+                interpolatedValues[i] = y[0];
+            } else if (values[i] > x[n - 1]) {
+                interpolatedValues[i] = y[n - 1];
+            } else {
+                int j = 1;
+                while (j < x.length - 1 && x[j] < values[i]) {
+                    j++;
+                }
+                // Perform linear interpolation using the two closest data points
+                double x1 = x[j - 1];
+                double y1 = y[j - 1];
+                double x2 = x[j];
+                double y2 = y[j];
+                double slope = (y2 - y1) / (x2 - x1);
+                double interpolatedValue = y1 + slope * (values[i] - x1);
+
+                interpolatedValues[i] = interpolatedValue;
             }
-            // Perform linear interpolation using the two closest data points
-            double x1 = x[j - 1];
-            double y1 = y[j - 1];
-            double x2 = x[j];
-            double y2 = y[j];
-            double slope = (y2 - y1) / (x2 - x1);
-            double interpolatedValue = y1 + slope * (values[i] - x1);
-
-            interpolatedValues[i] = interpolatedValue;
         }
-
         return interpolatedValues;
     }
 

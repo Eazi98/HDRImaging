@@ -1,25 +1,15 @@
 package com.example.hdrimaging;
 
-import static java.lang.Math.abs;
 import static java.lang.Math.atan;
 import static java.lang.Math.exp;
 import static java.lang.Math.floor;
-import static java.lang.Math.log10;
-import static java.lang.Math.max;
-import static java.lang.Math.round;
-import static java.util.Arrays.*;
-import static java.util.Arrays.sort;
+import static java.util.Arrays.stream;
 
-
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 
 
 public class DCA_TMO extends Thread{
 
-    public double[][] hdrLum;
-    public double[][] hdrPQ;
     private int length;
     private int width;
     private static final double eps = Math.pow(2,-52);
@@ -31,7 +21,7 @@ public class DCA_TMO extends Thread{
         double maxhdr;
         double minhdr;
         double hdrMaxValue;
-        double[][][] ldrImg = {};
+        double[][][] ldrImg;
 
         //set parameters
         double K = 55;
@@ -55,10 +45,10 @@ public class DCA_TMO extends Thread{
                         hdrImg[i][j][k] = minhdr;
                     }
                 }
-        //tone map using clustering method
-        hdrLum = new double[length][width];
+        //tone map using clustering methods
+        double[][] hdrLum = new double[length][width];
         double[][] hdrLum1 = new double[length][width];
-        hdrPQ = new double[length][width];
+        double[][] hdrPQ = new double[length][width];
 
         //get max value for hdrLum1 = hdrLum./max(hdrImg(:));  max(hdrImg(:)) value
         hdrMaxValue = hdrImg[0][0][0];
@@ -78,6 +68,8 @@ public class DCA_TMO extends Thread{
 
         QuantizeNL_float QuantizeNL_float = new QuantizeNL_float(length, width);
         double[][] labels = QuantizeNL_float.quantizeNL_float(hdrPQ, K, hdrLum);
+        // TODO: Check labels to see when values are off by less than 1
+
         //local enhancement using DoG
         double sigmaC = 0.5;
         double sigmaS = 0.8;
@@ -92,28 +84,21 @@ public class DCA_TMO extends Thread{
                 DoGfilter[i][j] = (gfilterC[i][j] - gfilterS[i][j]);
 
         double[][] hdrPQnor = new double[length][width];
-        double hdrPQMax = hdrPQ[0][0];
-        double hdrPQMin = hdrPQ[0][0];
-        /* maybe put into a method */
-        for (double[] doubles : hdrPQ)
-            for (double aDouble : doubles) {
-                if (aDouble > hdrPQMax) {
-                    hdrPQMax = aDouble;
-                } else if (aDouble < hdrPQMin) {
-                    hdrPQMin = aDouble;
-                }
-            }
+
+        double[] hdrPQMaxMin = findMaxAndMinOfArray(hdrPQ);
+        double hdrPQMax = hdrPQMaxMin[0];
+        double hdrPQMin = hdrPQMaxMin[1];
 
         for (int i = 0; i < hdrImg.length; i++)
             for (int j = 0; j < hdrImg[i].length; j++) {
                 hdrPQnor[i][j] = 255 * (hdrPQ[i][j] - hdrPQMin) / (hdrPQMax - hdrPQMin) + 1;
             }
-        //Correct to here
+
         for (int i = 0; i < hdrImg.length; i++)
             for (int j = 0; j < hdrImg[i].length; j++) {
                 hdrPQnor[i][j] = hdrPQnor[i][j] * 0.35 + labels[i][j] * 0.65;
             }
-
+        //Correct to here
         double[][] labels_DoG = new double[length][width];
         double[][] imfilterArray = imfilter(hdrPQnor, DoGfilter);
         for (int i = 0; i < labels_DoG.length; i++)
@@ -122,7 +107,7 @@ public class DCA_TMO extends Thread{
             }
 
         // color restoration
-        double[][] s1 = new double[length][width];
+        double[][] s1;
         double minLabels_DoG = min2dArray(labels_DoG);
         double maxLabels_DoG = max2dArray(labels_DoG);
 
@@ -162,9 +147,24 @@ public class DCA_TMO extends Thread{
                     }
                 }
         double[][][]minusedArray = array3dMinusDouble(ldrImg_DoG,minn);
-        double[][][] multipliedArray = multiply3dDouble(255,minusedArray);
-        ldrImg = divide3dDouble(multipliedArray,(maxx - minn));
+
+        dividedArray = divide3dDouble(minusedArray,(maxx - minn));
+        ldrImg = multiply3dDouble(255,dividedArray);
         return ldrImg;
+    }
+
+    private double[] findMaxAndMinOfArray(double[][] array){
+        double max = array[0][0];
+        double min = array[0][0];
+        for (double[] doubles : array)
+            for (double aDouble : doubles) {
+                if (aDouble > max) {
+                    max = aDouble;
+                } else if (aDouble < min) {
+                    min = aDouble;
+                }
+            }
+        return new double[]{max,min};
     }
 
     private double[][][] divide3dDouble(double[][][] array, double value) {
@@ -276,11 +276,11 @@ public class DCA_TMO extends Thread{
 
     private double[][] filterDouble2DWithConv(double[][] a, double[][] h, double[] finalSize){
         int[] padSize = new int[] {4,4};
-        double[][] retArray =  new double[length][width];
-        h = rot90(a,2);
-        double[] imageSize = {length, width};
+        double[][] retArray;
+        h = rot90(h,2);
+        //double[] imageSize = {length, width};
         double[] sizeh = new double[] {h.length,h.length};
-        double[] nonSymmetricPadShift = numMinusArray(1,mod(sizeh,2));
+        //double[] nonSymmetricPadShift = numMinusArray(1,mod(sizeh,2));
         a = padarray_algo(a,padSize);
         retArray = conv2(a,h);
 
@@ -292,7 +292,8 @@ public class DCA_TMO extends Thread{
         double[][] retArray = new double[length][width];
         //https://towardsdatascience.com/intuitively-understanding-convolutions-for-deep-learning-1f6f42faee1
         //TODO:Check values
-        retArray = Convolution.convolution2DPadded(a,length,width,h,h.length,h.length);
+        //+ 8 to length and width to ensure that the returned array gives correct dimensions
+        retArray = Convolution.convolution2D(a, length+8, width+8,h,h.length,h.length);
         //https://homepages.inf.ed.ac.uk/rbf/HIPR2/flatjavasrc/Convolution.java
         return retArray;
     }
