@@ -51,17 +51,13 @@ public class MainActivity extends AppCompatActivity {
     private ScrollView scrollViewLDR;
     private TextView timeTaken;
     private HDRtoDoubleArray hdrtodoublearray;
-    private ArrayList<Double> HDRArray;
-    private ArrayList<Double> LDRArray;
     private ArrayList<Double> pixelArrayTextArray = new ArrayList<>();
-    private final int loadArray = 200;
     //double[][][] pixelArray;
     int width;
     int length;
-    int arraySize;
+    double[][][] HDRDoubleArray;
+    double[][][] LDRDoubleArray;
 
-    ActivityResultLauncher<Intent> filePicker;
-    Thread arrayThread = null;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -72,7 +68,6 @@ public class MainActivity extends AppCompatActivity {
         imageHDR = binding.convertedImage;
         scrollViewHDR = binding.scrollView;
         timeTaken = binding.TimeTakenText;
-        //scrollViewLDR = binding.scrollView1;
         if (Build.VERSION.SDK_INT >= 30) {
             if (!Environment.isExternalStorageManager()) {
                 Intent getpermission = new Intent();
@@ -83,6 +78,7 @@ public class MainActivity extends AppCompatActivity {
         binding.ReadFileButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+
                 openFileDialog(view);
 
             }
@@ -116,6 +112,16 @@ public class MainActivity extends AppCompatActivity {
 //            }
 //        });
     }
+    public void openFileDialog(View view){
+        Intent data = new Intent(Intent.ACTION_OPEN_DOCUMENT);
+        data.setType("*/*");
+        data = Intent.createChooser(data, "Choose a file");
+        sActivityResultLauncher.launch(data);
+        if (fileLocationText.getText() == ""){
+            Snackbar.make(view, "Do not select files from recent!", Snackbar.LENGTH_LONG)
+                    .setAction("Action", null).show();
+        }
+    }
 
     ActivityResultLauncher<Intent> sActivityResultLauncher = registerForActivityResult(
             new ActivityResultContracts.StartActivityForResult(),
@@ -130,11 +136,13 @@ public class MainActivity extends AppCompatActivity {
                         String path = getFileName(uri, getApplicationContext());
                         fileLocationText.setText(path);
 
-                        double[][][] HDRDoubleArray = getHDRDoubleArray(path, getApplicationContext());
-
-                        double[][][] LDRDoubleArray = DCATMO(HDRDoubleArray);
+                        HDRDoubleArray = getHDRDoubleArray(path);
+                        LDRDoubleArray = DCATMO(HDRDoubleArray);
 
                         createBitMap(LDRDoubleArray,path);
+
+                        HDRDoubleArray = null;
+                        LDRDoubleArray = null;
                     }
                 }
             }
@@ -153,27 +161,15 @@ public class MainActivity extends AppCompatActivity {
         double seconds = nanoseconds / 1_000_000_000.0;
         return seconds;
     }
-    public void openFileDialog(View view){
-        Intent data = new Intent(Intent.ACTION_OPEN_DOCUMENT);
-        data.setType("*/*");
-        data = Intent.createChooser(data, "Choose a file");
-        sActivityResultLauncher.launch(data);
-        if (fileLocationText.getText() == ""){
-            Snackbar.make(view, "Do not select files from recent!", Snackbar.LENGTH_LONG)
-                    .setAction("Action", null).show();
-        }
-    }
 
     String getFileName (Uri uri, Context context){
-        String res = null;
-        res = RealPathUtil.getRealPath(context,uri);
-        return res;
+        String realPath = RealPathUtil.getRealPath(context, uri);
+        return realPath;
     }
 
-    double[][][] getHDRDoubleArray (String path, Context context){
+    double[][][] getHDRDoubleArray (String path){
         pixelArrayTextArray.clear();
         File file = new File(path); //for HDRtofloatarray
-//        pixelArrayText = "";
         try {
             hdrtodoublearray = new HDRtoDoubleArray(file);
         } catch (IOException e) {
@@ -181,8 +177,7 @@ public class MainActivity extends AppCompatActivity {
         }
         width = hdrtodoublearray.getWidth();
         length = hdrtodoublearray.getHeight();
-        double[][][] pixelArray = hdrtodoublearray.getPixelArray();
-        return pixelArray;
+        return hdrtodoublearray.getPixelArray();
     }
     private void createBitMap(double[][][] ldrImg, String path){// your 2D array
         File folder = new File(path).getParentFile();
