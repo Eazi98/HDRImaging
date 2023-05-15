@@ -117,7 +117,6 @@ public class QuantizeNL_float {
         double[] lum01d = reshape1D(lum0,numel(lum0));
         mdata[0] = min(lum01d)[0];
         mdata[mdata.length-1] = max(lum01d)[0];
-        //TODO: Check mdata values
         double[][] ind;
         for (int i=1; i<=nclust-1; i++) {
             if (lum1D[(int) edges[i]-1] == lum1D[(int) edges[i + 1]-1]) {
@@ -222,7 +221,6 @@ public class QuantizeNL_float {
         return retArray;
     }
 
-    //TODO: CHECK if this is correct
     private double[] getIndexValuesToArray(double[][] lum0, double[][] ind) {
         List<Double> retArray = new ArrayList<>();
         for (int i = 0; i < ind.length; i++)

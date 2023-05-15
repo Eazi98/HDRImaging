@@ -68,7 +68,6 @@ public class DCA_TMO extends Thread{
 
         QuantizeNL_float QuantizeNL_float = new QuantizeNL_float(length, width);
         double[][] labels = QuantizeNL_float.quantizeNL_float(hdrPQ, K, hdrLum);
-        // TODO: Check labels to see when values are off by less than 1
 
         //local enhancement using DoG
         double sigmaC = 0.5;
@@ -291,9 +290,9 @@ public class DCA_TMO extends Thread{
     private static double[][] conv2(double[][] a, double[][] h) {
         double[][] retArray = new double[length][width];
         //https://towardsdatascience.com/intuitively-understanding-convolutions-for-deep-learning-1f6f42faee1
-        //TODO:Check values
         //+ 8 to length and width to ensure that the returned array gives correct dimensions
-        retArray = Convolution.convolution2D(a, length+8, width+8,h,h.length,h.length);
+        int padding = h.length;
+        retArray = Convolution.convolution2D(a, length+(padding-1), width+(padding-1),h,padding,padding);
         //https://homepages.inf.ed.ac.uk/rbf/HIPR2/flatjavasrc/Convolution.java
         return retArray;
     }

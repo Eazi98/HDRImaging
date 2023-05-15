@@ -170,27 +170,6 @@ public class MainActivity extends AppCompatActivity {
         return res;
     }
 
-//    ArrayList<Double> getHDRArray (String path, Context context){ //TODO: might need to put in threaded function
-//        pixelArrayTextArray.clear();
-//        File file = new File(path); //for HDRtofloatarray
-////        pixelArrayText = "";
-//        try {
-//            hdrtodoublearray = new HDRtoDoubleArray(file);
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
-//        pixelArray = hdrtodoublearray.getPixelArray();
-//        width = hdrtodoublearray.getWidth();
-//        length = hdrtodoublearray.getHeight();
-//
-//        //Full array
-//        for (double[][] doubles : pixelArray)
-//            for (double[] aDouble : doubles)
-//                for (double v : aDouble) pixelArrayTextArray.add(v);
-//
-//        return pixelArrayTextArray;
-//    }
-
     double[][][] getHDRDoubleArray (String path, Context context){
         pixelArrayTextArray.clear();
         File file = new File(path); //for HDRtofloatarray
