@@ -118,10 +118,7 @@ public class DCA_TMO extends Thread{
         double[][][] dividedArray = divide3dArray2dArray(hdrImg,hdrLum);
         double[][][] powArray = pow3d2d(dividedArray, s);
         double[][][] ldrImg_DoG = multiply3d2d(powArray, labels_DoG);
-        double[] ldrImg_DoG1D = stream(ldrImg_DoG)
-                .flatMap(Arrays::stream)
-                .flatMapToDouble(Arrays::stream)
-                .toArray();
+        double[] ldrImg_DoG1D = to1dArray(ldrImg_DoG);
         MaxQuart maxQuart = new MaxQuart();
         double maxx = maxQuart.maxQuart(ldrImg_DoG1D, 0.99);
         double minn = maxQuart.maxQuart(ldrImg_DoG1D, 0.01);
@@ -152,6 +149,22 @@ public class DCA_TMO extends Thread{
         return ldrImg;
     }
 
+    private static double[] to1dArray(double[][][] array) {
+        double[] retArray = new double[array.length * array[0].length * array[0][0].length];
+        int index = 0;
+
+        for (int i = 0; i < array.length; i++) {
+            for (int j = 0; j < array[i].length; j++) {
+                for (int k = 0; k < array[i][j].length; k++) {
+                    retArray[index] = array[i][j][k];
+                    index++;
+                }
+            }
+        }
+
+        return retArray;
+    }
+
     private static double[] findMaxAndMinOfArray(double[][] array){
         double max = array[0][0];
         double min = array[0][0];
@@ -167,48 +180,48 @@ public class DCA_TMO extends Thread{
     }
 
     private static double[][][] divide3dDouble(double[][][] array, double value) {
-        double[][][] retArray = new double[array.length][array[0].length][array[0][0].length];
+        //double[][][] retArray = new double[array.length][array[0].length][array[0][0].length];
         for (int i = 0; i < array.length; i++)
             for (int j = 0; j < array[i].length; j++)
                 for (int k = 0; k < array[i][j].length; k++)
-                    retArray[i][j][k] = array[i][j][k] / value;
-        return retArray;
+                    array[i][j][k] = array[i][j][k] / value;
+        return array;
     }
 
     private static double[][][] multiply3dDouble(int value, double[][][] array) {
-        double[][][] retArray = new double[array.length][array[0].length][array[0][0].length];
+        //double[][][] retArray = new double[array.length][array[0].length][array[0][0].length];
         for (int i = 0; i < array.length; i++)
             for (int j = 0; j < array[i].length; j++)
                 for (int k = 0; k < array[i][j].length; k++)
-                    retArray[i][j][k] = array[i][j][k] * value;
-        return retArray;
+                    array[i][j][k] = array[i][j][k] * value;
+        return array;
     }
 
     private static double[][][] array3dMinusDouble(double[][][] array, double minn) {
-        double[][][] retArray = new double[array.length][array[0].length][array[0][0].length];
+        //double[][][] retArray = new double[array.length][array[0].length][array[0][0].length];
         for (int i = 0; i < array.length; i++)
             for (int j = 0; j < array[i].length; j++)
                 for (int k = 0; k < array[i][j].length; k++)
-                    retArray[i][j][k] = array[i][j][k] - minn;
-        return retArray;
+                    array[i][j][k] = array[i][j][k] - minn;
+        return array;
     }
 
     private static double[][][] multiply3d2d(double[][][] array, double[][] multiplyBy) {
-        double[][][] retArray = new double[array.length][array[0].length][array[0][0].length];
+        //double[][][] retArray = new double[array.length][array[0].length][array[0][0].length];
         for (int i = 0; i < array.length; i++)
             for (int j = 0; j < array[i].length; j++)
                 for (int k = 0; k < array[0][0].length; k++)
-                    retArray[i][j][k] = array[i][j][k] * multiplyBy[i][j];
-        return retArray;
+                    array[i][j][k] = array[i][j][k] * multiplyBy[i][j];
+        return array;
     }
 
     private static double[][][] pow3d2d(double[][][] array, double[][] power) {
-        double[][][] retArray = new double[array.length][array[0].length][array[0][0].length];
+        //double[][][] retArray = new double[array.length][array[0].length][array[0][0].length];
         for (int i = 0; i < array.length; i++)
             for (int j = 0; j < array[i].length; j++)
                 for (int k = 0; k < array[0][0].length; k++)
-                    retArray[i][j][k] = Math.pow(array[i][j][k],power[i][j]);
-        return retArray;
+                    array[i][j][k] = Math.pow(array[i][j][k],power[i][j]);
+        return array;
     }
 
     private static double[][][] divide3dArray2dArray(double[][][] array, double[][] divideBy) {
@@ -352,24 +365,24 @@ public class DCA_TMO extends Thread{
         return retArray;
     }
 
-    private double[] numMinusArray(int num, double[] mod) {
-        double[] retArray = new double[mod.length];
-        for (int i = 0; i< mod.length; i++){
-            retArray[i] = num - mod[i];
-        }
-        return retArray;
-    }
-
-    private double[] mod(double[] doubles, int y) {
-        double x1 = doubles[0];
-        double x2 = doubles[1];
-        double[] retArray = new double[doubles.length];
-        for (int i= 0; i < doubles.length; i++)
-            retArray[i] = doubles[i]- floor(doubles[i]/y)*y;
-
-        return retArray;
-
-    }
+//    private double[] numMinusArray(int num, double[] mod) {
+//        double[] retArray = new double[mod.length];
+//        for (int i = 0; i< mod.length; i++){
+//            retArray[i] = num - mod[i];
+//        }
+//        return retArray;
+//    }
+//
+//    private double[] mod(double[] doubles, int y) {
+//        double x1 = doubles[0];
+//        double x2 = doubles[1];
+//        double[] retArray = new double[doubles.length];
+//        for (int i= 0; i < doubles.length; i++)
+//            retArray[i] = doubles[i]- floor(doubles[i]/y)*y;
+//
+//        return retArray;
+//
+//    }
 
     private static double[][] rot90(double[][] arr1, int times) {
         int d = arr1.length;
