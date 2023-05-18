@@ -1,7 +1,6 @@
 package com.example.hdrimaging;
 
 import static com.example.hdrimaging.DCA_TMO.DCA_TMO_Processing;
-import static java.lang.System.currentTimeMillis;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
@@ -9,15 +8,11 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Color;
-import android.graphics.ColorSpace;
-import android.graphics.ImageDecoder;
-import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.Settings;
-import android.text.method.ScrollingMovementMethod;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.ScrollView;
@@ -33,15 +28,9 @@ import com.example.hdrimaging.databinding.ActivityMainBinding;
 import com.google.android.material.snackbar.Snackbar;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.lang.reflect.Array;
-import java.sql.Time;
-import java.time.Duration;
 import java.util.ArrayList;
-import java.util.Date;
-import java.util.concurrent.TimeoutException;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -51,13 +40,16 @@ public class MainActivity extends AppCompatActivity {
     private ScrollView scrollViewLDR;
     private TextView timeTaken;
     private HDRtoDoubleArray hdrtodoublearray;
-    private ArrayList<Double> pixelArrayTextArray = new ArrayList<>();
-    //double[][][] pixelArray;
     int width;
     int length;
     double[][][] HDRDoubleArray;
     double[][][] LDRDoubleArray;
 
+    static {
+        System.loadLibrary("hdrimaging");
+    }
+
+    public native double[][][] DCATMO(double[][][] HDRDoubleArray,int length, int width, int depth);
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -136,12 +128,12 @@ public class MainActivity extends AppCompatActivity {
                         String path = getFileName(uri, getApplicationContext());
                         fileLocationText.setText(path);
 
-                        HDRDoubleArray = getHDRDoubleArray(path);
-                        LDRDoubleArray = DCATMO(HDRDoubleArray);
+                        //HDRDoubleArray = getHDRDoubleArray(path);
+                        LDRDoubleArray = DCATMO(getHDRDoubleArray(path));
 
                         createBitMap(LDRDoubleArray,path);
 
-                        HDRDoubleArray = null;
+                        //HDRDoubleArray = null;
                         LDRDoubleArray = null;
                     }
                 }
@@ -168,7 +160,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
     double[][][] getHDRDoubleArray (String path){
-        pixelArrayTextArray.clear();
         File file = new File(path); //for HDRtofloatarray
         try {
             hdrtodoublearray = new HDRtoDoubleArray(file);

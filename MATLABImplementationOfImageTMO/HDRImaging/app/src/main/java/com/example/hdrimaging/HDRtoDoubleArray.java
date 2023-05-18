@@ -42,24 +42,24 @@ public class HDRtoDoubleArray { //https://github.com/aicp7/HDR_file_readin/blob/
         return height;
     }
 
-    public double[][] getLumArray() {
-        return lum;
-    }
+//    public double[][] getLumArray() {
+//        return lum;
+//    }
 
     public double[][][] getPixelArray() {
         return pixels;
     }
-
-    public double getLummax() {
-        return lummax;
-    }
-    public double getLummin() {
-        return lummin;
-    }
-
-    public double getLummean() {
-        return lummean;
-    }
+//
+//    public double getLummax() {
+//        return lummax;
+//    }
+//    public double getLummin() {
+//        return lummin;
+//    }
+//
+//    public double getLummean() {
+//        return lummean;
+//    }
     //Construction method if the input is a file.
     public HDRtoDoubleArray(File file) throws IOException{
         if (file==null)
