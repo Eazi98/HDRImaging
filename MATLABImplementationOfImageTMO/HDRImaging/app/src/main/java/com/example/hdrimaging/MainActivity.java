@@ -39,6 +39,7 @@ public class MainActivity extends AppCompatActivity {
     private ScrollView scrollViewHDR;
     private ScrollView scrollViewLDR;
     private TextView timeTaken;
+    private TextView timeTakenC;
     private HDRtoDoubleArray hdrtodoublearray;
     int width;
     int length;
@@ -60,6 +61,7 @@ public class MainActivity extends AppCompatActivity {
         imageHDR = binding.convertedImage;
         scrollViewHDR = binding.scrollView;
         timeTaken = binding.TimeTakenText;
+        timeTakenC = binding.TimeTakenCText;
         if (Build.VERSION.SDK_INT >= 30) {
             if (!Environment.isExternalStorageManager()) {
                 Intent getpermission = new Intent();
@@ -141,11 +143,21 @@ public class MainActivity extends AppCompatActivity {
     );
 
     public double[][][] DCATMO(double[][][] HDRDoubleArray){
+
+        //Java interpretation
         long startTime = System.nanoTime();
         double[][][] retArray = DCA_TMO_Processing(HDRDoubleArray, length, width);
         long endTime = System.nanoTime();
         long TimeTaken = endTime - startTime;
         timeTaken.setText(String.valueOf(nanosecondsToSeconds(TimeTaken)));
+
+        //C interpretation
+        startTime = System.nanoTime();
+        double[][][] retArrayC = DCATMO(HDRDoubleArray, HDRDoubleArray.length, HDRDoubleArray[0].length, HDRDoubleArray[0][0].length);
+        endTime = System.nanoTime();
+        TimeTaken = endTime - startTime;
+        timeTakenC.setText(String.valueOf(nanosecondsToSeconds(TimeTaken)));
+
         return retArray;
     }
 

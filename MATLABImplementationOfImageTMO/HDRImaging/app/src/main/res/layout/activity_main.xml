@@ -49,10 +49,8 @@
             android:id="@+id/scrollView"
             android:layout_width="399dp"
             android:layout_height="113dp"
-            android:layout_marginBottom="12dp"
-            app:layout_constraintBottom_toTopOf="@+id/scrollView1"
+            android:layout_marginTop="64dp"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="1.0"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/TimeTakenText">
 
@@ -79,6 +77,18 @@
             app:layout_constraintHorizontal_bias="0.487"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/convertedImage" />
+
+        <TextView
+            android:id="@+id/TimeTakenCText"
+            android:layout_width="370dp"
+            android:layout_height="51dp"
+            android:ems="10"
+            android:importantForAutofill="no"
+            android:text="@string/hdr_file_location"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.487"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/TimeTakenText" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

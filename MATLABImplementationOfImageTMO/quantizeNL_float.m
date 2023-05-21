@@ -49,6 +49,7 @@ for i = 1 : nclust-1
         e2 = ssn - ssm - (sn - sm)^2/(n-m);
         d = 2 * d;
         if(abs(e1-e2) < 0.001 || d >= n)
+            test = lum(k+1:k+m);
             lum1 = median(lum(k+1:k+m)); 
             delta1 = 10.^tvi(log10(lum1));
 
