@@ -1,9 +1,9 @@
 #include <jni.h>
-#include <cstdio>
-#include <cstdlib>
-#include <ctime>
-#include <cmath>
-#include <cstring>
+#include <stdio.h>
+#include <stdlib.h>
+#include <time.h>
+#include <math.h>
+#include <string.h>
 
 
 
@@ -29,17 +29,41 @@ double * powArray(double *pDouble, int length);
 
 double * RangeArray(double *pDouble, double d, double d1);
 
-extern "C" jobjectArray
+double median(double *pDouble, int i);
+
+double tvi(double log);
+
+int find(double intensity, double i, double i1, double d, double i2);
+
+double *doubleMinusArray(double value, double *pDouble);
+
+double *absMatrix(double *pDouble);
+
+double *min(double *pDouble);
+
+double *linspace(int i, int i1, int i2);
+
+double **matrixBoolean1(double **pDouble, double d, double d1, int length, int width);
+
+double **matrixBoolean(double **pDouble, double d, int length, int width);
+
+double *getIndexValuesToArray(double **pDouble, double **pDouble1, int length, int width);
+
+double *AppendErrors(double *pDouble, double e1, double e2, double *pDouble1);
+
+double *AppendEdges(double *pDouble, int i, double *pDouble1);
+
+jobjectArray
 Java_com_example_hdrimaging_MainActivity_DCATMO(JNIEnv *env, jobject thiz,
                                                   jobjectArray hdrdouble_array, jint length,
                                                   jint width, jint depth) {
 
     // Get the dimensions of the Java array
-    jsize depthA = (*env).GetArrayLength(hdrdouble_array);
-    jobjectArray subArray = (jobjectArray) (*env).GetObjectArrayElement( hdrdouble_array, 0);
-    jsize rows = (*env).GetArrayLength(subArray);
-    jdoubleArray innerArray = (jdoubleArray) (*env).GetObjectArrayElement(subArray, 0);
-    jsize cols = (*env).GetArrayLength(innerArray);
+    jsize depthA = (*env)->GetArrayLength((JNIEnv *) *env, hdrdouble_array);
+    jobjectArray subArray = (jobjectArray) (*env)->GetObjectArrayElement( (JNIEnv *) *env,hdrdouble_array, 0);
+    jsize rows = (*env)->GetArrayLength((JNIEnv *) *env,subArray);
+    jdoubleArray innerArray = (jdoubleArray) (*env)->GetObjectArrayElement((JNIEnv *) *env,subArray, 0);
+    jsize cols = (*env)->GetArrayLength((JNIEnv *) *env,innerArray);
 
     // Allocate memory for the C array
     double*** cArray = (double***) malloc(depth * sizeof(double**));
@@ -52,14 +76,14 @@ Java_com_example_hdrimaging_MainActivity_DCATMO(JNIEnv *env, jobject thiz,
 
     // Retrieve elements from the Java array and assign them to the C array
     for (jsize i = 0; i < depth; i++) {
-        subArray = (jobjectArray) (*env).GetObjectArrayElement(hdrdouble_array, i);
+        subArray = (jobjectArray) (*env)->GetObjectArrayElement((JNIEnv *) *env,hdrdouble_array, i);
         for (jsize j = 0; j < rows; j++) {
-            innerArray = (jdoubleArray) (*env).GetObjectArrayElement(subArray, j);
-            jdouble* values = (*env).GetDoubleArrayElements(innerArray, NULL);
+            innerArray = (jdoubleArray) (*env)->GetObjectArrayElement((JNIEnv *) *env,subArray, j);
+            jdouble* values = (*env)->GetDoubleArrayElements((JNIEnv *) *env,innerArray, NULL);
             for (jsize k = 0; k < cols; k++) {
                 cArray[i][j][k] = values[k];
             }
-            (*env).ReleaseDoubleArrayElements(innerArray, values, 0);
+            (*env)->ReleaseDoubleArrayElements((JNIEnv *) *env,innerArray, values, 0);
         }
     }
 
@@ -130,6 +154,7 @@ jobjectArray DCA_TMO(double*** hdrImg, jint length, jint width, jint depth) {
 //Start of QuantizeNL_Float
 
 double** QuantizeNL_float(double** y, double nclust, double** lum, int length, int width) {
+
     double** labels = (double**)malloc(length * sizeof(double*));
     int i, j;
     for (i = 0; i < length; i++) {
@@ -154,7 +179,7 @@ double** QuantizeNL_float(double** y, double nclust, double** lum, int length, i
     qsort(y1D, y1D_n, sizeof(double), compare);
 
     int y1DLength = numel(y, length, width);
-    int edges[2] = {0, y1DLength};
+    double *edges = {0, y1DLength};
     double errorsPow[y1DLength];
     double meanOfY = mean(y1D, y1DLength);
     for (int i = 0; i < y1DLength; i++){
@@ -193,16 +218,135 @@ double** QuantizeNL_float(double** y, double nclust, double** lum, int length, i
             d = 2 * d;
             if(fabs(e1-e2) < 0.001 || d >= n) {
                 double * lum1Range = RangeArray(lum1D, (k+1-1), (k + m-1));
-                double lum1 = median(lum1Range, /*add length here*/);
+                double lum1 = median(lum1Range, (int)(sizeof(lum1Range) / sizeof(lum1Range[0])));
                 double lum1log = log10(lum1);
-                TVI tvi = new TVI();
-                double tvilum1 = tvi.tvi(new double[]{lum1log});
-                double delta1 = Math.pow(10, tvilum1);
+                double tvilum1 = tvi(lum1log);
+                double delta1 = pow(10, tvilum1);
+
+                double * lum2Range = RangeArray(lum1D, (k + m +1-1), (k + n-1));
+                double lum2 = median(lum2Range,(int)(sizeof(lum2Range) / sizeof(lum2Range[0])));
+                double lum2log = log10(lum2);
+                double tvilum2 = tvi(lum2log);
+                double delta2 = pow(10, tvilum2);
+                double value = delta1/(delta1+delta2) * (lum1D[(int) (k+n -1)] - lum1D[(int) (k)]) + lum1D[(int) (k)];
+                double * absValue = doubleMinusArray(value, RangeArray(lum1D, (int) (k), (int) (k+n-1)));
+                double * absMatrixValue = absMatrix(absValue);
+
+                double * values = min(absMatrixValue);
+                double lum_loc = values[1];
+                m = lum_loc;
+                sm = s_data[(int) (k + m)];
+                if (k >= 1)
+                    sm = sm - s_data[(int) k-1];
+                ssm = ss_data[(int) (k + m)];
+                if (k >= 1)
+                    ssm = ssm - ss_data[(int) k-1];
+                e1 = ssm - pow(sm, 2.0) / (m+1);
+                e2 = ssn - ssm - pow((sn - sm), 2.0) / (n - (m+1));
+                edges = AppendEdges(RangeArray(edges,0, idx),(int)(k+m+1),RangeArray(edges,  (idx+1), sizeof(edges)/sizeof(edges[0]) - 1));
+                errors = AppendErrors(RangeArray(errors,0, (int) (idx-1)),e1,e2,RangeArray(errors, (int) (idx+1),sizeof(errors)/sizeof(errors[0]) - 1));
+                break;
+            }
+            else{
+                if(e1 > e2)
+                    m = m-floor(n/d);
+                else if(e1 < e2)
+                    m = m+floor(n/d);
             }
         }
     }
 
+    double mdata[(int) nclust];
+    double * lum01d = reshape1D(lum, length, width,numel(lum, length, width));
+    mdata[0] = min(lum01d)[0];
+    mdata[(int) nclust - 1] = max(lum01d,numel(lum, length, width))[0];
+    double ** ind;
+    for (int i=1; i<=nclust-1; i++) {
+        if (lum1D[(int) edges[i]-1] == lum1D[(int) edges[i + 1]-1]) {
+            ind = matrixBoolean(lum, lum1D[(int) edges[i]], length, width); //(lum0==lum[(int) edges[i]]);
+            double * lum0Ind = getIndexValuesToArray(lum, ind, length, width);
+            mdata[i] = mean(lum0Ind, sizeof (lum0Ind)) + pow(2,-52) * i;
+        } else {
+            ind = matrixBoolean1(lum, lum1D[(int) edges[i]-1], lum1D[(int) edges[i + 1]-1], length, width);
+            double * lum0Ind = getIndexValuesToArray(lum, ind, length, width);
+
+            mdata[i] = mean(lum0Ind, length*width);
+        }
+    }
+    double * labels_mdata = linspace(1,256,(int)nclust);
+    labels = (double **) interp1(mdata, labels_mdata, lum); //Done in main
+
     return labels;
+}
+
+double *min(double *absMatrix) {
+    int length =  sizeof(absMatrix) / sizeof(absMatrix[0]);
+    double min = absMatrix[0];
+    double index = 0;
+    for (int i = 0; i < length; i++)
+    {
+        if (min > absMatrix[i])
+        {
+            min = absMatrix[i];
+            index = i;
+        }
+    }
+    double ret[2] = {min, index};
+    return ret;
+}
+double tvi(double intensity) {
+    double threshold;
+    int idx = find(intensity, 0 ,4,-3.94,0);
+    if (idx == 1)
+    {
+        threshold = -2.86;
+    }
+    idx = find(intensity,3,0,-3.94,-1.44);
+    if (idx == 1)
+    {
+        double value =(0.405 * intensity + 1.6);
+        threshold = pow(value,2.18) - 2.86;
+    }
+    idx = find(intensity,3,0,-1.44,-0.0184);
+    if (idx == 1)
+    {
+        threshold = intensity - 0.395;
+    }
+    idx = find(intensity, 3,0,-0.0184,1.9);
+    if (idx == 1)
+    {
+        double value =0.249 * intensity + 0.65;
+        threshold = pow(value,2.7) - 0.72;
+    }
+    idx = find(intensity,3,4, 1.9,0);
+    if (idx == 1)
+    {
+        threshold = intensity - 1.255;
+    }
+    threshold = threshold - 0.95;
+    return threshold;
+}
+
+int find(double intensity, double check1, double check2, double value1, double value2) {
+    int indexes;
+    for (int i = 0; i < 1; i++) {
+        if (check1 == 0 && check2 == 4) {
+            if (intensity < value1) {
+                indexes = 1;
+            }
+        }
+        if (check1 == 3 && check2 == 0) {
+            if (intensity >= value1 && intensity < value2) {
+                indexes = 1;
+            }
+        }
+        if (check1 == 3 && check2 == 4) {
+            if (intensity >= value1) {
+                indexes = 1;
+            }
+        }
+    }
+    return indexes;
 }
 
 int compare(const void* a, const void* b) {
@@ -218,7 +362,8 @@ int compare(const void* a, const void* b) {
     return 0;
 }
 
-double* linspace(double min, double max, int points) {
+
+double *linspace(int min, int max, int points) {
     double* retArray = (double*)malloc(points * sizeof(double));
     int i;
     for (i = 0; i < points; i++) {
@@ -227,7 +372,7 @@ double* linspace(double min, double max, int points) {
     return retArray;
 }
 
-double* getIndexValuesToArray(double** lum0, double** ind, int rows, int cols) {
+double *getIndexValuesToArray(double **lum0, double **ind, int rows, int cols) {
     double* retArray = NULL;
     int retSize = 0;
 
@@ -244,13 +389,12 @@ double* getIndexValuesToArray(double** lum0, double** ind, int rows, int cols) {
 
     return retArray;
 }
-
-double** matrixBoolean(double** array, double valueToCheck, int rows, int cols) {
-    double** retArray = (double**)malloc(rows * sizeof(double*));
+double **matrixBoolean(double** array, double valueToCheck, int length, int width) {
+    double** retArray = (double**)malloc(length * sizeof(double*));
     int i, j;
-    for (i = 0; i < rows; i++) {
-        retArray[i] = (double*)malloc(cols * sizeof(double));
-        for (j = 0; j < cols; j++) {
+    for (i = 0; i < length; i++) {
+        retArray[i] = (double*)malloc(width * sizeof(double));
+        for (j = 0; j < width; j++) {
             if (array[i][j] == valueToCheck) {
                 retArray[i][j] = 1;
             } else {
@@ -261,7 +405,7 @@ double** matrixBoolean(double** array, double valueToCheck, int rows, int cols) 
     return retArray;
 }
 
-double** matrixBoolean1(double** array, double valueToCheck1, double valueToCheck2, int rows, int cols) {
+double **matrixBoolean1(double** array, double valueToCheck1, double valueToCheck2, int rows, int cols) {
     double** retArray = (double**)malloc(rows * sizeof(double*));
     int i, j;
     for (i = 0; i < rows; i++) {
@@ -277,7 +421,9 @@ double** matrixBoolean1(double** array, double valueToCheck1, double valueToChec
     return retArray;
 }
 
-double* AppendEdges(double* rangeArray, double value, double* rangeArray1, int length1, int length2) {
+double *AppendEdges(double *rangeArray, int value, double *rangeArray1) {
+    int length1 = sizeof(rangeArray)/ sizeof(rangeArray[0]);
+    int length2 = sizeof(rangeArray1)/ sizeof(rangeArray1[0]);
     int resultLength = length1 + length2 + 1;
     double* result = (double*)malloc(resultLength * sizeof(double));
     memcpy(result, rangeArray, length1 * sizeof(double));
@@ -286,7 +432,9 @@ double* AppendEdges(double* rangeArray, double value, double* rangeArray1, int l
     return result;
 }
 
-double* AppendErrors(double* rangeArray, double e1, double e2, double* rangeArray1, int length1, int length2) {
+double *AppendErrors(double *rangeArray, double e1, double e2, double *rangeArray1) {
+    int length1 = sizeof(rangeArray)/ sizeof(rangeArray[0]);
+    int length2 = sizeof(rangeArray1)/ sizeof(rangeArray1[0]);
     int resultLength = length1 + length2 + 2;
     double* result = (double*)malloc(resultLength * sizeof(double));
     memcpy(result, rangeArray, length1 * sizeof(double));
@@ -307,16 +455,20 @@ double* RangeArray(double *lum, double indexStart, double indexEnd) {
     return rangeArray;
 }
 
-void absMatrix(double* absValue, int length) {
+double *absMatrix(double *absValue) {
+    int length = sizeof(absValue) / sizeof(absValue[0]);
     for (int i = 0; i < length; i++) {
         absValue[i] = fabs(absValue[i]);
     }
+    return absValue;
 }
 
-void doubleMinusArray(double value, double* rangeArray, int length) {
+double *doubleMinusArray(double value, double *rangeArray) {
+    int length =  sizeof(rangeArray) / sizeof(rangeArray[0]);
     for (int i = 0; i < length; i++) {
         rangeArray[i] = value - rangeArray[i];
     }
+    return rangeArray;
 }
 
 int numel(double **array, int length, int width) {
@@ -376,7 +528,8 @@ double *powArray(double *array, int length) {
     return retArray;
 }
 
-double median(double* array, int length) {
+
+double median(double * array, int length) {
     double m = 0;
     int n = length;
 
