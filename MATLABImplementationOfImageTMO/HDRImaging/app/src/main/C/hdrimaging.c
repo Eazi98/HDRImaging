@@ -53,6 +53,15 @@ double *AppendErrors(double *pDouble, double e1, double e2, double *pDouble1);
 
 double *AppendEdges(double *pDouble, int i, double *pDouble1);
 
+double **QuantizeNL_float(double **pDouble, double k, double **pDouble1, jint length, jint width);
+
+double **interp1(double pDouble[], double *pDouble1, double **pDouble2, jint i, jint i1);
+
+int compare (const void * a, const void * b);
+
+
+double *linearInterpolation(double *pDouble, double *pDouble1, double *pDouble2);
+
 jobjectArray
 Java_com_example_hdrimaging_MainActivity_DCATMO(JNIEnv *env, jobject thiz,
                                                   jobjectArray hdrdouble_array, jint length,
@@ -116,9 +125,9 @@ jobjectArray DCA_TMO(double*** hdrImg, jint length, jint width, jint depth) {
     }
 
     //tone map using clustering methods
-    double hdrLum[length][width];
+    double **hdrLum;
     double hdrLum1[length][width];
-    double hdrPQ[length][width];
+    double **hdrPQ;
     //get max value for hdrLum1 = hdrLum./max(hdrImg(:));  max(hdrImg(:)) value
     double hdrMaxValue = hdrImg[0][0][0];
     for (int i = 0; i < length; i++) {
@@ -144,16 +153,15 @@ jobjectArray DCA_TMO(double*** hdrImg, jint length, jint width, jint depth) {
 
     //Continue from here
     double** labels;
-    labels = QuantizeNL_float(hdrPQ, K, hdrLum);
+    labels = QuantizeNL_float(hdrPQ, K, hdrLum, length, width);
     return 0;
 
 
 }
 
-
 //Start of QuantizeNL_Float
 
-double** QuantizeNL_float(double** y, double nclust, double** lum, int length, int width) {
+double **QuantizeNL_float(double **y, double nclust, double **lum, jint length, jint width) {
 
     double** labels = (double**)malloc(length * sizeof(double*));
     int i, j;
@@ -170,7 +178,6 @@ double** QuantizeNL_float(double** y, double nclust, double** lum, int length, i
     double* lum1D;
     lum1D = reshape1D(lum, length, width, numelLum);
     size_t lum1D_n = sizeof(lum1D) / sizeof(lum1D[0]);
-    int (*compare)(const void *, const void *);
     qsort(lum1D, lum1D_n, sizeof(double), compare);
 
     double* y1D;
@@ -274,9 +281,52 @@ double** QuantizeNL_float(double** y, double nclust, double** lum, int length, i
         }
     }
     double * labels_mdata = linspace(1,256,(int)nclust);
-    labels = (double **) interp1(mdata, labels_mdata, lum); //Done in main
+    labels = (double **) interp1(mdata, labels_mdata, lum, length, width); //Done in main
 
     return labels;
+}
+
+double **interp1(double X[], double *V, double **Xq,jint length, jint width) {
+    double **Vout;
+    size_t X_n = sizeof(X) / sizeof(X[0]);
+    qsort(X, X_n, sizeof(double), compare);
+    size_t V_n = sizeof(V) / sizeof(V[0]);
+    qsort(V, V_n, sizeof(double), compare);
+    size_t Xq_length = sizeof(Xq) / sizeof(Xq[0]);
+
+    for (int i = 0; i < Xq_length; i++) {
+        Vout[i] = linearInterpolation(X,V,Xq[i]);
+    }
+    return Vout;
+}
+
+double *linearInterpolation(double *x, double *y, double *values) {
+    int values_length = sizeof(values)/sizeof(values[0]);
+    double interpolatedValues[values_length];
+    int n = sizeof(x)/sizeof(x[0]);
+    for (int i = 0; i < values_length; i++) {
+        // Find the index of the x value that is closest to the value to interpolate
+        if (values[i] < x[0]) {
+            interpolatedValues[i] = y[0];
+        } else if (values[i] > x[n - 1]) {
+            interpolatedValues[i] = y[n - 1];
+        } else {
+            int j = 1;
+            while (j < n - 1 && x[j] < values[i]) {
+                j++;
+            }
+            // Perform linear interpolation using the two closest data points
+            double x1 = x[j - 1];
+            double y1 = y[j - 1];
+            double x2 = x[j];
+            double y2 = y[j];
+            double slope = (y2 - y1) / (x2 - x1);
+            double interpolatedValue = y1 + slope * (values[i] - x1);
+
+            interpolatedValues[i] = interpolatedValue;
+        }
+    }
+    return interpolatedValues;
 }
 
 double *min(double *absMatrix) {
@@ -348,18 +398,8 @@ int find(double intensity, double check1, double check2, double value1, double v
     }
     return indexes;
 }
-
-int compare(const void* a, const void* b) {
-    double x = *(const double*)a;
-    double y = *(const double*)b;
-
-    if (x < y) {
-        return -1;
-    } else if (x > y) {
-        return 1;
-    }
-
-    return 0;
+int compare (const void * a, const void * b) {
+    return ( *(int*)a - *(int*)b );
 }
 
 
