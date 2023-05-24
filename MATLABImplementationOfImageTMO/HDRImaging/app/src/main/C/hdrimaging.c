@@ -4,16 +4,16 @@
 #include <time.h>
 #include <math.h>
 #include <string.h>
-
+#include <opencl-c.h>
 
 
 jobjectArray DCA_TMO(double ***hdrImg, jint length, jint width, jint depth);
 
-void flatten3DArray(double ***arr3D, double *arr1D, jint length, jint width, jint depth);
+void flatten3DArray(double ***arr3D, double *arr1D, int length, int width, int depth);
 
 double * max(double array[2], int length);
 
-double maxQuart(double *hdrImg, double percentile, jint length);
+double maxQuart(double *hdrImg, double percentile, int length);
 
 int numel(double **lum, int length, int width);
 
@@ -53,20 +53,41 @@ double *AppendErrors(double *pDouble, double e1, double e2, double *pDouble1);
 
 double *AppendEdges(double *pDouble, int i, double *pDouble1);
 
-double **QuantizeNL_float(double **pDouble, double k, double **pDouble1, jint length, jint width);
+double **QuantizeNL_float(double **pDouble, double k, double **pDouble1, int length, int width);
 
-double **interp1(double pDouble[], double *pDouble1, double **pDouble2, jint i, jint i1);
+double **interp1(double pDouble[], double *pDouble1, double **pDouble2, int i, int i1);
 
 int compare (const void * a, const void * b);
 
 
 double *linearInterpolation(double *pDouble, double *pDouble1, double *pDouble2);
 
+double **fspecial(int window, double c);
+
+double *findMaxAndMinOfArray(double **pDouble, int length, int width);
+
+double **imfilter(double ** pDouble, double ** pDouble1, int length, int width);
+
+double **filterDouble2DWithConv(double **pDouble, double **pDouble1, int length, int width);
+
+double **rot90(double **pDouble, int i);
+
+double **padarray_algo(double **pDouble, int pInt[2], int i, int i1);
+
+int **getPaddingIndices(double pDouble[2], int *pInt, int i, int i1);
+
+int *ones(int p);
+
+double **RangeMatrix(double **pDouble, int **pInt);
+
 jobjectArray
 Java_com_example_hdrimaging_MainActivity_DCATMO(JNIEnv *env, jobject thiz,
-                                                  jobjectArray hdrdouble_array, jint length,
-                                                  jint width, jint depth) {
+                                                  jobjectArray hdrdouble_array, jint lengthw,
+                                                  jint widthw, jint depthw) {
 
+    int length = (int) lengthw;
+    int width = (int) widthw;
+    int depth = (int) depthw;
     // Get the dimensions of the Java array
     jsize depthA = (*env)->GetArrayLength((JNIEnv *) *env, hdrdouble_array);
     jobjectArray subArray = (jobjectArray) (*env)->GetObjectArrayElement( (JNIEnv *) *env,hdrdouble_array, 0);
@@ -150,28 +171,214 @@ jobjectArray DCA_TMO(double*** hdrImg, jint length, jint width, jint depth) {
         }
     }
 
+    double** labels = QuantizeNL_float(hdrPQ, K, hdrLum, length, width);
 
-    //Continue from here
-    double** labels;
-    labels = QuantizeNL_float(hdrPQ, K, hdrLum, length, width);
+    //local enhancement using DoG
+    double sigmaC = 0.5;
+    double sigmaS = 0.8;
+    int window = 9;
+
+    double ** gfilterC = fspecial(window, sigmaC);
+    double ** gfilterS = fspecial(window, sigmaS);
+    double DoGfilter[window][window];
+    for (int i = 0; i < window; i++)
+        for (int j = 0; j < window; j++)
+            DoGfilter[i][j] = (gfilterC[i][j] - gfilterS[i][j]);
+
+    double hdrPQnor[length][width];
+
+    double * hdrPQMaxMin = findMaxAndMinOfArray(hdrPQ, length, width);
+    double hdrPQMax = hdrPQMaxMin[0];
+    double hdrPQMin = hdrPQMaxMin[1];
+
+    for (int i = 0; i < length; i++)
+        for (int j = 0; j < width; j++) {
+            hdrPQnor[i][j] = 255 * (hdrPQ[i][j] - hdrPQMin) / (hdrPQMax - hdrPQMin) + 1;
+        }
+
+    for (int i = 0; i < length; i++)
+        for (int j = 0; j < width; j++) {
+            hdrPQnor[i][j] = hdrPQnor[i][j] * 0.35 + labels[i][j] * 0.65;
+        }
+
+    double labels_DoG[length][width] ;
+    double ** imfilterArray = imfilter(hdrPQnor, DoGfilter, length, width);
+    for (int i = 0; i < length; i++){
+        for (int j = 0; j < width; j++) {
+            labels_DoG[i][j] = labels[i][j] + 3.0 * imfilterArray[i][j];
+        }
+    }
     return 0;
 
 
 }
 
-//Start of QuantizeNL_Float
+double **imfilter(double ** hdrPQnor, double ** doGfilter, int length, int width) {
+    return filterDouble2DWithConv(hdrPQnor,doGfilter, length, width);
+}
 
-double **QuantizeNL_float(double **y, double nclust, double **lum, jint length, jint width) {
+double **filterDouble2DWithConv(double **a, double **h, int length, int width) {
+    int padSize[2] = {4,4};
+    double ** retArray;
+    h = rot90(h,2);
+    a = padarray_algo(a,padSize, length, width);
+    retArray = conv2(a,h);
 
-    double** labels = (double**)malloc(length * sizeof(double*));
-    int i, j;
-    for (i = 0; i < length; i++) {
-        labels[i] = (double*)malloc(width * sizeof(double));
-        for (j = 0; j < width; j++) {
-            // Perform quantization logic here
-            // Use hdrPQ[i][j], K, and hdrLum[i][j] to calculate labels[i][j]
+
+    return retArray;
+}
+
+double **padarray_algo(double **a, int padSize[2], int length, int width) {
+    double aSize[2]= {length, width};
+    int ** aIdx = getPaddingIndices(aSize, padSize, length, width);
+    double ** b = RangeMatrix(a,aIdx);
+    return b;
+}
+
+double **RangeMatrix(double **a, int **aIdx) {
+    int aIdx0_length = sizeof(aIdx[0])/sizeof(aIdx[0][0]);
+    double retArray[aIdx0_length][aIdx0_length];
+    for (int i = 0; i < retArray.length-1; i++){
+        for (int j = 0; j < retArray[i].length-1; j++){
+            int lengthAxis = aIdx[0][i];
+            int widthAxis = aIdx[1][j];
+            retArray[i][j] = a[lengthAxis-1][widthAxis-1];
         }
     }
+    return retArray;
+}
+
+int **getPaddingIndices(double *aSize, int padSize[2], int length, int width) {
+    int numDims = sizeof(padSize)/ sizeof(padSize[0]);
+    int **idx;
+    idx[0] = malloc((length + (4 * 2)) * sizeof(int));
+    idx[1] = malloc((width + (4 * 2)) * sizeof(int));
+    for (int k = 0; k< numDims; k++){
+        double M = aSize[k];
+        int p = padSize[k];
+        int * onesVector = ones(p);
+        int ones_length = sizeof(onesVector)/sizeof(onesVector[0]);
+        int loopRange = (int) (ones_length + M + ones_length);
+        int count = 1;
+        for (int j = 0; j< loopRange; j++){
+            if (j < ones_length){
+                idx[k][j] = 1;
+            }
+            else if ((j >= ones_length) && (j <= (loopRange - ones_length-1)))
+            {
+                idx[k][j] = count;
+                count += 1;
+            }
+            else if (j > (loopRange - ones_length-1))
+            {
+                idx[k][j] = (int) M;
+            }
+        }
+    }
+    return idx;
+}
+
+int *ones(int p) {
+    int *retArray;
+    for (int i = 0; i< p; i++){
+        retArray[i] = 1;
+    }
+    return retArray;
+}
+
+double **rot90(double **arr1, int times) {
+    double ** arr2;
+
+    for (int i = 0; i < 9; i++)
+        for (int j = 0; j < 9; j++)
+            arr2[9 - 1 - j][i] = arr1[i][j];
+
+    times -= 1;
+
+    if (times > 0) {
+        rot90(arr2, times);
+    }
+    return arr2;
+}
+
+double *findMaxAndMinOfArray(double **array, int length, int width) {
+    double max = array[0][0];
+    double min = array[0][0];
+    double * ret;
+    for (int i = 0; i < length; i++){
+        for (int j = 0; j < width; j++) {
+            if (array[i][j] > max) {
+                ret[0] = array[i][j];
+            } else if (array[i][j] < min) {
+                ret[1] = array[i][j];
+            }
+        }
+    }
+
+    return ret;
+}
+
+double **fspecial(int window, double sigma) {
+    double p2[2] = {window,window};  // siz
+    double p3 = sigma;;    // std
+    double siz   = (p2[1]-1)/2;
+
+    double x[9][9] = {
+            {-4,-3,-2,-1,0,1,2,3,4},
+            {-4,-3,-2,-1,0,1,2,3,4},
+            {-4,-3,-2,-1,0,1,2,3,4},
+            {-4,-3,-2,-1,0,1,2,3,4},
+            {-4,-3,-2,-1,0,1,2,3,4},
+            {-4,-3,-2,-1,0,1,2,3,4},
+            {-4,-3,-2,-1,0,1,2,3,4},
+            {-4,-3,-2,-1,0,1,2,3,4},
+            {-4,-3,-2,-1,0,1,2,3,4}};
+    double y[9][9] = {
+            {-4 ,-4 ,-4 ,-4 ,-4 ,-4 ,-4 ,-4 ,-4 },
+            {-3 ,-3 ,-3 ,-3 ,-3 ,-3 ,-3 ,-3 ,-3 },
+            {-2 ,-2 ,-2 ,-2 ,-2 ,-2 ,-2 ,-2 ,-2 },
+            {-1 ,-1 ,-1 ,-1 ,-1 ,-1 ,-1 ,-1 ,-1 },
+            {0  ,0  ,0  ,0  ,0  ,0  ,0  ,0  ,0  },
+            {1  ,1  ,1  ,1  ,1  ,1  ,1  ,1  ,1  },
+            {2  ,2  ,2  ,2  ,2  ,2  ,2  ,2  ,2  },
+            {3  ,3  ,3  ,3  ,3  ,3  ,3  ,3  ,3  },
+            {4  ,4  ,4  ,4  ,4  ,4  ,4  ,4  ,4  }};
+
+    double arg[9][9] ;
+    for (int i = 0; i < 9; i++)
+        for (int j = 0; j < 9; j++)
+            arg[i][j] = -((x[i][j]*x[i][j]) + (y[i][j] *y[i][j]))/(2*p3*p3);
+    double ** h;
+    for (int i = 0; i < 9; i++)
+        for (int j = 0; j < 9; j++)
+            h[i][j] = exp(arg[i][j]);
+
+    double hMax = h[0][0];
+    for (int i = 0; i < 9; i++)
+        for (int j = 0; j < 9; j++)
+            if (h[i][j] > hMax)
+                hMax = h[i][j];
+    double sumh = 0;
+    for (int i = 0; i < 9; i++)
+        for (int j = 0; j < 9; j++) {
+            if (h[i][j] < ((pow((double)2, -52)) * hMax))
+                h[i][j] = 0;
+            sumh += h[i][j];
+        }
+
+    if (sumh != 0){
+        for (int i = 0; i < 9; i++)
+            for (int j = 0; j < 9; j++)
+                h[i][j] = (h[i][j]/sumh);
+    }
+    return h;
+}
+
+//Start of QuantizeNL_Float
+
+double **QuantizeNL_float(double **y, double nclust, double **lum, int length, int width) {
+
+    double** labels = (double**)malloc(length * sizeof(double*));
 
     int numelLum = numel(lum, length, width);
 
@@ -198,7 +405,7 @@ double **QuantizeNL_float(double **y, double nclust, double **lum, jint length, 
     double* y1DPow = powArray(y1D, y1DLength);
     double* ss_data = cumsum(y1DPow, y1DLength);
 
-    for (i=0; i<nclust-1; i++)
+    for (int i=0; i<nclust-1; i++)
     {
         double* maxError = max(errors, y1DLength);
         double idx = maxError[1];
@@ -272,7 +479,7 @@ double **QuantizeNL_float(double **y, double nclust, double **lum, jint length, 
         if (lum1D[(int) edges[i]-1] == lum1D[(int) edges[i + 1]-1]) {
             ind = matrixBoolean(lum, lum1D[(int) edges[i]], length, width); //(lum0==lum[(int) edges[i]]);
             double * lum0Ind = getIndexValuesToArray(lum, ind, length, width);
-            mdata[i] = mean(lum0Ind, sizeof (lum0Ind)) + pow(2,-52) * i;
+            mdata[i] = mean(lum0Ind, sizeof (lum0Ind)) + pow((double)2,-52) * i;
         } else {
             ind = matrixBoolean1(lum, lum1D[(int) edges[i]-1], lum1D[(int) edges[i + 1]-1], length, width);
             double * lum0Ind = getIndexValuesToArray(lum, ind, length, width);
@@ -286,7 +493,7 @@ double **QuantizeNL_float(double **y, double nclust, double **lum, jint length, 
     return labels;
 }
 
-double **interp1(double X[], double *V, double **Xq,jint length, jint width) {
+double **interp1(double X[], double *V, double **Xq,int length,int width) {
     double **Vout;
     size_t X_n = sizeof(X) / sizeof(X[0]);
     qsort(X, X_n, sizeof(double), compare);
@@ -588,7 +795,7 @@ double median(double * array, int length) {
 
 //End of QuantizeNL_Float
 
-double maxQuart(double *hdrImg, double percentile, jint length) {
+double maxQuart(double *hdrImg, double percentile, int length) {
     if (percentile > 1.0)
         percentile = 1.0;
 
@@ -631,7 +838,7 @@ double * max(double array[2], int length) {
     return result;
 }
 
-void flatten3DArray(double ***arr3D, double *arr1D, jint length, jint width, jint depth) {
+void flatten3DArray(double ***arr3D, double *arr1D, int length, int width, int depth) {
     int index = 0;
     for (int i = 0; i < length; i++) {
         for (int j = 0; j < width; j++) {
