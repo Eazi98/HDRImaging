@@ -25,7 +25,7 @@ public class DCA_TMO extends Thread{
 
         //set parameters
         double K = 55;
-//      pre-processing
+        //pre-processing
         double[] hdrOneD = stream(hdrImg)
                 .flatMap(Arrays::stream)
                 .flatMapToDouble(Arrays::stream)
@@ -111,7 +111,6 @@ public class DCA_TMO extends Thread{
         double maxLabels_DoG = max2dArray(labels_DoG);
 
         s1 = array2dDivision(arrayMinusDouble(labels_DoG,minLabels_DoG),(maxLabels_DoG - minLabels_DoG));
-//        s1 = (labels_DoG - min(labels_DoG(:))) ./ (max(labels_DoG(:)) - min(labels_DoG(:)));
         double[][] s;
         s = doubleMinus2dArray(1,atan2DArray(s1));
         s = min2dArrayOrScalar(s,0.5);
@@ -290,9 +289,6 @@ public class DCA_TMO extends Thread{
         int[] padSize = new int[] {4,4};
         double[][] retArray;
         h = rot90(h,2);
-        //double[] imageSize = {length, width};
-        double[] sizeh = new double[] {h.length,h.length};
-        //double[] nonSymmetricPadShift = numMinusArray(1,mod(sizeh,2));
         a = padarray_algo(a,padSize);
         retArray = conv2(a,h);
 
@@ -364,25 +360,6 @@ public class DCA_TMO extends Thread{
         }
         return retArray;
     }
-
-//    private double[] numMinusArray(int num, double[] mod) {
-//        double[] retArray = new double[mod.length];
-//        for (int i = 0; i< mod.length; i++){
-//            retArray[i] = num - mod[i];
-//        }
-//        return retArray;
-//    }
-//
-//    private double[] mod(double[] doubles, int y) {
-//        double x1 = doubles[0];
-//        double x2 = doubles[1];
-//        double[] retArray = new double[doubles.length];
-//        for (int i= 0; i < doubles.length; i++)
-//            retArray[i] = doubles[i]- floor(doubles[i]/y)*y;
-//
-//        return retArray;
-//
-//    }
 
     private static double[][] rot90(double[][] arr1, int times) {
         int d = arr1.length;
