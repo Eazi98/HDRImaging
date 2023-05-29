@@ -47,7 +47,6 @@ public class DCA_TMO extends Thread{
                 }
         //tone map using clustering methods
         double[][] hdrLum = new double[length][width];
-        double[][] hdrLum1 = new double[length][width];
         double[][] hdrPQ = new double[length][width];
 
         //get max value for hdrLum1 = hdrLum./max(hdrImg(:));  max(hdrImg(:)) value
@@ -62,8 +61,8 @@ public class DCA_TMO extends Thread{
         for (int i = 0; i < hdrImg.length; i++)
             for (int j = 0; j < hdrImg[i].length; j++){
                 hdrLum[i][j] = 0.2126 * hdrImg[i][j][0] + 0.7152 * hdrImg[i][j][1]+ 0.0722 * hdrImg[i][j][2];
-                hdrLum1[i][j] = (hdrLum[i][j])/ hdrMaxValue;
-                hdrPQ[i][j] = Math.pow((Math.pow(hdrLum1[i][j],((double)1305/(double)8192)) * ((double)2413/(double)128)+ ((double)107/(double)128)) / (Math.pow(hdrLum1[i][j],((double)1305 /(double)8192)) *((double)2392/(double)128)+ ((double)1)), ((double)2523/(double)32));
+                double b = (hdrLum[i][j])/ hdrMaxValue;
+                hdrPQ[i][j] = Math.pow((Math.pow(b,((double)1305/(double)8192)) * ((double)2413/(double)128)+ ((double)107/(double)128)) / (Math.pow(b,((double)1305 /(double)8192)) *((double)2392/(double)128)+ ((double)1)), ((double)2523/(double)32));
             }
 
         QuantizeNL_float QuantizeNL_float = new QuantizeNL_float(length, width);
@@ -111,12 +110,8 @@ public class DCA_TMO extends Thread{
         double maxLabels_DoG = max2dArray(labels_DoG);
 
         s1 = array2dDivision(arrayMinusDouble(labels_DoG,minLabels_DoG),(maxLabels_DoG - minLabels_DoG));
-//        s1 = (labels_DoG - min(labels_DoG(:))) ./ (max(labels_DoG(:)) - min(labels_DoG(:)));
-        double[][] s;
-        s = doubleMinus2dArray(1,atan2DArray(s1));
-        s = min2dArrayOrScalar(s,0.5);
-        double[][][] dividedArray = divide3dArray2dArray(hdrImg,hdrLum);
-        double[][][] powArray = pow3d2d(dividedArray, s);
+        double[][] s = min2dArrayOrScalar(doubleMinus2dArray(1,atan2DArray(s1)),0.5);
+        double[][][] powArray = pow3d2d(divide3dArray2dArray(hdrImg,hdrLum), s);
         double[][][] ldrImg_DoG = multiply3d2d(powArray, labels_DoG);
         double[] ldrImg_DoG1D = to1dArray(ldrImg_DoG);
         MaxQuart maxQuart = new MaxQuart();
@@ -144,12 +139,16 @@ public class DCA_TMO extends Thread{
                 }
         double[][][]minusedArray = array3dMinusDouble(ldrImg_DoG,minn);
 
-        dividedArray = divide3dDouble(minusedArray,(maxx - minn));
+        double[][][] dividedArray = divide3dDouble(minusedArray,(maxx - minn));
         ldrImg = multiply3dDouble(255,dividedArray);
         return ldrImg;
     }
 
     private static double[] to1dArray(double[][][] array) {
+//        double[] retArray = stream(array)
+//                .flatMap(Arrays::stream)
+//                .flatMapToDouble(Arrays::stream)
+//                .toArray();
         double[] retArray = new double[array.length * array[0].length * array[0][0].length];
         int index = 0;
 
@@ -225,12 +224,12 @@ public class DCA_TMO extends Thread{
     }
 
     private static double[][][] divide3dArray2dArray(double[][][] array, double[][] divideBy) {
-        double[][][] retArray = new double[array.length][array[0].length][array[0][0].length];
+        //double[][][] retArray = new double[array.length][array[0].length][array[0][0].length];
             for (int i = 0; i < array.length; i++)
                 for (int j = 0; j < array[i].length; j++)
                     for (int k = 0; k < array[0][0].length; k++)
-                        retArray[i][j][k] = array[i][j][k]/divideBy[i][j];
-        return retArray;
+                        array[i][j][k] = array[i][j][k]/divideBy[i][j];
+        return array;
     }
 
     private static double[][] min2dArrayOrScalar(double[][] array, double value) {
@@ -415,18 +414,16 @@ public class DCA_TMO extends Thread{
     }
 
     private static double[][] arrayMinusDouble(double[][] rangeArray, double value) {
-        double[][] retArray = new double[rangeArray.length][rangeArray[0].length];
         for (int i = 0; i < rangeArray.length; i++)
             for (int j = 0; j < rangeArray[i].length; j++)
-                retArray[i][j] = rangeArray[i][j] - value;
-        return retArray;
+                rangeArray[i][j] = rangeArray[i][j] - value;
+        return rangeArray;
     }
     private static double[][] doubleMinus2dArray(double value, double[][] rangeArray) {
-        double[][] retArray = new double[rangeArray.length][rangeArray[0].length];
         for (int i = 0; i < rangeArray.length; i++)
             for (int j = 0; j < rangeArray[i].length; j++)
-                retArray[i][j] = value - rangeArray[i][j] ;
-        return retArray;
+                rangeArray[i][j] = value - rangeArray[i][j] ;
+        return rangeArray;
     }
 
     private static double[] max(double[] array){

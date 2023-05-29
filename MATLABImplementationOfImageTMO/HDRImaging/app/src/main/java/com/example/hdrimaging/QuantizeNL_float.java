@@ -22,7 +22,7 @@ public class QuantizeNL_float {
 
         double[][] lum0 = lum;
 
-        int numelLum =numel(lum);
+        int numelLum = numel(lum);
 
         double[] lum1D = reshape1D(lum, numelLum);
         sort(lum1D);
@@ -37,13 +37,12 @@ public class QuantizeNL_float {
             errorsPow[i] = Math.pow((y1D[i]-meanOfY),2);
         }
         double[] errors = sum(errorsPow);
-
+        errorsPow = null;
         sort(y1D);
         double[] s_data = cumsum(y1D);
         sort(y1D);
         double[] y1DPow = pow(y1D);
         double[] ss_data = cumsum(y1DPow);
-
 
         for (int i=0; i<nclust-1; i++)
         {
@@ -61,6 +60,7 @@ public class QuantizeNL_float {
             double m = floor(n/d);
             while(true)
             {
+
                 double sm = s_data[(int) (k+m)-1];
                 if(k>=1)
                     sm = sm - s_data[(int) k-1];
@@ -186,14 +186,14 @@ public class QuantizeNL_float {
     }
 
     private static double[] linearInterpolation(double[] x, double[] y, double[] values) {
-        double[] interpolatedValues = new double[values.length];
+        //double[] interpolatedValues = new double[values.length];
         int n = x.length;
         for (int i = 0; i < values.length; i++) {
             // Find the index of the x value that is closest to the value to interpolate
             if (values[i] < x[0]) {
-                interpolatedValues[i] = y[0];
+                values[i] = y[0];
             } else if (values[i] > x[n - 1]) {
-                interpolatedValues[i] = y[n - 1];
+                values[i] = y[n - 1];
             } else {
                 int j = 1;
                 while (j < x.length - 1 && x[j] < values[i]) {
@@ -207,10 +207,10 @@ public class QuantizeNL_float {
                 double slope = (y2 - y1) / (x2 - x1);
                 double interpolatedValue = y1 + slope * (values[i] - x1);
 
-                interpolatedValues[i] = interpolatedValue;
+                values[i] = interpolatedValue;
             }
         }
-        return interpolatedValues;
+        return values;
     }
 
     public static double[] linspace(double min, double max, int points) {
@@ -231,29 +231,32 @@ public class QuantizeNL_float {
     }
 
     private double[][] matrixBoolean(double[][] array, double valueToCheck) {
-        double[][] retArray = new double[length][width];
-        for (int i = 0; i < array.length-1; i++) {
-            for (int j = 1; j < array[i].length-1; j++) {
+        for (int i = 0; i < array.length; i++) {
+            for (int j = 1; j < array[i].length; j++) {
                 if (array[i][j] == valueToCheck) {
-                    retArray[i][j] = 1;
+                    array[i][j] = 1;
+                }
+                else{
+                    array[i][j] = 0;
                 }
             }
-
         }
-        return retArray;
+        return array;
     }
 
     private double[][] matrixBoolean1(double[][] array, double valueToCheck1,double valueToCheck2) {
-        double[][] retArray = new double[length][width];
-        for (int i = 0; i < array.length-1; i++) {
-            for (int j = 0; j < array[i].length-1; j++) {
+        for (int i = 0; i < array.length; i++) {
+            for (int j = 0; j < array[i].length; j++) {
                 if (array[i][j] > valueToCheck1 && array[i][j] <= valueToCheck2) {
-                    retArray[i][j] = 1;
+                    array[i][j] = 1;
+                }
+                else{
+                    array[i][j] = 0;
                 }
             }
 
         }
-        return retArray;
+        return array;
     }
 
     private double[] AppendEdges(double[] rangeArray, double value, double[] rangeArray1) {
@@ -303,14 +306,16 @@ public class QuantizeNL_float {
         return num;
     }
     private double[] reshape1D(double[][] array, int numberEle){
-        double retArray[] = new double[numberEle];
-        int index = 0;
-        for (int i = 0; i < array.length; i++)
-            for (int j = 0; j < array[i].length; j++) {
-                retArray[index] = array[i][j];
-                index +=1;
-            }
-        return retArray;
+//        double retArray[] = new double[numberEle];
+//        int index = 0;
+//        for (int i = 0; i < array.length; i++)
+//            for (int j = 0; j < array[i].length; j++) {
+//                retArray[index] = array[i][j];
+//                index +=1;
+//            }
+        return Arrays.stream(array)
+                .flatMapToDouble(Arrays::stream)
+                .toArray();
     }
     private double mean(double[] array) {
         double sum = sum(array)[0];

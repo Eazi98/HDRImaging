@@ -76,33 +76,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-//        binding.scrollView.setOnScrollChangeListener(new View.OnScrollChangeListener() {
-//            @SuppressLint("DefaultLocale")
-//            @Override
-//            public void onScrollChange(View view, int scrollX, int scrollY, int oldScrollX, int oldScrollY) {
-//                if (scrollViewHDR.getChildAt(0).getBottom() <= (scrollViewHDR.getHeight() + scrollViewHDR.getScrollY())) {
-//                    for (int i= 0; i < loadArray; i++){
-//                        HDRText.append(" "+ String.format("%.4f", HDRArray.get(0)));
-//                        HDRArray.remove(0);
-//                    }
-//                }
-//
-//            }
-//        });
 
-//        binding.scrollView.setOnScrollChangeListener(new View.OnScrollChangeListener() {
-//            @SuppressLint("DefaultLocale")
-//            @Override
-//            public void onScrollChange(View view, int scrollX, int scrollY, int oldScrollX, int oldScrollY) {
-//                if (scrollViewLDR.getChildAt(0).getBottom() <= (scrollViewLDR.getHeight() + scrollViewLDR.getScrollY())) {
-//                    for (int i= 0; i < loadArray; i++){
-//                        LDRText.append(" "+ String.format("%.4f", LDRArray.get(0)));
-//                        LDRArray.remove(0);
-//                    }
-//                }
-//
-//            }
-//        });
     }
     public void openFileDialog(View view){
         Intent data = new Intent(Intent.ACTION_OPEN_DOCUMENT);
