@@ -47,6 +47,7 @@ public class DCA_TMO extends Thread{
                 }
         //tone map using clustering methods
         double[][] hdrLum = new double[length][width];
+        double[][] hdrLum1 = new double[length][width];
         double[][] hdrPQ = new double[length][width];
 
         //get max value for hdrLum1 = hdrLum./max(hdrImg(:));  max(hdrImg(:)) value
@@ -61,8 +62,8 @@ public class DCA_TMO extends Thread{
         for (int i = 0; i < hdrImg.length; i++)
             for (int j = 0; j < hdrImg[i].length; j++){
                 hdrLum[i][j] = 0.2126 * hdrImg[i][j][0] + 0.7152 * hdrImg[i][j][1]+ 0.0722 * hdrImg[i][j][2];
-                double b = (hdrLum[i][j])/ hdrMaxValue;
-                hdrPQ[i][j] = Math.pow((Math.pow(b,((double)1305/(double)8192)) * ((double)2413/(double)128)+ ((double)107/(double)128)) / (Math.pow(b,((double)1305 /(double)8192)) *((double)2392/(double)128)+ ((double)1)), ((double)2523/(double)32));
+                hdrLum1[i][j] = (hdrLum[i][j])/ hdrMaxValue;
+                hdrPQ[i][j] = Math.pow((Math.pow(hdrLum1[i][j],((double)1305/(double)8192)) * ((double)2413/(double)128)+ ((double)107/(double)128)) / (Math.pow(hdrLum1[i][j],((double)1305 /(double)8192)) *((double)2392/(double)128)+ ((double)1)), ((double)2523/(double)32));
             }
 
         QuantizeNL_float QuantizeNL_float = new QuantizeNL_float(length, width);
@@ -414,10 +415,11 @@ public class DCA_TMO extends Thread{
     }
 
     private static double[][] arrayMinusDouble(double[][] rangeArray, double value) {
+        double[][] retArray = new double[rangeArray[0].length][rangeArray[1].length];
         for (int i = 0; i < rangeArray.length; i++)
             for (int j = 0; j < rangeArray[i].length; j++)
-                rangeArray[i][j] = rangeArray[i][j] - value;
-        return rangeArray;
+                retArray[i][j] = rangeArray[i][j] - value;
+        return retArray;
     }
     private static double[][] doubleMinus2dArray(double value, double[][] rangeArray) {
         for (int i = 0; i < rangeArray.length; i++)
