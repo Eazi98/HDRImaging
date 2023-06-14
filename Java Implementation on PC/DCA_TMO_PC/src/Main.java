@@ -30,6 +30,7 @@ public class Main {
         BufferedImage image = new BufferedImage(length, width, BufferedImage.TYPE_INT_RGB);
 
         // Set the pixel values of the image using the pixelData array
+       // TODO: FIX orientation of image
         for (int x = 0; x < length; x++) {
             for (int y = 0; y < width; y++) {
                 int rgb = (int)pixelData[x][y][0] << 16 | (int)pixelData[x][y][1] << 8 | (int)pixelData[x][y][2];
