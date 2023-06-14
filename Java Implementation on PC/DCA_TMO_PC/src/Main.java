@@ -1,24 +1,57 @@
 import javax.imageio.ImageIO;
+import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.nio.file.Paths;
-import java.util.Scanner;
 
 public class Main {
 
     static int width;
     static int length;
     public static void main(String[] args) {
-        String fileName = "moto720";
+//        // Specify the folder path
+//        String folderPath = "../../MATLABImplementationOfImageTMO/HDRim/testFiles";
+//
+//        // Create a File object for the folder
+//        File folder = new File(folderPath);
+//
+//        // Check if the folder exists
+//        if (folder.exists() && folder.isDirectory()) {
+//            // Get the list of files in the folder
+//            File[] files = folder.listFiles();
+//
+//            // Iterate over the files and print their names
+//            if (files != null) {
+//                for (File file : files) {
+//                    if (file.isFile()) {
+//                        String fullFileName = file.getName();
+//                        String[] fileName = fullFileName.split("\\.");
+//                        System.out.println(fileName[0]);
+//                        String path = "../../MATLABImplementationOfImageTMO/HDRim/" + fileName[0] + ".hdr";
+//                        double[][][] LDRDoubleArray;
+//                        LDRDoubleArray = DCATMO(getHDRDoubleArray(path));
+//                        String outputFile = "../../MATLABImplementationOfImageTMO/LDRim/Java_"+ fileName[0] + ".png";
+//                        System.out.println(outputFile);
+//                        writeToPNG(LDRDoubleArray, outputFile);
+//                    }
+//                }
+//            }
+//        } else {
+//            System.out.println("Invalid folder path!");
+//        }
+        String fileName = "moto1500";
         String path = "../../MATLABImplementationOfImageTMO/HDRim/" + fileName + ".hdr";
         double[][][] LDRDoubleArray;
         LDRDoubleArray = DCATMO(getHDRDoubleArray(path));
         String outputFile = "../../MATLABImplementationOfImageTMO/LDRim/Java_"+ fileName + ".png";
+        System.out.println(fileName);
         writeToPNG(LDRDoubleArray, outputFile);
     }
 
+    public static double nanosecondsToSeconds(long nanoseconds) {
+        double seconds = nanoseconds / 1_000_000_000.0;
+        return seconds;
+    }
     public static void writeToPNG(double[][][] LDRDoubleArray, String path){
 
         // Create a 3D array representing the pixel values (RGB) of the image
@@ -27,16 +60,20 @@ public class Main {
         // Populate the pixelData array with the desired pixel values
 
         // Create a BufferedImage object with the specified width and height
-        BufferedImage image = new BufferedImage(length, width, BufferedImage.TYPE_INT_RGB);
+        BufferedImage image = new BufferedImage(width, length, BufferedImage.TYPE_INT_RGB);
 
         // Set the pixel values of the image using the pixelData array
        // TODO: FIX orientation of image
-        for (int x = 0; x < length; x++) {
-            for (int y = 0; y < width; y++) {
-                int rgb = (int)pixelData[x][y][0] << 16 | (int)pixelData[x][y][1] << 8 | (int)pixelData[x][y][2];
+        for (int y = 0; y < length; y++) {
+            for (int x = 0; x < width; x++) {
+                int red = (int) LDRDoubleArray[y][x][0];
+                int green = (int) LDRDoubleArray[y][x][1];
+                int blue = (int) LDRDoubleArray[y][x][2];
+                int rgb = new Color(red, green, blue).getRGB();
                 image.setRGB(x, y, rgb);
             }
         }
+
 
         // Save the image to a PNG file
         try {
@@ -53,6 +90,7 @@ public class Main {
         double[][][] retArray = DCA_TMO.DCA_TMO_Processing(HDRDoubleArray, length, width);
         long endTime = System.nanoTime();
         long TimeTaken = endTime - startTime;
+        System.out.println(nanosecondsToSeconds(TimeTaken));
         return retArray;
     }
     static double[][][] getHDRDoubleArray(String path) {
