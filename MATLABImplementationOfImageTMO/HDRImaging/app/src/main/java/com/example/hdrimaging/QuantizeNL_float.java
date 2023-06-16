@@ -303,13 +303,6 @@ public class QuantizeNL_float {
         return num;
     }
     private double[] reshape1D(double[][] array, int numberEle){
-//        double retArray[] = new double[numberEle];
-//        int index = 0;
-//        for (int i = 0; i < array.length; i++)
-//            for (int j = 0; j < array[i].length; j++) {
-//                retArray[index] = array[i][j];
-//                index +=1;
-//            }
         return Arrays.stream(array)
                 .flatMapToDouble(Arrays::stream)
                 .toArray();

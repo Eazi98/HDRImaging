@@ -1,4 +1,4 @@
-    hdrImg = double(hdrread("smallmoto.hdr"));
+    hdrImg = double(hdrread("HDRim/moto720.hdr"));
 %     ldrImgTime0 = timeit( @() DCA_TMO(hdrImg));
 %     ldrImgTime1 = timeit( @() DCA_TMO(hdrImg));
 %     ldrImgTime2 = timeit( @() DCA_TMO(hdrImg));
