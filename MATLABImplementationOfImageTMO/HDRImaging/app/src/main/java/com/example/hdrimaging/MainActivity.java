@@ -4,6 +4,7 @@ import static com.example.hdrimaging.DCA_TMO.DCA_TMO_Processing;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.app.ActivityManager;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -13,6 +14,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.Settings;
+import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.ScrollView;
@@ -39,11 +41,8 @@ public class MainActivity extends AppCompatActivity {
     private ScrollView scrollViewHDR;
     private ScrollView scrollViewLDR;
     private TextView timeTaken;
-    private HDRtoDoubleArray hdrtodoublearray;
     int width;
     int length;
-    double[][][] HDRDoubleArray;
-    double[][][] LDRDoubleArray;
 
     static {
         System.loadLibrary("hdrimaging");
@@ -67,6 +66,9 @@ public class MainActivity extends AppCompatActivity {
                 startActivity(getpermission);
             }
         }
+//        ActivityManager am = (ActivityManager) getSystemService(ACTIVITY_SERVICE);
+//        int memoryClass = am.getMemoryClass();
+//        Log.v("onCreate", "memoryClass:" + Integer.toString(memoryClass) + "MB");
         binding.ReadFileButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -79,6 +81,7 @@ public class MainActivity extends AppCompatActivity {
 
     }
     public void openFileDialog(View view){
+
         Intent data = new Intent(Intent.ACTION_OPEN_DOCUMENT);
         data.setType("*/*");
         data = Intent.createChooser(data, "Choose a file");
@@ -103,8 +106,12 @@ public class MainActivity extends AppCompatActivity {
                         fileLocationText.setText(path);
 
                         //HDRDoubleArray = getHDRDoubleArray(path);
-                        LDRDoubleArray = DCATMO(getHDRDoubleArray(path));
+                        double[][][] LDRDoubleArray = DCATMO(getHDRDoubleArray(path));
 
+                        /**
+                         * Use DCATMO to test C's ability to do array manipulation
+                         */
+                        double[][][] arrayTest= DCATMO(getHDRDoubleArray(path),length, width, 3);
                         createBitMap(LDRDoubleArray,path);
 
                         //HDRDoubleArray = null;
@@ -135,6 +142,7 @@ public class MainActivity extends AppCompatActivity {
 
     double[][][] getHDRDoubleArray (String path){
         File file = new File(path); //for HDRtofloatarray
+        HDRtoDoubleArray hdrtodoublearray = null;
         try {
             hdrtodoublearray = new HDRtoDoubleArray(file);
         } catch (IOException e) {

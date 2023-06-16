@@ -9,10 +9,14 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
-
+/**
+ * https://github.com/aicp7/HDR_file_readin/blob/master/HDRtofloatarray.java
+ * Converted the above code to return 3D Double array.
+ * Removed unused values to reduce memory use
+ */
 // This class is used to convert a HDR format image into a three-dimension float array represents the
 //RGB channels of the original image.
-public class HDRtoDoubleArray { //https://github.com/aicp7/HDR_file_readin/blob/master/HDRtofloatarray.java
+public class HDRtoDoubleArray {
     //the width of the HDR image
     private int width;
     //the height of the HDR image
@@ -26,13 +30,6 @@ public class HDRtoDoubleArray { //https://github.com/aicp7/HDR_file_readin/blob/
     private double[][][] buffers;
     //This two-dimension float array is storing the luminance information of the pixel.
     //We use the YUV format to calculate the luminance by lum=0.299*R+0.587*G+0.114*B
-    private double[][] lum;
-    //The mean value of the lum[][]
-    private double lummean;
-    //The maximum value of the lum[][]
-    private double lummax;
-    //The minimum value of the lum[][]
-    private double lummin;
 
     public int getWidth() {
         return width;
@@ -41,25 +38,9 @@ public class HDRtoDoubleArray { //https://github.com/aicp7/HDR_file_readin/blob/
     public int getHeight() {
         return height;
     }
-
-//    public double[][] getLumArray() {
-//        return lum;
-//    }
-
     public double[][][] getPixelArray() {
         return pixels;
     }
-//
-//    public double getLummax() {
-//        return lummax;
-//    }
-//    public double getLummin() {
-//        return lummin;
-//    }
-//
-//    public double getLummean() {
-//        return lummean;
-//    }
     //Construction method if the input is a file.
     public HDRtoDoubleArray(File file) throws IOException{
         if (file==null)
@@ -188,7 +169,7 @@ public class HDRtoDoubleArray { //https://github.com/aicp7/HDR_file_readin/blob/
          *Y=0.299*R+0.587*G+0.114*B;
          */
         pixels = new double[height][width][3];
-        lum = new double[height][width];
+        //lum = new double[height][width];
         double lmax = 0.0F;     //This float value is storing the max value of FP32 (RGB) data.
         for (int i = 0; i < height; i++) {
             for (int j = 0; j < width; j++) {
@@ -197,38 +178,38 @@ public class HDRtoDoubleArray { //https://github.com/aicp7/HDR_file_readin/blob/
                     pixels[i][j][0] = 0.0F;
                     pixels[i][j][1] = 0.0F;
                     pixels[i][j][2] = 0.0F;
-                    lum[i][j] = 0.0F;
+                    //lum[i][j] = 0.0F;
                 }
                 else {
                     double exppart = (double) Math.pow(2, exp-128-8);
                     pixels[i][j][0] = buffers[i][j][0]*exppart;
                     pixels[i][j][1] = buffers[i][j][1]*exppart;
                     pixels[i][j][2] = buffers[i][j][2]*exppart;
-                    lum[i][j] = (double) (0.299*pixels[i][j][0]+0.587*pixels[i][j][1]+0.114*pixels[i][j][2]);
-                    if (lum[i][j] > lmax) {
-                        lmax = lum[i][j];
-                    }
+                    //lum[i][j] = (double) (0.299*pixels[i][j][0]+0.587*pixels[i][j][1]+0.114*pixels[i][j][2]);
+                    //if (lum[i][j] > lmax) {
+                    //    lmax = lum[i][j];
+                    //}
                 }
             }
         }
 
         //The next step is normalize to 1; In the above loop, we already find the max value of the FP32(RGB) data.
-        lummax = 0.0F;
-        lummin = 1.0F;
-        double lumsum = 0.0F;
-        for (int i = 0; i < height; i++) {
-            for (int j = 0; j < width; j++) {
-                lum[i][j] /= lmax;
-                if (lum[i][j] > lummax) {
-                    lummax=lum[i][j];
-                }
-                if (lum[i][j] < lummin) {
-                    lummin=lum[i][j];
-                }
-                lumsum += lum[i][j];
-            }
-        }
-        lummean = lumsum / (height * width);
+//        lummax = 0.0F;
+//        lummin = 1.0F;
+//        double lumsum = 0.0F;
+//        for (int i = 0; i < height; i++) {
+//            for (int j = 0; j < width; j++) {
+//                lum[i][j] /= lmax;
+//                if (lum[i][j] > lummax) {
+//                    lummax=lum[i][j];
+//                }
+//                if (lum[i][j] < lummin) {
+//                    lummin=lum[i][j];
+//                }
+//                lumsum += lum[i][j];
+//            }
+//        }
+//        lummean = lumsum / (height * width);
     }
 
     private String readLine(InputStream in) throws IOException{

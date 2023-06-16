@@ -180,7 +180,6 @@ public class DCA_TMO extends Thread{
     }
 
     private static double[][][] divide3dDouble(double[][][] array, double value) {
-        //double[][][] retArray = new double[array.length][array[0].length][array[0][0].length];
         for (int i = 0; i < array.length; i++)
             for (int j = 0; j < array[i].length; j++)
                 for (int k = 0; k < array[i][j].length; k++)
@@ -189,7 +188,6 @@ public class DCA_TMO extends Thread{
     }
 
     private static double[][][] multiply3dDouble(int value, double[][][] array) {
-        //double[][][] retArray = new double[array.length][array[0].length][array[0][0].length];
         for (int i = 0; i < array.length; i++)
             for (int j = 0; j < array[i].length; j++)
                 for (int k = 0; k < array[i][j].length; k++)
@@ -198,7 +196,6 @@ public class DCA_TMO extends Thread{
     }
 
     private static double[][][] array3dMinusDouble(double[][][] array, double minn) {
-        //double[][][] retArray = new double[array.length][array[0].length][array[0][0].length];
         for (int i = 0; i < array.length; i++)
             for (int j = 0; j < array[i].length; j++)
                 for (int k = 0; k < array[i][j].length; k++)
@@ -207,7 +204,6 @@ public class DCA_TMO extends Thread{
     }
 
     private static double[][][] multiply3d2d(double[][][] array, double[][] multiplyBy) {
-        //double[][][] retArray = new double[array.length][array[0].length][array[0][0].length];
         for (int i = 0; i < array.length; i++)
             for (int j = 0; j < array[i].length; j++)
                 for (int k = 0; k < array[0][0].length; k++)
@@ -216,7 +212,6 @@ public class DCA_TMO extends Thread{
     }
 
     private static double[][][] pow3d2d(double[][][] array, double[][] power) {
-        //double[][][] retArray = new double[array.length][array[0].length][array[0][0].length];
         for (int i = 0; i < array.length; i++)
             for (int j = 0; j < array[i].length; j++)
                 for (int k = 0; k < array[0][0].length; k++)
@@ -225,7 +220,6 @@ public class DCA_TMO extends Thread{
     }
 
     private static double[][][] divide3dArray2dArray(double[][][] array, double[][] divideBy) {
-        //double[][][] retArray = new double[array.length][array[0].length][array[0][0].length];
             for (int i = 0; i < array.length; i++)
                 for (int j = 0; j < array[i].length; j++)
                     for (int k = 0; k < array[0][0].length; k++)
@@ -234,31 +228,28 @@ public class DCA_TMO extends Thread{
     }
 
     private static double[][] min2dArrayOrScalar(double[][] array, double value) {
-        double[][] retArray = new double[array.length][array[0].length];
         for (int i = 0; i < array.length; i++)
             for (int j = 0; j < array[i].length; j++)
                 if (array[i][j] < value)
-                    retArray[i][j] = array[i][j];
+                    array[i][j] = array[i][j];
                 else{
-                    retArray[i][j] = value;
+                    array[i][j] = value;
                 }
-        return retArray;
+        return array;
     }
 
     private static double[][] atan2DArray(double[][] array) {
-        double[][] retArray = new double[array.length][array[0].length];
         for (int i = 0; i < array.length; i++)
             for (int j = 0; j < array[i].length; j++)
-                retArray[i][j] = atan(array[i][j]);
-        return  retArray;
+                array[i][j] = atan(array[i][j]);
+        return  array;
     }
 
     private static double[][] array2dDivision(double[][] array, double value) {
-        double[][] retArray = new double[array.length][array[0].length];
         for (int i = 0; i < array.length; i++)
             for (int j = 0; j < array[i].length; j++)
-                retArray[i][j] = array[i][j]/ value;
-        return retArray;
+                array[i][j] = array[i][j]/ value;
+        return array;
     }
 
     private static double min2dArray(double[][] array){
@@ -288,26 +279,18 @@ public class DCA_TMO extends Thread{
 
     private static double[][] filterDouble2DWithConv(double[][] a, double[][] h, double[] finalSize){
         int[] padSize = new int[] {4,4};
-        double[][] retArray;
         h = rot90(h,2);
-        //double[] imageSize = {length, width};
-        double[] sizeh = new double[] {h.length,h.length};
-        //double[] nonSymmetricPadShift = numMinusArray(1,mod(sizeh,2));
         a = padarray_algo(a,padSize);
-        retArray = conv2(a,h);
 
-
-        return retArray;
+        return conv2(a,h);
     }
 
     private static double[][] conv2(double[][] a, double[][] h) {
-        double[][] retArray = new double[length][width];
         //https://towardsdatascience.com/intuitively-understanding-convolutions-for-deep-learning-1f6f42faee1
         //+ 8 to length and width to ensure that the returned array gives correct dimensions
         int padding = h.length;
-        retArray = Convolution.convolution2D(a, length+(padding-1), width+(padding-1),h,padding,padding);
         //https://homepages.inf.ed.ac.uk/rbf/HIPR2/flatjavasrc/Convolution.java
-        return retArray;
+        return Convolution.convolution2D(a, length + (padding - 1), width + (padding - 1), h, padding, padding);
     }
 
     private static double[][] padarray_algo(double[][] a, int[] padSize) {
@@ -319,8 +302,8 @@ public class DCA_TMO extends Thread{
 
     private static double[][] RangeMatrix(double[][] a, int[][] aIdx) {
         double[][] retArray = new double[aIdx[0].length][aIdx[1].length];
-        for (int i = 0; i < retArray.length-1; i++){
-            for (int j = 0; j < retArray[i].length-1; j++){
+        for (int i = 0; i < aIdx.length-1; i++){
+            for (int j = 0; j < aIdx[i].length-1; j++){
                 int lengthAxis = aIdx[0][i];
                 int widthAxis = aIdx[1][j];
                 retArray[i][j] = a[lengthAxis-1][widthAxis-1];
@@ -365,25 +348,6 @@ public class DCA_TMO extends Thread{
         return retArray;
     }
 
-//    private double[] numMinusArray(int num, double[] mod) {
-//        double[] retArray = new double[mod.length];
-//        for (int i = 0; i< mod.length; i++){
-//            retArray[i] = num - mod[i];
-//        }
-//        return retArray;
-//    }
-//
-//    private double[] mod(double[] doubles, int y) {
-//        double x1 = doubles[0];
-//        double x2 = doubles[1];
-//        double[] retArray = new double[doubles.length];
-//        for (int i= 0; i < doubles.length; i++)
-//            retArray[i] = doubles[i]- floor(doubles[i]/y)*y;
-//
-//        return retArray;
-//
-//    }
-
     private static double[][] rot90(double[][] arr1, int times) {
         int d = arr1.length;
         double[][] arr2 = new double[d][d];
@@ -418,7 +382,7 @@ public class DCA_TMO extends Thread{
         double[][] retArray = new double[rangeArray[0].length][rangeArray[1].length];
         for (int i = 0; i < rangeArray.length; i++)
             for (int j = 0; j < rangeArray[i].length; j++)
-                retArray[i][j] = rangeArray[i][j] - value;
+                rangeArray[i][j] = rangeArray[i][j] - value;
         return retArray;
     }
     private static double[][] doubleMinus2dArray(double value, double[][] rangeArray) {

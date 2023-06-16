@@ -175,16 +175,6 @@ public class QuantizeNL_float {
         return Vout;
     }
 
-    private double[][] to2dArray(double[] array1D) {
-        double[][] retArray = new double[length][width];
-        for (int j = 0; j < length; j++) {
-            for (int k = 0; k < width; k++) {
-                retArray[j][k] = array1D[0];
-            }
-        }
-        return retArray;
-    }
-
     private static double[] linearInterpolation(double[] x, double[] y, double[] values) {
         double[] interpolatedValues = new double[values.length];
         int n = x.length;
@@ -231,16 +221,15 @@ public class QuantizeNL_float {
     }
 
     private double[][] matrixBoolean(double[][] array, double valueToCheck) {
-        double[][] retArray = new double[length][width];
         for (int i = 0; i < array.length-1; i++) {
             for (int j = 1; j < array[i].length-1; j++) {
                 if (array[i][j] == valueToCheck) {
-                    retArray[i][j] = 1;
+                    array[i][j] = 1;
                 }
             }
 
         }
-        return retArray;
+        return array;
     }
 
     private double[][] matrixBoolean1(double[][] array, double valueToCheck1,double valueToCheck2) {
@@ -323,21 +312,16 @@ public class QuantizeNL_float {
         double[] retArray = new double[array.length];
         double sum = 0;
         for (int i = 0; i < array.length; i++) {
-
-            // find sum
             sum += array[i];
-
-            // replace
             retArray[i] = sum;
         }
         return retArray;
     }
     private double[] pow(double[] array){
-        double[] retArray = new double[array.length];
         for (int i = 0; i < array.length; i++){
-            retArray[i] = array[i] * array[i];
+            array[i] = array[i] * array[i];
         }
-        return retArray;
+        return array;
     }
 
     private double median(double[] array)
