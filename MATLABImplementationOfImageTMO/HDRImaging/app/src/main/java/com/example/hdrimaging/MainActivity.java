@@ -38,8 +38,7 @@ public class MainActivity extends AppCompatActivity {
 
     private TextView fileLocationText;
     private ImageView imageHDR;
-    private ScrollView scrollViewHDR;
-    private ScrollView scrollViewLDR;
+    private TextView ldrFilePath;
     private TextView timeTaken;
     int width;
     int length;
@@ -57,7 +56,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(binding.getRoot());
         fileLocationText = binding.FileLocationText;
         imageHDR = binding.convertedImage;
-        scrollViewHDR = binding.scrollView;
+        ldrFilePath = binding.LDRText;
         timeTaken = binding.TimeTakenText;
         if (Build.VERSION.SDK_INT >= 30) {
             if (!Environment.isExternalStorageManager()) {
@@ -111,7 +110,7 @@ public class MainActivity extends AppCompatActivity {
                         /**
                          * Use DCATMO to test C's ability to do array manipulation
                          */
-                        double[][][] arrayTest= DCATMO(getHDRDoubleArray(path),length, width, 3);
+                        //double[][][] arrayTest= DCATMO(getHDRDoubleArray(path),length, width, 3);
                         createBitMap(LDRDoubleArray,path);
 
                         //HDRDoubleArray = null;
@@ -126,7 +125,7 @@ public class MainActivity extends AppCompatActivity {
         double[][][] retArray = DCA_TMO_Processing(HDRDoubleArray, length, width);
         long endTime = System.nanoTime();
         long TimeTaken = endTime - startTime;
-        timeTaken.setText(String.valueOf(nanosecondsToSeconds(TimeTaken)));
+        timeTaken.setText(String.valueOf("Time taken for DCATMO to run: \n" + nanosecondsToSeconds(TimeTaken)));
         return retArray;
     }
 
@@ -183,6 +182,7 @@ public class MainActivity extends AppCompatActivity {
         } catch (IOException e) {
             e.printStackTrace();
         }
+        ldrFilePath.setText("File Path for LDR .PNG Image: \n" + file);
         imageHDR.setImageURI(Uri.parse(file.toString()));
     }
 
