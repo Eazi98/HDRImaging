@@ -39,13 +39,17 @@ public class Main {
 //        } else {
 //            System.out.println("Invalid folder path!");
 //        }
-        String fileName = "moto1500";
-        String path = "../../MATLABImplementationOfImageTMO/HDRim/" + fileName + ".hdr";
+        String fileName = "moto720";
+        String path = "../MATLABImplementationOfImageTMO/HDRim/" + fileName + ".hdr";
         double[][][] LDRDoubleArray;
+        long startTime = System.nanoTime();
         LDRDoubleArray = DCATMO(getHDRDoubleArray(path));
-        String outputFile = "../../MATLABImplementationOfImageTMO/LDRim/Java_"+ fileName + ".png";
-        System.out.println(fileName);
+        String outputFile = "../MATLABImplementationOfImageTMO/LDRim/Java_"+ fileName + ".png";
+        //System.out.println(fileName);
         writeToPNG(LDRDoubleArray, outputFile);
+        long endTime = System.nanoTime();
+        long TimeTaken = endTime - startTime;
+        System.out.println(nanosecondsToSeconds(TimeTaken));
     }
 
     public static double nanosecondsToSeconds(long nanoseconds) {
@@ -79,7 +83,7 @@ public class Main {
         try {
             File output = new File(path);
             ImageIO.write(image, "png", output);
-            System.out.println("Image saved successfully.");
+            //System.out.println("Image saved successfully.");
         } catch (IOException e) {
             e.printStackTrace();
             // Handle the exception as appropriate for your application
@@ -90,7 +94,7 @@ public class Main {
         double[][][] retArray = DCA_TMO.DCA_TMO_Processing(HDRDoubleArray, length, width);
         long endTime = System.nanoTime();
         long TimeTaken = endTime - startTime;
-        System.out.println(nanosecondsToSeconds(TimeTaken));
+        //System.out.println(nanosecondsToSeconds(TimeTaken));
         return retArray;
     }
     static double[][][] getHDRDoubleArray(String path) {
