@@ -8,4 +8,6 @@
     <string name="read_hdr_file">Read HDR File</string>
     <string name="hdr_file_location">HDR File Path</string>
     <string name="ldr_file_path">LDR File Path</string>
+    <string name="time_taken">Time Taken:</string>
+    <string name="time_taken_overall">Time Taken Overall:</string>
 </resources>

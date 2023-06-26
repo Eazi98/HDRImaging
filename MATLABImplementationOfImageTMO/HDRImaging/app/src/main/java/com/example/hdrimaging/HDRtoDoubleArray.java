@@ -28,8 +28,6 @@ public class HDRtoDoubleArray {
     //[][][] the first and second is location information
     //[][][] the third one is the R,G,B,E. which is its associated information.
     private double[][][] buffers;
-    //This two-dimension float array is storing the luminance information of the pixel.
-    //We use the YUV format to calculate the luminance by lum=0.299*R+0.587*G+0.114*B
 
     public int getWidth() {
         return width;
