@@ -40,6 +40,7 @@ public class MainActivity extends AppCompatActivity {
     private ImageView imageHDR;
     private TextView ldrFilePath;
     private TextView timeTaken;
+    private TextView timeTakenOverAll;
     int width;
     int length;
 
@@ -58,6 +59,7 @@ public class MainActivity extends AppCompatActivity {
         imageHDR = binding.convertedImage;
         ldrFilePath = binding.LDRText;
         timeTaken = binding.TimeTakenText;
+        timeTakenOverAll = binding.TimeTakenOverallText;
         if (Build.VERSION.SDK_INT >= 30) {
             if (!Environment.isExternalStorageManager()) {
                 Intent getpermission = new Intent();
@@ -65,9 +67,9 @@ public class MainActivity extends AppCompatActivity {
                 startActivity(getpermission);
             }
         }
-//        ActivityManager am = (ActivityManager) getSystemService(ACTIVITY_SERVICE);
-//        int memoryClass = am.getMemoryClass();
-//        Log.v("onCreate", "memoryClass:" + Integer.toString(memoryClass) + "MB");
+        ActivityManager am = (ActivityManager) getSystemService(ACTIVITY_SERVICE);
+        int memoryClass = am.getMemoryClass();
+        Log.v("onCreate", "memoryClass:" + Integer.toString(memoryClass) + "MB");
         binding.ReadFileButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -103,7 +105,7 @@ public class MainActivity extends AppCompatActivity {
                         Uri uri = data.getData();
                         String path = getFileName(uri, getApplicationContext());
                         fileLocationText.setText(path);
-
+                        long startTime = System.nanoTime();
                         //HDRDoubleArray = getHDRDoubleArray(path);
                         double[][][] LDRDoubleArray = DCATMO(getHDRDoubleArray(path));
 
@@ -112,6 +114,10 @@ public class MainActivity extends AppCompatActivity {
                          */
                         //double[][][] arrayTest= DCATMO(getHDRDoubleArray(path),length, width, 3);
                         createBitMap(LDRDoubleArray,path);
+
+                        long endTime = System.nanoTime();
+                        long TimeTaken = endTime - startTime;
+                        timeTakenOverAll.setText(String.valueOf("Time taken including read & write: \n" + nanosecondsToSeconds(TimeTaken)));
 
                         //HDRDoubleArray = null;
                         LDRDoubleArray = null;
