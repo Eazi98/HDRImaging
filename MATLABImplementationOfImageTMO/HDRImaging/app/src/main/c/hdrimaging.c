@@ -2,28 +2,26 @@
 #include <stdlib.h>
 #include <time.h>
 
-jobjectArray
-Java_com_example_hdrimaging_MainActivity_DCATMO(JNIEnv *env, jobject thiz,
-                                                  jobjectArray hdrdouble_array, jint length,
-                                                  jint width, jint depth)
-                                                  {
+JNIEXPORT void JNICALL
+Java_com_example_hdrimaging_MainActivity_create3DArray(JNIEnv *env, jobject thiz, jint length,
+                                                       jint width, jint depth) {
+    // Allocate memory for the 3D array
+    double*** array3D = (double***)malloc(length * sizeof(double**));
+    for (int i = 0; i < length; i++) {
+        array3D[i] = (double**)malloc(width * sizeof(double*));
+        for (int j = 0; j < width; j++) {
+            array3D[i][j] = (double*)malloc(depth * sizeof(double));
+        }
+    }
 
-//    // Create a new 3D double array in Java
-//    jclass doubleArrayClass = env->FindClass(env,"[D");
-//    jobjectArray resultArray = env->NewObjectArray(length, doubleArrayClass, nullptr);
+//    // Use the 3D array...
 //
-//    // Populate the resultArray with your computed values
+//    // Free the allocated memory
 //    for (int i = 0; i < length; i++) {
-//        jobjectArray rowArray = env->NewObjectArray(width, doubleArrayClass, nullptr);
 //        for (int j = 0; j < width; j++) {
-//            jdoubleArray colArray = env->NewDoubleArray(depth);
-//            env->SetDoubleArrayRegion(colArray, 0, depth, computedValues[i][j]);
-//            env->SetObjectArrayElement(rowArray, j, colArray);
-//            env->DeleteLocalRef(colArray);
+//            free(array3D[i][j]);
 //        }
-//        env->SetObjectArrayElement(resultArray, i, rowArray);
-//        env->DeleteLocalRef(rowArray);
+//        free(array3D[i]);
 //    }
-//
-//    return resultArray;
+//    free(array3D);
 }

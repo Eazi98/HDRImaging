@@ -48,7 +48,8 @@ public class MainActivity extends AppCompatActivity {
         System.loadLibrary("hdrimaging");
     }
 
-    public native double[][][] DCATMO(double[][][] HDRDoubleArray,int length, int width, int depth);
+    //public native double[][][] DCATMO(double[][][] HDRDoubleArray,int length, int width, int depth);
+    public native void create3DArray(int length, int width, int depth);
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -105,22 +106,24 @@ public class MainActivity extends AppCompatActivity {
                         Uri uri = data.getData();
                         String path = getFileName(uri, getApplicationContext());
                         fileLocationText.setText(path);
+//                        long startTime = System.nanoTime();
+//                        //HDRDoubleArray = getHDRDoubleArray(path);
+//                        double[][][] LDRDoubleArray = DCATMO(getHDRDoubleArray(path));
+//
+//                        createBitMap(LDRDoubleArray,path);
+//
+//                        long endTime = System.nanoTime();
+//                        long TimeTaken = endTime - startTime;
+//                        timeTakenOverAll.setText(String.valueOf("Time taken including read & write: \n" + nanosecondsToSeconds(TimeTaken)));
+
                         long startTime = System.nanoTime();
-                        //HDRDoubleArray = getHDRDoubleArray(path);
-                        double[][][] LDRDoubleArray = DCATMO(getHDRDoubleArray(path));
-
-                        /**
-                         * Use DCATMO to test C's ability to do array manipulation
-                         */
-                        //double[][][] arrayTest= DCATMO(getHDRDoubleArray(path),length, width, 3);
-                        createBitMap(LDRDoubleArray,path);
-
+                        create3DArray(length, width, 3);
                         long endTime = System.nanoTime();
                         long TimeTaken = endTime - startTime;
-                        timeTakenOverAll.setText(String.valueOf("Time taken including read & write: \n" + nanosecondsToSeconds(TimeTaken)));
+                        timeTakenOverAll.setText(String.valueOf("Time C takes to create array: \n" + nanosecondsToSeconds(TimeTaken)));
 
-                        //HDRDoubleArray = null;
-                        LDRDoubleArray = null;
+
+//                        LDRDoubleArray = null;
                     }
                 }
             }
