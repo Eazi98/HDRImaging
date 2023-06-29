@@ -39,17 +39,20 @@ public class Main {
 //        } else {
 //            System.out.println("Invalid folder path!");
 //        }
-        String fileName = "moto720";
-        String path = "../MATLABImplementationOfImageTMO/HDRim/" + fileName + ".hdr";
+        String fileName = "moto2350x1322";
+        String path = "../../MATLABImplementationOfImageTMO/HDRim/" + fileName + ".hdr";
         double[][][] LDRDoubleArray;
-        long startTime = System.nanoTime();
-        LDRDoubleArray = DCATMO(getHDRDoubleArray(path));
-        String outputFile = "../MATLABImplementationOfImageTMO/LDRim/Java_"+ fileName + ".png";
-        //System.out.println(fileName);
-        writeToPNG(LDRDoubleArray, outputFile);
-        long endTime = System.nanoTime();
-        long TimeTaken = endTime - startTime;
-        System.out.println(nanosecondsToSeconds(TimeTaken));
+        for (int i = 0; i <= 10; i++){
+            long startTime = System.nanoTime();
+            LDRDoubleArray = DCATMO(getHDRDoubleArray(path));
+            String outputFile = "../../MATLABImplementationOfImageTMO/LDRim/Java_"+ fileName + ".png";
+            //System.out.println(fileName);
+            writeToPNG(LDRDoubleArray, outputFile);
+            long endTime = System.nanoTime();
+            long TimeTaken = endTime - startTime;
+            System.out.println(nanosecondsToSeconds(TimeTaken));
+        }
+
     }
 
     public static double nanosecondsToSeconds(long nanoseconds) {
