@@ -1,4 +1,0 @@
-#Sat Feb 18 15:24:24 SGT 2023
-base.0=D\:\\GitRepos\\HDRImaging\\MATLABImplementationOfImageTMO\\LDRim\\HDRImaging_ert_rtw\\HDRImaging\\build\\intermediates\\dex\\debug\\mergeDexDebug\\classes.dex
-renamed.0=classes.dex
-path.0=classes.dex
