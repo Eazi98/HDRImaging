@@ -5,7 +5,6 @@ K = 55;
 
 %% pre-processing
 % [N, M, C] = size(hdrImg);
-test = hdrImg(:);
 maxhdr = MaxQuart(hdrImg(:), 0.99);
 minhdr = MaxQuart(hdrImg(:), 0.01);
 hdrImg(hdrImg>maxhdr) = maxhdr;
@@ -26,7 +25,6 @@ gfilterS = fspecial('gaussian', window, sigmaS);
 DoGfilter = gfilterC - gfilterS;
 hdrPQnor = 255 .* (hdrPQ - min(hdrPQ(:))) ./ (max(hdrPQ(:)) - min(hdrPQ(:))) + 1;
 hdrPQnor = hdrPQnor .* 0.35 + labels .* 0.65;
-test = imfilter(hdrPQnor, DoGfilter, 'replicate');
 labels_DoG = labels + 3.0*imfilter(hdrPQnor, DoGfilter, 'replicate');
 
 %% color restoration
@@ -53,4 +51,6 @@ end
 ldrImg_DoG(ldrImg_DoG>maxx) = maxx;
 ldrImg_DoG(ldrImg_DoG<minn) = minn;
 ldrImg = 255.* ((ldrImg_DoG - minn) ./ (maxx - minn));
+
 end
+
