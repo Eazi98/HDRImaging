@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.appcompat.widget.LinearLayoutCompat xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fitsSystemWindows="true"
+    tools:context=".MainActivity">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <TextView
+            android:id="@+id/FileLocationText"
+            android:layout_width="370dp"
+            android:layout_height="51dp"
+            android:layout_marginTop="16dp"
+            android:ems="10"
+            android:importantForAutofill="no"
+            android:text="@string/hdr_file_location"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.487"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <ImageView
+            android:id="@+id/convertedImage"
+            android:layout_width="393dp"
+            android:layout_height="287dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/ReadFileButton"
+            app:srcCompat="@drawable/ic_launcher_foreground"
+            tools:ignore="ContentDescription,ImageContrastCheck" />
+
+        <Button
+            android:id="@+id/ReadFileButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:onClick="openFileDialog"
+            android:text="@string/read_hdr_file"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.498"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/FileLocationText" />
+
+        <TextView
+            android:id="@+id/TimeTakenText"
+            android:layout_width="370dp"
+            android:layout_height="51dp"
+            android:ems="10"
+            android:importantForAutofill="no"
+            android:text="@string/time_taken"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.487"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/convertedImage" />
+
+        <TextView
+            android:id="@+id/TimeTakenOverallText"
+            android:layout_width="370dp"
+            android:layout_height="51dp"
+            android:layout_marginTop="28dp"
+            android:ems="10"
+            android:importantForAutofill="no"
+            android:text="@string/time_taken_overall"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.487"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/TimeTakenText" />
+
+        <TextView
+            android:id="@+id/LDRText"
+            android:layout_width="370dp"
+            android:layout_height="75dp"
+            android:layout_marginTop="28dp"
+            android:ems="10"
+            android:importantForAutofill="no"
+            android:text="@string/ldr_file_path"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.487"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/TimeTakenOverallText" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</androidx.appcompat.widget.LinearLayoutCompat>
