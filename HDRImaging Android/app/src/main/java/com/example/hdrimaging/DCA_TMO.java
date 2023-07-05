@@ -104,10 +104,12 @@ public class DCA_TMO extends Thread{
         double[][] s1;
         double minLabels_DoG = min2dArray(labels_DoG);
         double maxLabels_DoG = max2dArray(labels_DoG);
-
-        s1 = array2dDivision(arrayMinusDouble(labels_DoG,minLabels_DoG),(maxLabels_DoG - minLabels_DoG));
-        double[][] s = min2dArrayOrScalar(doubleMinus2dArray(1,atan2DArray(s1)),0.5);
-        double[][][] powArray = pow3d2d(divide3dArray2dArray(hdrImg,hdrLum), s);
+        double[][] arrayMinused = arrayMinusDouble(labels_DoG,minLabels_DoG);
+        s1 = array2dDivision(arrayMinused,(maxLabels_DoG - minLabels_DoG));
+        double[][] s = doubleMinus2dArray(1,atan2DArray(s1));
+        s = min2dArrayOrScalar(s,0.5);
+        double[][][] divided3dArray = divide3dArray2dArray(hdrImg,hdrLum);
+        double[][][] powArray = pow3d2d(divided3dArray, s);
         double[][][] ldrImg_DoG = multiply3d2d(powArray, labels_DoG);
         double[] ldrImg_DoG1D = to1dArray(ldrImg_DoG);
         MaxQuart maxQuart = new MaxQuart();
@@ -141,10 +143,6 @@ public class DCA_TMO extends Thread{
     }
 
     private static double[] to1dArray(double[][][] array) {
-//        double[] retArray = stream(array)
-//                .flatMap(Arrays::stream)
-//                .flatMapToDouble(Arrays::stream)
-//                .toArray();
         double[] retArray = new double[array.length * array[0].length * array[0][0].length];
         int index = 0;
 
@@ -377,7 +375,7 @@ public class DCA_TMO extends Thread{
         double[][] retArray = new double[rangeArray[0].length][rangeArray[1].length];
         for (int i = 0; i < rangeArray.length; i++)
             for (int j = 0; j < rangeArray[i].length; j++)
-                rangeArray[i][j] = rangeArray[i][j] - value;
+                retArray[i][j] = rangeArray[i][j] - value;
         return retArray;
     }
     private static double[][] doubleMinus2dArray(double value, double[][] rangeArray) {
