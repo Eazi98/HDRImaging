@@ -1,4 +1,4 @@
-    hdrImg = double(hdrread("HDRim/smallmoto.hdr"));
+    hdrImg = double(hdrread("HDRim/mpi_office.hdr"));
 %     ldrImgTime0 = timeit( @() DCA_TMO(hdrImg));
 %     ldrImgTime1 = timeit( @() DCA_TMO(hdrImg));
 %     ldrImgTime2 = timeit( @() DCA_TMO(hdrImg));
@@ -11,5 +11,5 @@
 %     ldrImgTime9 = timeit( @() DCA_TMO(hdrImg));
     ldrImg = DCA_TMO(hdrImg);
     
-%     imwrite(uint8(ldrImg), ['LDRim\', 'something', '.png']);
+     imwrite(uint8(ldrImg), ['LDRim\', 'something', '.png']);
 %     imshow(uint8(ldrImg));

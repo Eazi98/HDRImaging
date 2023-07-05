@@ -50,7 +50,6 @@ public class DCA_TMO extends Thread{
         double[][] hdrLum1 = new double[length][width];
         double[][] hdrPQ = new double[length][width];
 
-        //get max value for hdrLum1 = hdrLum./max(hdrImg(:));  max(hdrImg(:)) value
         hdrMaxValue = hdrImg[0][0][0];
         for (int i = 0; i < hdrImg.length; i++)
             for (int j = 0; j < hdrImg[i].length; j++)
@@ -91,13 +90,9 @@ public class DCA_TMO extends Thread{
         for (int i = 0; i < hdrImg.length; i++)
             for (int j = 0; j < hdrImg[i].length; j++) {
                 hdrPQnor[i][j] = 255 * (hdrPQ[i][j] - hdrPQMin) / (hdrPQMax - hdrPQMin) + 1;
-            }
-
-        for (int i = 0; i < hdrImg.length; i++)
-            for (int j = 0; j < hdrImg[i].length; j++) {
                 hdrPQnor[i][j] = hdrPQnor[i][j] * 0.35 + labels[i][j] * 0.65;
             }
-        //Correct to here
+
         double[][] labels_DoG = new double[length][width];
         double[][] imfilterArray = imfilter(hdrPQnor, DoGfilter);
         for (int i = 0; i < labels_DoG.length; i++)
@@ -302,11 +297,11 @@ public class DCA_TMO extends Thread{
 
     private static double[][] RangeMatrix(double[][] a, int[][] aIdx) {
         double[][] retArray = new double[aIdx[0].length][aIdx[1].length];
-        for (int i = 0; i < aIdx.length-1; i++){
-            for (int j = 0; j < aIdx[i].length-1; j++){
+        for (int i = 0; i < retArray.length; i++) {
+            for (int j = 0; j < retArray[i].length; j++) {
                 int lengthAxis = aIdx[0][i];
                 int widthAxis = aIdx[1][j];
-                retArray[i][j] = a[lengthAxis-1][widthAxis-1];
+                retArray[i][j] = a[lengthAxis][widthAxis];
             }
         }
         return retArray;
@@ -323,16 +318,16 @@ public class DCA_TMO extends Thread{
             int count = 1;
             for (int j = 0; j< loopRange; j++){
                 if (j < onesVector.length){
-                    idx[k][j] = 1;
+                    idx[k][j] = 0;
                 }
                 else if ((j >= onesVector.length) && (j <= (loopRange - onesVector.length-1)))
                 {
-                    idx[k][j] = count;
+                    idx[k][j] = count-1;
                     count += 1;
                 }
                 else if (j > (loopRange - onesVector.length-1))
                 {
-                    idx[k][j] = (int) M;
+                    idx[k][j] = (int) M-1;
                 }
             }
 
