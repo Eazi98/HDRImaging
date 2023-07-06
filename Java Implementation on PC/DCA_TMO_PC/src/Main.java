@@ -39,14 +39,15 @@ public class Main {
 //        } else {
 //            System.out.println("Invalid folder path!");
 //        }
-        String fileName = "moto2350x1322";
+        String fileName = "mpi_office";
         String path = "../MATLABImplementationOfImageTMO/HDRim/" + fileName + ".hdr";
         double[][][] LDRDoubleArray;
-        for (int i = 0; i <= 1; i++){
+        for (int i = 0; i <= 11; i++){
             long startTime = System.nanoTime();
             LDRDoubleArray = DCATMO(getHDRDoubleArray(path));
+
             String outputFile = "../MATLABImplementationOfImageTMO/LDRim/Java_"+ fileName + ".png";
-            System.out.println(fileName);
+//            System.out.println(fileName);
             writeToPNG(LDRDoubleArray, outputFile);
             long endTime = System.nanoTime();
             long TimeTaken = endTime - startTime;
@@ -85,7 +86,7 @@ public class Main {
         // Save the image to a PNG file
         try {
             File output = new File(path);
-            System.out.println(output);
+//            System.out.println(output);
             ImageIO.write(image, "png", output);
             //System.out.println("Image saved successfully.");
         } catch (IOException e) {
