@@ -1,4 +1,4 @@
-    hdrImg = double(hdrread("HDRim/[24]-14.hdr"));
+    hdrImg = double(hdrread("HDRim/mpi_office.hdr"));
     ldrImgTime0 = timeit( @() DCA_TMO(hdrImg));
     ldrImgTime1 = timeit( @() DCA_TMO(hdrImg));
     ldrImgTime2 = timeit( @() DCA_TMO(hdrImg));
