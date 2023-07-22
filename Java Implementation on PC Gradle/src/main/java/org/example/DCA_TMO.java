@@ -146,141 +146,141 @@ public class DCA_TMO extends Thread{
         return ldrImg;
     }
 
-    public static double[][][] DCA_TMO_Processing_Matrix(double[][][] hdrImg, int length1, int width1)
-    {
-        length = length1;
-        width = width1;
-        double maxhdr;
-        double minhdr;
-        double hdrMaxValue;
-        double[][][] ldrImg;
-
-        //set parameters
-        double K = 55;
-//      pre-processing
-        double[] hdrOneD = stream(hdrImg)
-                .flatMap(Arrays::stream)
-                .flatMapToDouble(Arrays::stream)
-                .toArray();
-
-        MaxQuart MaxQuart = new MaxQuart();
-        maxhdr = MaxQuart.maxQuart(hdrOneD, 0.99);
-        minhdr = MaxQuart.maxQuart(hdrOneD, 0.01);
-
-
-        for (int i = 0; i < hdrImg.length; i++)
-            for (int j = 0; j < hdrImg[i].length; j++)
-                for (int k = 0; k < hdrImg[i][j].length; k++){
-                    if (hdrImg[i][j][k] > maxhdr){
-                        hdrImg[i][j][k] = maxhdr;
-                    }else if(hdrImg[i][j][k] < minhdr){
-                        hdrImg[i][j][k] = minhdr;
-                    }
-                }
-        //tone map using clustering methods
-
-        SimpleMatrix hdrLumMatrix = new SimpleMatrix(
-                new double[length][width]
-        );
-
-        SimpleMatrix hdrLum1Matrix;
-        SimpleMatrix hdrPQMatrix = new SimpleMatrix(
-                new double[length][width]
-        );
-        SimpleMatrix hdrPQMatrix1;
-        SimpleMatrix hdrPQMatrix2;
-        hdrMaxValue = hdrImg[0][0][0];
-        for (int i = 0; i < hdrImg.length; i++)
-            for (int j = 0; j < hdrImg[i].length; j++)
-                for (int k = 0; k < hdrImg[i][j].length; k++){
-                    if (hdrImg[i][j][k] > hdrMaxValue)
-                        hdrMaxValue = hdrImg[i][j][k];
-                }
-
-        for (int i = 0; i < hdrImg.length; i++)
-            for (int j = 0; j < hdrImg[i].length; j++){
-                hdrLumMatrix.set(i,j,0.2126 * hdrImg[i][j][0] + 0.7152 * hdrImg[i][j][1]+ 0.0722 * hdrImg[i][j][2]);
-            }
-        hdrLum1Matrix = hdrLumMatrix.divide(hdrMaxValue);
-        hdrPQMatrix1 = hdrLum1Matrix.elementPower((double) 1305 /8192).scale((double) 2413 /128).plus((double) 107 /128);
-        hdrPQMatrix2 = hdrLum1Matrix.elementPower((double) 1305 /8192).scale((double) 2392 /128).plus(1);
-        hdrPQMatrix = hdrPQMatrix1.elementDiv(hdrPQMatrix2).elementPower((double) 2523 /32);
-        QuantizeNL_float QuantizeNL_float = new QuantizeNL_float(length, width);
-        double[][] labels = QuantizeNL_float.quantizeNL_float_matrix(hdrPQMatrix, K, hdrLumMatrix);
-
-        //local enhancement using DoG
-        double sigmaC = 0.5;
-        double sigmaS = 0.8;
-        double window = 9;
-
-        //Correct from here
-        double[][] gfilterC = fspecial(window, sigmaC);
-        double[][] gfilterS = fspecial(window, sigmaS);
-        double[][] DoGfilter = new double[(int) window][(int) window];
-        for (int i = 0; i < DoGfilter.length; i++)
-            for (int j = 0; j < DoGfilter[i].length; j++)
-                DoGfilter[i][j] = (gfilterC[i][j] - gfilterS[i][j]);
-
-        double[][] hdrPQnor = new double[length][width];
-
-        double[] hdrPQMaxMin = findMaxAndMinOfArray(hdrPQ);
-        double hdrPQMax = hdrPQMaxMin[0];
-        double hdrPQMin = hdrPQMaxMin[1];
-
-        for (int i = 0; i < hdrImg.length; i++)
-            for (int j = 0; j < hdrImg[i].length; j++) {
-                hdrPQnor[i][j] = 255 * (hdrPQ[i][j] - hdrPQMin) / (hdrPQMax - hdrPQMin) + 1;
-                hdrPQnor[i][j] = hdrPQnor[i][j] * 0.35 + labels[i][j] * 0.65;
-            }
-
-        double[][] labels_DoG = new double[length][width];
-        double[][] imfilterArray = imfilter(hdrPQnor, DoGfilter);
-        for (int i = 0; i < labels_DoG.length; i++)
-            for (int j = 0; j < labels_DoG[i].length; j++) {
-                labels_DoG[i][j] = labels[i][j] + 3.0 * imfilterArray[i][j];
-            }
-
-        // color restoration
-        double[][] s1;
-        double minLabels_DoG = min2dArray(labels_DoG);
-        double maxLabels_DoG = max2dArray(labels_DoG);
-        double[][] arrayMinused = arrayMinusDouble(labels_DoG,minLabels_DoG);
-        s1 = array2dDivision(arrayMinused,(maxLabels_DoG - minLabels_DoG));
-        double[][] s = doubleMinus2dArray(1,atan2DArray(s1));
-        s = min2dArrayOrScalar(s,0.5);
-        double[][][] divided3dArray = divide3dArray2dArray(hdrImg,hdrLum);
-        double[][][] powArray = pow3d2d(divided3dArray, s);
-        double[][][] ldrImg_DoG = multiply3d2d(powArray, labels_DoG);
-        double[] ldrImg_DoG1D = to1dArray(ldrImg_DoG);
-        MaxQuart maxQuart = new MaxQuart();
-        double maxx = maxQuart.maxQuart(ldrImg_DoG1D, 0.99);
-        double minn = maxQuart.maxQuart(ldrImg_DoG1D, 0.01);
-        if (maxx <255)
-            if (max(ldrImg_DoG1D)[0] < 255)
-                maxx = max(ldrImg_DoG1D)[0];
-            else
-                maxx = 255;
-        if ( minn > 0)
-            if (min(ldrImg_DoG1D)[0] > 0)
-                minn = min(ldrImg_DoG1D)[0];
-            else
-                minn = 0;
-
-        for (int i = 0; i < ldrImg_DoG.length; i++)
-            for (int j = 0; j < ldrImg_DoG[i].length; j++)
-                for (int k = 0; k < hdrImg[i][j].length; k++){
-                    if (ldrImg_DoG[i][j][k] > maxx){
-                        ldrImg_DoG[i][j][k] = maxx;
-                    }else if(ldrImg_DoG[i][j][k] < minn){
-                        ldrImg_DoG[i][j][k] = minn;
-                    }
-                }
-        double[][][]minusedArray = array3dMinusDouble(ldrImg_DoG,minn);
-
-        double[][][] dividedArray = divide3dDouble(minusedArray,(maxx - minn));
-        ldrImg = multiply3dDouble(255,dividedArray);
-        return ldrImg;
-    }
+//    public static double[][][] DCA_TMO_Processing_Matrix(double[][][] hdrImg, int length1, int width1)
+//    {
+//        length = length1;
+//        width = width1;
+//        double maxhdr;
+//        double minhdr;
+//        double hdrMaxValue;
+//        double[][][] ldrImg;
+//
+//        //set parameters
+//        double K = 55;
+////      pre-processing
+//        double[] hdrOneD = stream(hdrImg)
+//                .flatMap(Arrays::stream)
+//                .flatMapToDouble(Arrays::stream)
+//                .toArray();
+//
+//        MaxQuart MaxQuart = new MaxQuart();
+//        maxhdr = MaxQuart.maxQuart(hdrOneD, 0.99);
+//        minhdr = MaxQuart.maxQuart(hdrOneD, 0.01);
+//
+//
+//        for (int i = 0; i < hdrImg.length; i++)
+//            for (int j = 0; j < hdrImg[i].length; j++)
+//                for (int k = 0; k < hdrImg[i][j].length; k++){
+//                    if (hdrImg[i][j][k] > maxhdr){
+//                        hdrImg[i][j][k] = maxhdr;
+//                    }else if(hdrImg[i][j][k] < minhdr){
+//                        hdrImg[i][j][k] = minhdr;
+//                    }
+//                }
+//        //tone map using clustering methods
+//
+//        SimpleMatrix hdrLumMatrix = new SimpleMatrix(
+//                new double[length][width]
+//        );
+//
+//        SimpleMatrix hdrLum1Matrix;
+//        SimpleMatrix hdrPQMatrix = new SimpleMatrix(
+//                new double[length][width]
+//        );
+//        SimpleMatrix hdrPQMatrix1;
+//        SimpleMatrix hdrPQMatrix2;
+//        hdrMaxValue = hdrImg[0][0][0];
+//        for (int i = 0; i < hdrImg.length; i++)
+//            for (int j = 0; j < hdrImg[i].length; j++)
+//                for (int k = 0; k < hdrImg[i][j].length; k++){
+//                    if (hdrImg[i][j][k] > hdrMaxValue)
+//                        hdrMaxValue = hdrImg[i][j][k];
+//                }
+//
+//        for (int i = 0; i < hdrImg.length; i++)
+//            for (int j = 0; j < hdrImg[i].length; j++){
+//                hdrLumMatrix.set(i,j,0.2126 * hdrImg[i][j][0] + 0.7152 * hdrImg[i][j][1]+ 0.0722 * hdrImg[i][j][2]);
+//            }
+//        hdrLum1Matrix = hdrLumMatrix.divide(hdrMaxValue);
+//        hdrPQMatrix1 = hdrLum1Matrix.elementPower((double) 1305 /8192).scale((double) 2413 /128).plus((double) 107 /128);
+//        hdrPQMatrix2 = hdrLum1Matrix.elementPower((double) 1305 /8192).scale((double) 2392 /128).plus(1);
+//        hdrPQMatrix = hdrPQMatrix1.elementDiv(hdrPQMatrix2).elementPower((double) 2523 /32);
+//        QuantizeNL_float QuantizeNL_float = new QuantizeNL_float(length, width);
+//        double[][] labels = QuantizeNL_float.quantizeNL_float_matrix(hdrPQMatrix, K, hdrLumMatrix);
+//
+//        //local enhancement using DoG
+//        double sigmaC = 0.5;
+//        double sigmaS = 0.8;
+//        double window = 9;
+//
+//        //Correct from here
+//        double[][] gfilterC = fspecial(window, sigmaC);
+//        double[][] gfilterS = fspecial(window, sigmaS);
+//        double[][] DoGfilter = new double[(int) window][(int) window];
+//        for (int i = 0; i < DoGfilter.length; i++)
+//            for (int j = 0; j < DoGfilter[i].length; j++)
+//                DoGfilter[i][j] = (gfilterC[i][j] - gfilterS[i][j]);
+//
+//        double[][] hdrPQnor = new double[length][width];
+//
+//        double[] hdrPQMaxMin = findMaxAndMinOfArray(hdrPQ);
+//        double hdrPQMax = hdrPQMaxMin[0];
+//        double hdrPQMin = hdrPQMaxMin[1];
+//
+//        for (int i = 0; i < hdrImg.length; i++)
+//            for (int j = 0; j < hdrImg[i].length; j++) {
+//                hdrPQnor[i][j] = 255 * (hdrPQ[i][j] - hdrPQMin) / (hdrPQMax - hdrPQMin) + 1;
+//                hdrPQnor[i][j] = hdrPQnor[i][j] * 0.35 + labels[i][j] * 0.65;
+//            }
+//
+//        double[][] labels_DoG = new double[length][width];
+//        double[][] imfilterArray = imfilter(hdrPQnor, DoGfilter);
+//        for (int i = 0; i < labels_DoG.length; i++)
+//            for (int j = 0; j < labels_DoG[i].length; j++) {
+//                labels_DoG[i][j] = labels[i][j] + 3.0 * imfilterArray[i][j];
+//            }
+//
+//        // color restoration
+//        double[][] s1;
+//        double minLabels_DoG = min2dArray(labels_DoG);
+//        double maxLabels_DoG = max2dArray(labels_DoG);
+//        double[][] arrayMinused = arrayMinusDouble(labels_DoG,minLabels_DoG);
+//        s1 = array2dDivision(arrayMinused,(maxLabels_DoG - minLabels_DoG));
+//        double[][] s = doubleMinus2dArray(1,atan2DArray(s1));
+//        s = min2dArrayOrScalar(s,0.5);
+//        double[][][] divided3dArray = divide3dArray2dArray(hdrImg,hdrLum);
+//        double[][][] powArray = pow3d2d(divided3dArray, s);
+//        double[][][] ldrImg_DoG = multiply3d2d(powArray, labels_DoG);
+//        double[] ldrImg_DoG1D = to1dArray(ldrImg_DoG);
+//        MaxQuart maxQuart = new MaxQuart();
+//        double maxx = maxQuart.maxQuart(ldrImg_DoG1D, 0.99);
+//        double minn = maxQuart.maxQuart(ldrImg_DoG1D, 0.01);
+//        if (maxx <255)
+//            if (max(ldrImg_DoG1D)[0] < 255)
+//                maxx = max(ldrImg_DoG1D)[0];
+//            else
+//                maxx = 255;
+//        if ( minn > 0)
+//            if (min(ldrImg_DoG1D)[0] > 0)
+//                minn = min(ldrImg_DoG1D)[0];
+//            else
+//                minn = 0;
+//
+//        for (int i = 0; i < ldrImg_DoG.length; i++)
+//            for (int j = 0; j < ldrImg_DoG[i].length; j++)
+//                for (int k = 0; k < hdrImg[i][j].length; k++){
+//                    if (ldrImg_DoG[i][j][k] > maxx){
+//                        ldrImg_DoG[i][j][k] = maxx;
+//                    }else if(ldrImg_DoG[i][j][k] < minn){
+//                        ldrImg_DoG[i][j][k] = minn;
+//                    }
+//                }
+//        double[][][]minusedArray = array3dMinusDouble(ldrImg_DoG,minn);
+//
+//        double[][][] dividedArray = divide3dDouble(minusedArray,(maxx - minn));
+//        ldrImg = multiply3dDouble(255,dividedArray);
+//        return ldrImg;
+//    }
 
     private static double[] to1dArray(double[][][] array) {
         double[] retArray = new double[array.length * array[0].length * array[0][0].length];

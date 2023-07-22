@@ -46,31 +46,178 @@ public class Main {
         String fileName = "moto2350x1322";
         String path = "../MATLABImplementationOfImageTMO/HDRim/" + fileName + ".hdr";
         double[][][] LDRDoubleArray;
-        for (int i = 0; i <= 11; i++){
-            long startTime = System.nanoTime();
-            LDRDoubleArray = DCATMO(getHDRDoubleArray(path));
-
-            String outputFile = "../MATLABImplementationOfImageTMO/LDRim/Java_"+ fileName + ".png";
-//            System.out.println(fileName);
-            writeToPNG(LDRDoubleArray, outputFile);
-            long endTime = System.nanoTime();
-            long TimeTaken = endTime - startTime;
-            System.out.println(nanosecondsToSeconds(TimeTaken));
-        }
+//        for (int i = 0; i <= 11; i++){
+//            long startTime = System.nanoTime();
+//            LDRDoubleArray = DCATMO(getHDRDoubleArray(path));
+//
+//            String outputFile = "../MATLABImplementationOfImageTMO/LDRim/Java_"+ fileName + ".png";
+////            System.out.println(fileName);
+//            writeToPNG(LDRDoubleArray, outputFile);
+//            long endTime = System.nanoTime();
+//            long TimeTaken = endTime - startTime;
+//            System.out.println(nanosecondsToSeconds(TimeTaken));
+//        }
         long startTime = System.nanoTime();
-        testMatrix(getHDRDoubleArray(path));
+//        testMatrix(getHDRDoubleArray(path));
         long endTime = System.nanoTime();
         long TimeTaken = endTime - startTime;
-        System.out.println(nanosecondsToSeconds(TimeTaken));
+//        System.out.println(nanosecondsToSeconds(TimeTaken));
 
+//        startTime = System.nanoTime();
+//        testArray(getHDRDoubleArray(path));
+//        endTime = System.nanoTime();
+//        TimeTaken = endTime - startTime;
+//        System.out.println(nanosecondsToSeconds(TimeTaken));
+
+
+        double[][][] hdrImg = getHDRDoubleArray(path);
+        SimpleMatrix hdrLumMatrix = new SimpleMatrix(
+                new double[length][width]
+        );
+        SimpleMatrix hdrLumMatrix1 = new SimpleMatrix(
+                new double[length][width]
+        );
+        double [][] hdrLumArray = new double[length][width];
+        double [][] hdrLumArray1 = new double[length][width];
+        for (int i = 0; i < hdrImg.length; i++)
+            for (int j = 0; j < hdrImg[i].length; j++){
+                hdrLumMatrix.set(i,j,0.2126 * hdrImg[i][j][0] + 0.7152 * hdrImg[i][j][1]+ 0.0722 * hdrImg[i][j][2]);
+                hdrLumMatrix1.set(i,j,0.1 * hdrImg[i][j][0] + 0.7152 * hdrImg[i][j][1]+ 0.0722 * hdrImg[i][j][2]);
+                hdrLumArray[i][j] = 0.2126 * hdrImg[i][j][0] + 0.7152 * hdrImg[i][j][1]+ 0.0722 * hdrImg[i][j][2];
+                hdrLumArray1[i][j] = 0.1 * hdrImg[i][j][0] + 0.7152 * hdrImg[i][j][1]+ 0.0722 * hdrImg[i][j][2];
+            }
+        //Test Matrix element wise division
+        System.out.println("Scalar Multiplication");
         startTime = System.nanoTime();
-        testArray(getHDRDoubleArray(path));
+        hdrLumMatrix.scale(5);
         endTime = System.nanoTime();
         TimeTaken = endTime - startTime;
-        System.out.println(nanosecondsToSeconds(TimeTaken));
+        System.out.println("Matrix: " +nanosecondsToSeconds(TimeTaken));
+
+
+        double [][] hdrLumArrayResult = new double[length][width];
+        startTime = System.nanoTime();
+        for (int i = 0; i < hdrImg.length; i++)
+            for (int j = 0; j < hdrImg[i].length; j++){
+                hdrLumArrayResult[i][j] = hdrLumArray[i][j] * 5;
+            }
+        endTime = System.nanoTime();
+        TimeTaken = endTime - startTime;
+        System.out.println("Array: \t" + nanosecondsToSeconds(TimeTaken) + "\n");
+
+        System.out.println("Scalar Division");
+        startTime = System.nanoTime();
+        hdrLumMatrix.divide(5);
+        endTime = System.nanoTime();
+        TimeTaken = endTime - startTime;
+        System.out.println("Matrix: " +nanosecondsToSeconds(TimeTaken));
+
+
+        hdrLumArrayResult = new double[length][width];
+        startTime = System.nanoTime();
+        for (int i = 0; i < hdrImg.length; i++)
+            for (int j = 0; j < hdrImg[i].length; j++){
+                hdrLumArrayResult[i][j] = hdrLumArray[i][j] / 5;
+            }
+        endTime = System.nanoTime();
+        TimeTaken = endTime - startTime;
+        System.out.println("Array: \t" + nanosecondsToSeconds(TimeTaken)+ "\n") ;
+
+        System.out.println("Element-wise Division");
+        startTime = System.nanoTime();
+        hdrLumMatrix.elementDiv(hdrLumMatrix1);
+        endTime = System.nanoTime();
+        TimeTaken = endTime - startTime;
+        System.out.println("Matrix: " +nanosecondsToSeconds(TimeTaken));
+
+
+        hdrLumArrayResult = new double[length][width];
+        startTime = System.nanoTime();
+        for (int i = 0; i < hdrImg.length; i++)
+            for (int j = 0; j < hdrImg[i].length; j++){
+                hdrLumArrayResult[i][j] = hdrLumArray[i][j] / hdrLumArray1[i][j];
+            }
+        endTime = System.nanoTime();
+        TimeTaken = endTime - startTime;
+        System.out.println("Array: \t" + nanosecondsToSeconds(TimeTaken)+ "\n");
+
+        System.out.println("Element-wise Power");
+        startTime = System.nanoTime();
+        hdrLumMatrix.elementPower(3);
+        endTime = System.nanoTime();
+        TimeTaken = endTime - startTime;
+        System.out.println("Matrix: " +nanosecondsToSeconds(TimeTaken));
+
+
+        hdrLumArrayResult = new double[length][width];
+        startTime = System.nanoTime();
+        for (int i = 0; i < hdrImg.length; i++)
+            for (int j = 0; j < hdrImg[i].length; j++){
+                hdrLumArrayResult[i][j] = Math.pow(hdrLumArray[i][j],3);
+            }
+        endTime = System.nanoTime();
+        TimeTaken = endTime - startTime;
+        System.out.println("Array: \t" + nanosecondsToSeconds(TimeTaken)+ "\n");
+
+        System.out.println("Element-wise Multiplication");
+        startTime = System.nanoTime();
+        hdrLumMatrix.elementMult(hdrLumMatrix1);
+        endTime = System.nanoTime();
+        TimeTaken = endTime - startTime;
+        System.out.println("Matrix: " +nanosecondsToSeconds(TimeTaken));
+
+
+        hdrLumArrayResult = new double[length][width];
+        startTime = System.nanoTime();
+        for (int i = 0; i < hdrImg.length; i++)
+            for (int j = 0; j < hdrImg[i].length; j++){
+                hdrLumArrayResult[i][j] = hdrLumArray[i][j] * hdrLumArray1[i][j];
+            }
+        endTime = System.nanoTime();
+        TimeTaken = endTime - startTime;
+        System.out.println("Array: \t" + nanosecondsToSeconds(TimeTaken)+ "\n");
+
+        System.out.println("Scalar Addition");
+        startTime = System.nanoTime();
+        hdrLumMatrix.plus(1);
+        endTime = System.nanoTime();
+        TimeTaken = endTime - startTime;
+        System.out.println("Matrix: " +nanosecondsToSeconds(TimeTaken));
+
+
+        hdrLumArrayResult = new double[length][width];
+        startTime = System.nanoTime();
+        for (int i = 0; i < hdrImg.length; i++)
+            for (int j = 0; j < hdrImg[i].length; j++){
+                hdrLumArrayResult[i][j] = hdrLumArray[i][j] + 1;
+            }
+        endTime = System.nanoTime();
+        TimeTaken = endTime - startTime;
+        System.out.println("Array: \t" + nanosecondsToSeconds(TimeTaken)+ "\n");
+
+        System.out.println("Reshape");
+        startTime = System.nanoTime();
+        hdrLumMatrix.reshape(1,hdrLumMatrix.getNumElements());
+        endTime = System.nanoTime();
+        TimeTaken = endTime - startTime;
+        System.out.println("Matrix: " +nanosecondsToSeconds(TimeTaken));
+
+        hdrLumArrayResult = new double[length][width];
+        double[] hdrLumArray1D = new double[length*width];
+        int count = 0;
+        startTime = System.nanoTime();
+        for (int i = 0; i < hdrImg.length; i++)
+            for (int j = 0; j < hdrImg[i].length; j++){
+                hdrLumArray1D[count] = hdrLumArray[i][j];
+                count +=1;
+            }
+        endTime = System.nanoTime();
+        TimeTaken = endTime - startTime;
+        System.out.println("Array: \t" + nanosecondsToSeconds(TimeTaken)+ "\n");
     }
 
     public static void testMatrix(double[][][] hdrImg){
+
         double hdrMaxValue = hdrImg[0][0][0];
         for (int i = 0; i < hdrImg.length; i++)
             for (int j = 0; j < hdrImg[i].length; j++)
